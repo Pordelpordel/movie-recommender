@@ -832,7 +832,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://movie-recommender.onrender.com';
+        const API_URL = 'https://movie-recommender-final-ic8x.onrender.com'
         let isLoginMode = true;
         let currentMovies = [];
         let myMovies = JSON.parse(localStorage.getItem('myMovies')) || [];
@@ -1278,17 +1278,7 @@
             if (event.target === document.getElementById('myListSidebar')) closeMyList();
         }
 
-        initializeMovies();
-        checkAuth();
-        updateMovieCount();
-	// تنظیم آدرس درست
-const API_URL = 'https://movie-recommender-final-ic8x.onrender.com';
-
-// تست
-fetch(`${API_URL}/movies`)
-  .then(res => res.json())
-  .then(data => console.log('✅ موفق! تعداد فیلم‌ها:', data.length))
-  .catch(err => console.log('❌ خطا:', err));
+       
     </script>
 </body>
 </html>
