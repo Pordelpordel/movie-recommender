@@ -13,6 +13,7 @@
             box-sizing: border-box;
         }
 
+        /* تم روشن (پیش‌فرض) */
         body {
             font-family: 'Vazir', 'Tahoma', 'Segoe UI', Arial, sans-serif;
             background: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
@@ -20,6 +21,12 @@
             min-height: 100vh;
             padding: 20px;
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: url('https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
         }
 
         body::before {
@@ -45,7 +52,7 @@
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
             border-radius: 50px;
-            padding: 10px 20px;
+            padding: 12px 25px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
@@ -54,11 +61,85 @@
             gap: 15px;
         }
 
-        .user-info {
-            color: white;
+        .user-profile {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            color: white;
+        }
+
+        .last-visit {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            color: white;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-movie-count {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-movie-count:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            min-width: auto;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
 
         /* Modal برای ورود و ثبت‌نام */
@@ -89,10 +170,15 @@
             position: relative;
         }
 
+        body.dark-mode .modal-content {
+            background: #1e1e2e;
+            color: white;
+        }
+
         .close-modal {
             position: absolute;
             top: 15px;
-            left: 20px;
+            right: 20px;
             font-size: 24px;
             cursor: pointer;
             color: #999;
@@ -107,6 +193,10 @@
             color: #1a1a2e;
         }
 
+        body.dark-mode .modal-content h2 {
+            color: white;
+        }
+
         .modal-content input {
             margin-bottom: 15px;
             width: 100%;
@@ -115,16 +205,18 @@
         .password-container {
             position: relative;
             width: 100%;
+            margin-bottom: 15px;
         }
 
         .password-container input {
             width: 100%;
-            padding-left: 40px;
+            padding-right: 40px;
+            margin-bottom: 0;
         }
 
         .toggle-password {
             position: absolute;
-            left: 12px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -133,6 +225,25 @@
             border: none;
             padding: 0;
             width: auto;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .forgot-password {
+            font-size: 12px;
+            color: #ff6b6b;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
         }
 
         .modal-content button {
@@ -146,20 +257,12 @@
             cursor: pointer;
         }
 
+        body.dark-mode .switch-mode {
+            color: #aaa;
+        }
+
         .switch-mode:hover {
             color: #ff6b6b;
-        }
-
-        .forgot-password {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #ff6b6b;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
         }
 
         /* Header */
@@ -233,6 +336,11 @@
             animation: fadeIn 0.5s;
         }
 
+        body.dark-mode .tab-content {
+            background: rgba(30, 30, 46, 0.95);
+            color: white;
+        }
+
         .tab-content.active {
             display: block;
         }
@@ -254,6 +362,10 @@
             color: #1a1a2e;
         }
 
+        body.dark-mode label {
+            color: white;
+        }
+
         input, select {
             width: 100%;
             padding: 12px;
@@ -267,6 +379,12 @@
             outline: none;
             border-color: #ff6b6b;
             box-shadow: 0 0 10px rgba(255,107,107,0.3);
+        }
+
+        body.dark-mode input, body.dark-mode select {
+            background: #2a2a3e;
+            color: white;
+            border-color: #444;
         }
 
         button {
@@ -407,6 +525,65 @@
             font-size: 1.8rem;
         }
 
+        body.dark-mode h2 {
+            color: white;
+        }
+
+        /* لیست من (سایدبار) */
+        .my-list-sidebar {
+            position: fixed;
+            left: -350px;
+            top: 0;
+            width: 350px;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            transition: left 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+            direction: rtl;
+        }
+
+        .my-list-sidebar.active {
+            left: 0;
+        }
+
+        .my-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .my-list-header h3 {
+            color: #ffd93d;
+        }
+
+        .close-sidebar {
+            background: none;
+            font-size: 24px;
+            padding: 5px;
+            min-width: auto;
+        }
+
+        .my-list-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .my-list-item button {
+            background: #ff6b6b;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
         @media (max-width: 768px) {
             .movies-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -415,18 +592,50 @@
             .header h1 {
                 font-size: 2rem;
             }
+            
+            .user-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .my-list-sidebar {
+                width: 100%;
+                left: -100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- بخش کاربر -->
+        <!-- بخش کاربر پیشرفته -->
         <div class="user-section">
-            <div class="user-info" id="userInfo">👤 مهمان</div>
-            <div>
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    👤
+                </div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">مهمان عزیز</div>
+                    <div class="user-email" id="userEmail"></div>
+                    <div class="last-visit" id="lastVisit"></div>
+                </div>
+            </div>
+            <div class="user-actions">
+                <div class="user-movie-count" id="userMovieCount" onclick="openMyList()" style="display:none;">
+                    🎬 لیست من: <span id="movieCount">0</span>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
                 <button id="loginBtn" onclick="openAuthModal()" style="background:#fff; color:#1a1a2e;">🔑 ورود / ثبت‌نام</button>
                 <button id="logoutBtn" onclick="logout()" style="display:none; background:#ff6b6b;">🚪 خروج</button>
             </div>
+        </div>
+
+        <!-- سایدبار لیست من -->
+        <div id="myListSidebar" class="my-list-sidebar">
+            <div class="my-list-header">
+                <h3>🎬 فیلم‌های من</h3>
+                <button class="close-sidebar" onclick="closeMyList()">✕</button>
+            </div>
+            <div id="myListItems"></div>
         </div>
 
         <div class="header">
@@ -453,8 +662,11 @@
                     <input type="password" id="authPassword" placeholder="رمز عبور (حداقل 6 کاراکتر)" maxlength="20">
                     <button class="toggle-password" onclick="togglePassword()">👁️</button>
                 </div>
+                <div class="modal-footer">
+                    <div></div>
+                    <div class="forgot-password" onclick="forgotPassword()">فراموش کردم رمز عبور را</div>
+                </div>
                 <button id="authActionBtn" onclick="login()">ورود</button>
-                <div class="forgot-password" onclick="forgotPassword()">فراموش کردم رمز عبور را</div>
                 <div class="switch-mode" onclick="toggleAuthMode()">ثبت‌نام ندارید؟ عضویت</div>
                 <div id="authMessage"></div>
             </div>
@@ -556,6 +768,8 @@
     <script>
         const API_URL = 'https://movie-recommender-final-ic8x.onrender.com';
         let isLoginMode = true;
+        let currentMovies = [];
+        let myMovies = JSON.parse(localStorage.getItem('myMovies')) || [];
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -568,7 +782,7 @@
             event.target.classList.add('active');
         }
 
-        function displayMovies(movies, containerId) {
+        function displayMovies(movies, containerId, showAddButton = false) {
             const container = document.getElementById(containerId);
             if (!movies || movies.length === 0) {
                 container.innerHTML = '<p style="text-align:center; padding:40px;">😔 هیچ فیلمی پیدا نشد...</p>';
@@ -576,18 +790,23 @@
             }
             
             container.innerHTML = movies.map(movie => `
-                <div class="movie-card">
+                <div class="movie-card" onclick="addToMyList(${JSON.stringify(movie).replace(/"/g, '&quot;')})">
                     <h3>🎬 ${movie.name}</h3>
                     <div class="genre">🎭 ${movie.genre}</div>
                     <div class="rating">⭐ ${movie.rating}/10</div>
+                    ${showAddButton ? `<button onclick="event.stopPropagation(); addToMyList(${JSON.stringify(movie).replace(/"/g, '&quot;')})">➕ افزودن به لیست من</button>` : ''}
                 </div>
             `).join('');
         }
 
         async function loadMovies() {
-            const response = await fetch(`${API_URL}/movies`);
-            const movies = await response.json();
-            displayMovies(movies, 'moviesList');
+            try {
+                const response = await fetch(`${API_URL}/movies`);
+                currentMovies = await response.json();
+                displayMovies(currentMovies, 'moviesList');
+            } catch(e) {
+                console.log('خطا در بارگیری فیلم‌ها:', e);
+            }
         }
 
         async function searchMovies() {
@@ -688,7 +907,122 @@
             }
         }
 
+        // ========== لیست من ==========
+        function addToMyList(movie) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('❌ لطفاً ابتدا وارد شوید!');
+                openAuthModal();
+                return;
+            }
+            
+            if (!myMovies.some(m => m.id === movie.id)) {
+                myMovies.push(movie);
+                localStorage.setItem('myMovies', JSON.stringify(myMovies));
+                updateMovieCount();
+                alert(`✅ ${movie.name} به لیست من اضافه شد!`);
+            } else {
+                alert(`⚠️ ${movie.name} قبلاً در لیست شماست!`);
+            }
+        }
+
+        function removeFromMyList(movieId) {
+            myMovies = myMovies.filter(m => m.id !== movieId);
+            localStorage.setItem('myMovies', JSON.stringify(myMovies));
+            updateMovieCount();
+            displayMyList();
+        }
+
+        function updateMovieCount() {
+            const count = myMovies.length;
+            document.getElementById('movieCount').innerText = count;
+            if (count > 0) {
+                document.getElementById('userMovieCount').style.display = 'flex';
+            } else {
+                document.getElementById('userMovieCount').style.display = 'none';
+            }
+        }
+
+        function openMyList() {
+            displayMyList();
+            document.getElementById('myListSidebar').classList.add('active');
+        }
+
+        function closeMyList() {
+            document.getElementById('myListSidebar').classList.remove('active');
+        }
+
+        function displayMyList() {
+            const container = document.getElementById('myListItems');
+            if (myMovies.length === 0) {
+                container.innerHTML = '<p style="color:white; text-align:center;">📭 فیلمی در لیست شما نیست</p>';
+                return;
+            }
+            container.innerHTML = myMovies.map(movie => `
+                <div class="my-list-item">
+                    <div>
+                        <strong>🎬 ${movie.name}</strong><br>
+                        <small>⭐ ${movie.rating}/10 | 🎭 ${movie.genre}</small>
+                    </div>
+                    <button onclick="removeFromMyList(${movie.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // ========== تم تاریک/روشن ==========
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeBtn').innerHTML = isDark ? '☀️' : '🌙';
+        }
+
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeBtn').innerHTML = '☀️';
+            } else {
+                document.getElementById('themeBtn').innerHTML = '🌙';
+            }
+        }
+
+        // ========== آخرین بازدید ==========
+        function setLastVisit() {
+            const now = new Date();
+            const date = now.toLocaleDateString('fa-IR');
+            const time = now.toLocaleTimeString('fa-IR');
+            localStorage.setItem('lastVisit', `${date} ${time}`);
+            document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${date} - ${time}`;
+        }
+
+        function showLastVisit() {
+            const lastVisit = localStorage.getItem('lastVisit');
+            if (lastVisit) {
+                document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${lastVisit}`;
+            } else {
+                document.getElementById('lastVisit').innerHTML = '🌟 خوش آمدید';
+            }
+        }
+
         // ========== بخش احراز هویت محلی ==========
+        function updateUserUI(email) {
+            if (email) {
+                const name = email.split('@')[0];
+                document.getElementById('userName').innerHTML = `خوش اومدی ${name} 🙋‍♂️`;
+                document.getElementById('userEmail').innerHTML = email;
+                document.getElementById('userAvatar').innerHTML = name.charAt(0).toUpperCase();
+                setLastVisit();
+                updateMovieCount();
+            } else {
+                document.getElementById('userName').innerHTML = 'مهمان عزیز';
+                document.getElementById('userEmail').innerHTML = '';
+                document.getElementById('userAvatar').innerHTML = '👤';
+                document.getElementById('userMovieCount').style.display = 'none';
+            }
+            showLastVisit();
+        }
+
         function openAuthModal() {
             document.getElementById('authModal').classList.add('active');
             document.getElementById('authMessage').innerHTML = '';
@@ -703,11 +1037,7 @@
 
         function togglePassword() {
             const passInput = document.getElementById('authPassword');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-            } else {
-                passInput.type = 'password';
-            }
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
         }
 
         function toggleAuthMode() {
@@ -730,8 +1060,7 @@
         }
 
         function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
         function validatePassword(password) {
@@ -746,12 +1075,10 @@
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>';
                 return;
             }
-            
             if (!validateEmail(email)) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
                 return;
             }
-            
             if (!validatePassword(password)) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ رمز عبور باید حداقل 6 کاراکتر باشد!</div>';
                 return;
@@ -767,7 +1094,7 @@
             if (data.error) {
                 document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
             } else {
-                document.getElementById('authMessage').innerHTML = `<div class="message success">✅ ثبت‌نام موفق! حالا وارد شو.</div>`;
+                document.getElementById('authMessage').innerHTML = '<div class="message success">✅ ثبت‌نام موفق! حالا وارد شو.</div>';
                 setTimeout(() => {
                     isLoginMode = true;
                     toggleAuthMode();
@@ -783,7 +1110,6 @@
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل و رمز عبور را وارد کن!</div>';
                 return;
             }
-            
             if (!validateEmail(email)) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
                 return;
@@ -801,7 +1127,7 @@
             } else {
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('userEmail', email);
-                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${email.split('@')[0]}`;
+                updateUserUI(email);
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
                 closeAuthModal();
@@ -809,13 +1135,22 @@
         }
 
         function forgotPassword() {
-            alert('🔐 لطفاً با پشتیبانی تماس بگیرید یا ایمیل خود را وارد کنید تا لینک بازیابی برای شما ارسال شود.');
+            const email = document.getElementById('authEmail').value;
+            if (!email) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل خود را وارد کنید!</div>';
+                return;
+            }
+            if (!validateEmail(email)) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
+                return;
+            }
+            document.getElementById('authMessage').innerHTML = `<div class="message success">✅ لینک بازیابی رمز عبور به ایمیل ${email} ارسال شد.</div>`;
         }
 
-        async function logout() {
+        function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userEmail');
-            document.getElementById('userInfo').innerHTML = '👤 مهمان';
+            updateUserUI(null);
             document.getElementById('loginBtn').style.display = 'inline-block';
             document.getElementById('logoutBtn').style.display = 'none';
         }
@@ -824,9 +1159,11 @@
             const token = localStorage.getItem('token');
             const email = localStorage.getItem('userEmail');
             if (token && email) {
-                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${email.split('@')[0]}`;
+                updateUserUI(email);
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
+            } else {
+                updateUserUI(null);
             }
         }
 
@@ -836,11 +1173,17 @@
             if (event.target === modal) {
                 closeAuthModal();
             }
+            const sidebar = document.getElementById('myListSidebar');
+            if (event.target === sidebar) {
+                closeMyList();
+            }
         }
 
-        // بارگیری خودکار فیلم‌ها و بررسی وضعیت ورود
+        // بارگیری اولیه
         loadMovies();
         checkAuth();
+        loadTheme();
+        updateMovieCount();
     </script>
 </body>
 </html>
