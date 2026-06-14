@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم توصیه‌گر فیلم | Movie Recommender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #764ba2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Content */
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Movie Cards */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .movie-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .movie-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .movie-card .genre {
+            color: #764ba2;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .movie-card .rating {
+            color: #ffc107;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 سیستم توصیه‌گر فیلم</h1>
+            <p>بهترین فیلم‌ها را بر اساس سلیقه خود پیدا کنید</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('search')">🔍 جستجو</button>
+            <button class="tab-btn" onclick="showTab('recommend')">🎯 پیشنهاد ویژه</button>
+            <button class="tab-btn" onclick="showTab('top')">🏆 برترین‌ها</button>
+            <button class="tab-btn" onclick="showTab('stats')">📊 آمار</button>
+            <button class="tab-btn" onclick="showTab('add')">➕ افزودن فیلم</button>
+        </div>
+
+        <!-- Tab 1: Search -->
+        <div id="search" class="tab-content active">
+            <h2>🔍 جستجوی پیشرفته فیلم</h2>
+            <div class="form-group">
+                <label>نام فیلم</label>
+                <input type="text" id="searchName" placeholder="مثلاً: ماتریکس">
+            </div>
+            <div class="form-group">
+                <label>ژانر</label>
+                <select id="searchGenre">
+                    <option value="">همه</option>
+                    <option>عاشقانه</option>
+                    <option>درام</option>
+                    <option>جنایی</option>
+                    <option>علمی تخیلی</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>حداقل امتیاز</label>
+                <input type="number" id="searchMinRating" step="0.1" placeholder="مثلاً: 8">
+            </div>
+            <button onclick="searchMovies()">جستجو</button>
+            <div id="searchResults" class="movies-grid"></div>
+        </div>
+
+        <!-- Tab 2: Recommend -->
+        <div id="recommend" class="tab-content">
+            <h2>🎯 پیشنهاد فیلم بر اساس ژانر</h2>
+            <div class="form-group">
+                <label>ژانر مورد علاقه خود را انتخاب کنید</label>
+                <select id="recommendGenre">
+                    <option>عاشقانه</option>
+                    <option>درام</option>
+                    <option>جنایی</option>
+                    <option>علمی تخیلی</option>
+                </select>
+            </div>
+            <button onclick="recommendMovies()">دریافت پیشنهاد</button>
+            <div id="recommendResults" class="movies-grid"></div>
+        </div>
+
+        <!-- Tab 3: Top Movies -->
+        <div id="top" class="tab-content">
+            <h2>🏆 برترین فیلم‌ها</h2>
+            <div class="form-group">
+                <label>تعداد فیلم</label>
+                <input type="number" id="topCount" value="5" min="1" max="20">
+            </div>
+            <button onclick="getTopMovies()">نمایش</button>
+            <div id="topResults" class="movies-grid"></div>
+        </div>
+
+        <!-- Tab 4: Stats -->
+        <div id="stats" class="tab-content">
+            <h2>📊 آمار سیستم</h2>
+            <div id="statsResults"></div>
+        </div>
+
+        <!-- Tab 5: Add Movie -->
+        <div id="add" class="tab-content">
+            <h2>➕ افزودن فیلم جدید</h2>
+            <div class="form-group">
+                <label>نام فیلم</label>
+                <input type="text" id="newName" placeholder="نام فیلم">
+            </div>
+            <div class="form-group">
+                <label>ژانر</label>
+                <select id="newGenre">
+                    <option>عاشقانه</option>
+                    <option>درام</option>
+                    <option>جنایی</option>
+                    <option>علمی تخیلی</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>امتیاز (0-10)</label>
+                <input type="number" id="newRating" step="0.1" min="0" max="10">
+            </div>
+            <button onclick="addMovie()">افزودن فیلم</button>
+            <div id="addResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function searchMovies() {
+            const name = document.getElementById('searchName').value;
+            const genre = document.getElementById('searchGenre').value;
+            const minRating = document.getElementById('searchMinRating').value;
+            
+            let url = `${API_URL}/search/?`;
+            if (name) url += `name=${name}&`;
+            if (genre) url += `genre=${genre}&`;
+            if (minRating) url += `min_rating=${minRating}&`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            displayMovies(data.results, 'searchResults');
+        }
+
+        async function recommendMovies() {
+            const genre = document.getElementById('recommendGenre').value;
+            const response = await fetch(`${API_URL}/recommend`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({genre: genre})
+            });
+            const data = await response.json();
+            displayMovies(data.پیشنهادها, 'recommendResults');
+        }
+
+        async function getTopMovies() {
+            const count = document.getElementById('topCount').value;
+            const response = await fetch(`${API_URL}/top/${count}`);
+            const data = await response.json();
+            displayMovies(data.top, 'topResults');
+        }
+
+        async function getStats() {
+            const response = await fetch(`${API_URL}/stats`);
+            const data = await response.json();
+            document.getElementById('statsResults').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>${data.total_movies}</h3>
+                        <p>تعداد فیلم‌ها</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.average_rating}</h3>
+                        <p>میانگین امتیاز</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.highest_rating}</h3>
+                        <p>بالاترین امتیاز</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.lowest_rating}</h3>
+                        <p>پایین‌ترین امتیاز</p>
+                    </div>
+                </div>
+                <h3>توزیع ژانرها:</h3>
+                <div class="stats-grid">
+                    ${data.genres_distribution.map(g => `
+                        <div class="stat-card">
+                            <h3>${g.count}</h3>
+                            <p>${g.genre}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function addMovie() {
+            const name = document.getElementById('newName').value;
+            const genre = document.getElementById('newGenre').value;
+            const rating = parseFloat(document.getElementById('newRating').value);
+            
+            if (!name || !rating) {
+                alert('لطفاً همه فیلدها را پر کنید');
+                return;
+            }
+            
+            const response = await fetch(`${API_URL}/add_movie`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, genre, rating})
+            });
+            const data = await response.json();
+            if (data.error) {
+                document.getElementById('addResult').innerHTML = `<p style="color: red;">❌ ${data.error}</p>`;
+            } else {
+                document.getElementById('addResult').innerHTML = `<p style="color: green;">✅ ${data.message}</p>`;
+                document.getElementById('newName').value = '';
+                document.getElementById('newRating').value = '';
+                setTimeout(() => {
+                    document.getElementById('addResult').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function displayMovies(movies, elementId) {
+            const container = document.getElementById(elementId);
+            if (!movies || movies.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 40px;">😔 هیچ فیلمی یافت نشد</p>';
+                return;
+            }
+            
+            container.innerHTML = movies.map(movie => `
+                <div class="movie-card">
+                    <h3>${movie.name}</h3>
+                    <div class="genre">🎭 ${movie.genre}</div>
+                    <div class="rating">⭐ ${movie.rating}/10</div>
+                </div>
+            `).join('');
+        }
+
+        // Load stats when stats tab is shown
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.textContent.includes('آمار')) {
+                btn.onclick = () => {
+                    showTab('stats');
+                    getStats();
+                };
+            }
+        });
+    </script>
+</body>
+</html>
