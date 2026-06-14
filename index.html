@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستم توصیه‌گر فیلم | Movie Recommender</title>
+    <title>🎬 سینماچی - سیستم توصیه‌گر فیلم</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazir&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,15 +14,30 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Vazir', 'Tahoma', 'Segoe UI', Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 0;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         /* Header */
@@ -28,12 +45,21 @@
             text-align: center;
             color: white;
             margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
         }
 
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .header h1 span {
+            color: #ffd700;
         }
 
         .header p {
@@ -41,7 +67,7 @@
             opacity: 0.9;
         }
 
-        /* Tab Navigation */
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 10px;
@@ -52,38 +78,41 @@
 
         .tab-btn {
             padding: 12px 24px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
             color: white;
             cursor: pointer;
             font-size: 1rem;
+            font-weight: 500;
             transition: all 0.3s;
         }
 
         .tab-btn.active {
-            background: white;
-            color: #764ba2;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+            color: #1a1a2e;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
 
         .tab-btn:hover {
             background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         /* Content */
         .tab-content {
             display: none;
-            background: white;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
             padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s;
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.5s;
         }
 
         @keyframes fadeIn {
@@ -99,77 +128,91 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
+            font-weight: bold;
+            color: #1a1a2e;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 15px;
             font-size: 14px;
             transition: all 0.3s;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #764ba2;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255,107,107,0.3);
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+            color: #1a1a2e;
             padding: 12px 30px;
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: bold;
             transition: all 0.3s;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
         /* Movie Cards */
         .movies-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
             margin-top: 20px;
         }
 
         .movie-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
             padding: 20px;
-            transition: all 0.3s;
+            transition: all 0.4s;
             cursor: pointer;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-card::before {
+            content: '🎬';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.1;
+            pointer-events: none;
         }
 
         .movie-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         .movie-card h3 {
-            color: #333;
+            font-size: 1.3rem;
             margin-bottom: 10px;
-            font-size: 1.2rem;
+            color: #ffd93d;
         }
 
         .movie-card .genre {
-            color: #764ba2;
+            color: #ff6b6b;
+            font-weight: bold;
             margin-bottom: 8px;
-            font-weight: 500;
         }
 
         .movie-card .rating {
-            color: #ffc107;
-            font-size: 1.3rem;
+            color: #ffd93d;
+            font-size: 1.4rem;
             font-weight: bold;
         }
 
@@ -184,17 +227,21 @@
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
         }
 
         .stat-card h3 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 10px;
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
@@ -202,18 +249,49 @@
             color: #666;
         }
 
-        /* Responsive */
+        .message {
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        h2 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
         @media (max-width: 768px) {
             .movies-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
             
-            .tabs {
-                flex-direction: column;
-            }
-            
-            .tab-btn {
-                width: 100%;
+            .header h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -221,27 +299,37 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎬 سیستم توصیه‌گر فیلم</h1>
-            <p>بهترین فیلم‌ها را بر اساس سلیقه خود پیدا کنید</p>
+            <h1>🎬 <span>سینماچی</span></h1>
+            <p>✨ هوشمندترین سیستم توصیه‌گر فیلم ایران ✨</p>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('search')">🔍 جستجو</button>
-            <button class="tab-btn" onclick="showTab('recommend')">🎯 پیشنهاد ویژه</button>
+            <button class="tab-btn active" onclick="showTab('movies')">🎬 فیلم‌ها</button>
+            <button class="tab-btn" onclick="showTab('search')">🔍 جستجو</button>
+            <button class="tab-btn" onclick="showTab('recommend')">🎯 پیشنهاد</button>
             <button class="tab-btn" onclick="showTab('top')">🏆 برترین‌ها</button>
             <button class="tab-btn" onclick="showTab('stats')">📊 آمار</button>
-            <button class="tab-btn" onclick="showTab('add')">➕ افزودن فیلم</button>
+            <button class="tab-btn" onclick="showTab('add')">➕ افزودن</button>
         </div>
 
-        <!-- Tab 1: Search -->
-        <div id="search" class="tab-content active">
-            <h2>🔍 جستجوی پیشرفته فیلم</h2>
+        <!-- Tab: Movies -->
+        <div id="movies" class="tab-content active">
+            <h2>🎬 گنجینه فیلم‌ها</h2>
+            <button onclick="loadMovies()" style="margin-bottom: 20px;">🔄 بارگیری مجدد</button>
+            <div id="moviesList" class="movies-grid">
+                <div class="loading">⏳ در حال بارگیری فیلم‌ها...</div>
+            </div>
+        </div>
+
+        <!-- Tab: Search -->
+        <div id="search" class="tab-content">
+            <h2>🔍 جستجوی هوشمند</h2>
             <div class="form-group">
-                <label>نام فیلم</label>
-                <input type="text" id="searchName" placeholder="مثلاً: ماتریکس">
+                <label>🎞️ نام فیلم</label>
+                <input type="text" id="searchName" placeholder="مثال: ماتریکس">
             </div>
             <div class="form-group">
-                <label>ژانر</label>
+                <label>🎭 ژانر</label>
                 <select id="searchGenre">
                     <option value="">همه</option>
                     <option>عاشقانه</option>
@@ -251,18 +339,18 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>حداقل امتیاز</label>
-                <input type="number" id="searchMinRating" step="0.1" placeholder="مثلاً: 8">
+                <label>⭐ حداقل امتیاز</label>
+                <input type="number" id="searchRating" step="0.1" placeholder="مثال: 8">
             </div>
-            <button onclick="searchMovies()">جستجو</button>
+            <button onclick="searchMovies()">🔍 جستجو کن</button>
             <div id="searchResults" class="movies-grid"></div>
         </div>
 
-        <!-- Tab 2: Recommend -->
+        <!-- Tab: Recommend -->
         <div id="recommend" class="tab-content">
-            <h2>🎯 پیشنهاد فیلم بر اساس ژانر</h2>
+            <h2>🎯 پیشنهاد ویژه سینماچی</h2>
             <div class="form-group">
-                <label>ژانر مورد علاقه خود را انتخاب کنید</label>
+                <label>🎭 ژانر مورد علاقه‌ات رو انتخاب کن</label>
                 <select id="recommendGenre">
                     <option>عاشقانه</option>
                     <option>درام</option>
@@ -270,36 +358,37 @@
                     <option>علمی تخیلی</option>
                 </select>
             </div>
-            <button onclick="recommendMovies()">دریافت پیشنهاد</button>
+            <button onclick="recommendMovies()">✨ دریافت پیشنهاد ✨</button>
             <div id="recommendResults" class="movies-grid"></div>
         </div>
 
-        <!-- Tab 3: Top Movies -->
+        <!-- Tab: Top -->
         <div id="top" class="tab-content">
-            <h2>🏆 برترین فیلم‌ها</h2>
+            <h2>🏆 بهترین‌های سینما</h2>
             <div class="form-group">
-                <label>تعداد فیلم</label>
+                <label>🔢 تعداد فیلم مورد نظر</label>
                 <input type="number" id="topCount" value="5" min="1" max="20">
             </div>
-            <button onclick="getTopMovies()">نمایش</button>
+            <button onclick="loadTopMovies()">🏆 نمایش برترین‌ها</button>
             <div id="topResults" class="movies-grid"></div>
         </div>
 
-        <!-- Tab 4: Stats -->
+        <!-- Tab: Stats -->
         <div id="stats" class="tab-content">
-            <h2>📊 آمار سیستم</h2>
+            <h2>📊 داشبورد تحلیلی</h2>
+            <button onclick="loadStats()">🔄 بارگیری آمار</button>
             <div id="statsResults"></div>
         </div>
 
-        <!-- Tab 5: Add Movie -->
+        <!-- Tab: Add Movie -->
         <div id="add" class="tab-content">
-            <h2>➕ افزودن فیلم جدید</h2>
+            <h2>➕ افزودن فیلم جدید به گنجینه</h2>
             <div class="form-group">
-                <label>نام فیلم</label>
-                <input type="text" id="newName" placeholder="نام فیلم">
+                <label>🎞️ نام فیلم</label>
+                <input type="text" id="newName" placeholder="نام فیلم رو وارد کن...">
             </div>
             <div class="form-group">
-                <label>ژانر</label>
+                <label>🎭 ژانر</label>
                 <select id="newGenre">
                     <option>عاشقانه</option>
                     <option>درام</option>
@@ -308,16 +397,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>امتیاز (0-10)</label>
-                <input type="number" id="newRating" step="0.1" min="0" max="10">
+                <label>⭐ امتیاز (0 تا 10)</label>
+                <input type="number" id="newRating" step="0.1" min="0" max="10" placeholder="مثال: 8.5">
             </div>
-            <button onclick="addMovie()">افزودن فیلم</button>
+            <button onclick="addMovie()">➕ افزودن به سینماچی</button>
             <div id="addResult"></div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'http://127.0.0.1:8000';
+        const API_URL = 'https://movie-recommender-final-ic8x.onrender.com';
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -330,15 +419,37 @@
             event.target.classList.add('active');
         }
 
+        function displayMovies(movies, containerId) {
+            const container = document.getElementById(containerId);
+            if (!movies || movies.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:40px;">😔 هیچ فیلمی پیدا نشد...</p>';
+                return;
+            }
+            
+            container.innerHTML = movies.map(movie => `
+                <div class="movie-card">
+                    <h3>🎬 ${movie.name}</h3>
+                    <div class="genre">🎭 ${movie.genre}</div>
+                    <div class="rating">⭐ ${movie.rating}/10</div>
+                </div>
+            `).join('');
+        }
+
+        async function loadMovies() {
+            const response = await fetch(`${API_URL}/movies`);
+            const movies = await response.json();
+            displayMovies(movies, 'moviesList');
+        }
+
         async function searchMovies() {
             const name = document.getElementById('searchName').value;
             const genre = document.getElementById('searchGenre').value;
-            const minRating = document.getElementById('searchMinRating').value;
+            const rating = document.getElementById('searchRating').value;
             
             let url = `${API_URL}/search/?`;
             if (name) url += `name=${name}&`;
             if (genre) url += `genre=${genre}&`;
-            if (minRating) url += `min_rating=${minRating}&`;
+            if (rating) url += `min_rating=${rating}&`;
             
             const response = await fetch(url);
             const data = await response.json();
@@ -356,41 +467,41 @@
             displayMovies(data.پیشنهادها, 'recommendResults');
         }
 
-        async function getTopMovies() {
+        async function loadTopMovies() {
             const count = document.getElementById('topCount').value;
             const response = await fetch(`${API_URL}/top/${count}`);
             const data = await response.json();
             displayMovies(data.top, 'topResults');
         }
 
-        async function getStats() {
+        async function loadStats() {
             const response = await fetch(`${API_URL}/stats`);
             const data = await response.json();
             document.getElementById('statsResults').innerHTML = `
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>${data.total_movies}</h3>
-                        <p>تعداد فیلم‌ها</p>
+                        <p>🎬 تعداد فیلم‌ها</p>
                     </div>
                     <div class="stat-card">
                         <h3>${data.average_rating}</h3>
-                        <p>میانگین امتیاز</p>
+                        <p>⭐ میانگین امتیاز</p>
                     </div>
                     <div class="stat-card">
                         <h3>${data.highest_rating}</h3>
-                        <p>بالاترین امتیاز</p>
+                        <p>🏆 بالاترین امتیاز</p>
                     </div>
                     <div class="stat-card">
                         <h3>${data.lowest_rating}</h3>
-                        <p>پایین‌ترین امتیاز</p>
+                        <p>📉 پایین‌ترین امتیاز</p>
                     </div>
                 </div>
-                <h3>توزیع ژانرها:</h3>
+                <h3>📊 توزیع ژانرها:</h3>
                 <div class="stats-grid">
                     ${data.genres_distribution.map(g => `
                         <div class="stat-card">
                             <h3>${g.count}</h3>
-                            <p>${g.genre}</p>
+                            <p>🎭 ${g.genre}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -403,7 +514,7 @@
             const rating = parseFloat(document.getElementById('newRating').value);
             
             if (!name || !rating) {
-                alert('لطفاً همه فیلدها را پر کنید');
+                alert('❌ لطفاً نام و امتیاز فیلم رو وارد کن!');
                 return;
             }
             
@@ -413,43 +524,23 @@
                 body: JSON.stringify({name, genre, rating})
             });
             const data = await response.json();
+            
+            const resultDiv = document.getElementById('addResult');
             if (data.error) {
-                document.getElementById('addResult').innerHTML = `<p style="color: red;">❌ ${data.error}</p>`;
+                resultDiv.innerHTML = `<div class="message error">❌ ${data.error}</div>`;
             } else {
-                document.getElementById('addResult').innerHTML = `<p style="color: green;">✅ ${data.message}</p>`;
+                resultDiv.innerHTML = `<div class="message success">✅ ${data.message} 🎉</div>`;
                 document.getElementById('newName').value = '';
                 document.getElementById('newRating').value = '';
                 setTimeout(() => {
-                    document.getElementById('addResult').innerHTML = '';
-                }, 3000);
+                    resultDiv.innerHTML = '';
+                    loadMovies();
+                }, 2000);
             }
         }
 
-        function displayMovies(movies, elementId) {
-            const container = document.getElementById(elementId);
-            if (!movies || movies.length === 0) {
-                container.innerHTML = '<p style="text-align: center; padding: 40px;">😔 هیچ فیلمی یافت نشد</p>';
-                return;
-            }
-            
-            container.innerHTML = movies.map(movie => `
-                <div class="movie-card">
-                    <h3>${movie.name}</h3>
-                    <div class="genre">🎭 ${movie.genre}</div>
-                    <div class="rating">⭐ ${movie.rating}/10</div>
-                </div>
-            `).join('');
-        }
-
-        // Load stats when stats tab is shown
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            if (btn.textContent.includes('آمار')) {
-                btn.onclick = () => {
-                    showTab('stats');
-                    getStats();
-                };
-            }
-        });
+        // بارگیری خودکار فیلم‌ها
+        loadMovies();
     </script>
 </body>
 </html>
