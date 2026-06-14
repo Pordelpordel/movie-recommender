@@ -86,6 +86,20 @@
             max-width: 400px;
             width: 90%;
             text-align: center;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #ff6b6b;
         }
 
         .modal-content h2 {
@@ -95,6 +109,30 @@
 
         .modal-content input {
             margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-container input {
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            background: none;
+            border: none;
+            padding: 0;
+            width: auto;
         }
 
         .modal-content button {
@@ -110,6 +148,18 @@
 
         .switch-mode:hover {
             color: #ff6b6b;
+        }
+
+        .forgot-password {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #ff6b6b;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
         }
 
         /* Header */
@@ -396,10 +446,15 @@
         <!-- Modal ورود/ثبت‌نام -->
         <div id="authModal" class="modal">
             <div class="modal-content">
+                <div class="close-modal" onclick="closeAuthModal()">✕</div>
                 <h2 id="modalTitle">ورود</h2>
-                <input type="text" id="authUsername" placeholder="نام کاربری">
-                <input type="password" id="authPassword" placeholder="رمز عبور">
+                <input type="email" id="authEmail" placeholder="ایمیل">
+                <div class="password-container">
+                    <input type="password" id="authPassword" placeholder="رمز عبور (حداقل 6 کاراکتر)" maxlength="20">
+                    <button class="toggle-password" onclick="togglePassword()">👁️</button>
+                </div>
                 <button id="authActionBtn" onclick="login()">ورود</button>
+                <div class="forgot-password" onclick="forgotPassword()">فراموش کردم رمز عبور را</div>
                 <div class="switch-mode" onclick="toggleAuthMode()">ثبت‌نام ندارید؟ عضویت</div>
                 <div id="authMessage"></div>
             </div>
@@ -637,12 +692,22 @@
         function openAuthModal() {
             document.getElementById('authModal').classList.add('active');
             document.getElementById('authMessage').innerHTML = '';
-            document.getElementById('authUsername').value = '';
+            document.getElementById('authEmail').value = '';
             document.getElementById('authPassword').value = '';
+            document.getElementById('authPassword').type = 'password';
         }
 
         function closeAuthModal() {
             document.getElementById('authModal').classList.remove('active');
+        }
+
+        function togglePassword() {
+            const passInput = document.getElementById('authPassword');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+            } else {
+                passInput.type = 'password';
+            }
         }
 
         function toggleAuthMode() {
@@ -664,19 +729,38 @@
             }
         }
 
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
         async function register() {
-            const username = document.getElementById('authUsername').value;
+            const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
             
-            if (!username || !password) {
+            if (!email || !password) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>';
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
+                return;
+            }
+            
+            if (!validatePassword(password)) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ رمز عبور باید حداقل 6 کاراکتر باشد!</div>';
                 return;
             }
             
             const response = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password})
+                body: JSON.stringify({email, password})
             });
             const data = await response.json();
             
@@ -692,18 +776,23 @@
         }
 
         async function login() {
-            const username = document.getElementById('authUsername').value;
+            const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
             
-            if (!username || !password) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً نام کاربری و رمز عبور را وارد کن!</div>';
+            if (!email || !password) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل و رمز عبور را وارد کن!</div>';
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
                 return;
             }
             
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username, password})
+                body: JSON.stringify({email, password})
             });
             const data = await response.json();
             
@@ -711,15 +800,21 @@
                 document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
             } else {
                 localStorage.setItem('token', data.access_token);
-                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${username}`;
+                localStorage.setItem('userEmail', email);
+                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${email.split('@')[0]}`;
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
                 closeAuthModal();
             }
         }
 
+        function forgotPassword() {
+            alert('🔐 لطفاً با پشتیبانی تماس بگیرید یا ایمیل خود را وارد کنید تا لینک بازیابی برای شما ارسال شود.');
+        }
+
         async function logout() {
             localStorage.removeItem('token');
+            localStorage.removeItem('userEmail');
             document.getElementById('userInfo').innerHTML = '👤 مهمان';
             document.getElementById('loginBtn').style.display = 'inline-block';
             document.getElementById('logoutBtn').style.display = 'none';
@@ -727,10 +822,19 @@
 
         function checkAuth() {
             const token = localStorage.getItem('token');
-            if (token) {
-                document.getElementById('userInfo').innerHTML = '👤 کاربر عزیز';
+            const email = localStorage.getItem('userEmail');
+            if (token && email) {
+                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${email.split('@')[0]}`;
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
+            }
+        }
+
+        // بستن مودال با کلیک بیرون
+        window.onclick = function(event) {
+            const modal = document.getElementById('authModal');
+            if (event.target === modal) {
+                closeAuthModal();
             }
         }
 
