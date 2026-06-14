@@ -13,7 +13,6 @@
             box-sizing: border-box;
         }
 
-        /* تم روشن (پیش‌فرض) */
         body {
             font-family: 'Vazir', 'Tahoma', 'Segoe UI', Arial, sans-serif;
             background: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
@@ -45,6 +44,33 @@
             margin: 0 auto;
             position: relative;
             z-index: 1;
+        }
+
+        /* Toast Message */
+        .toast-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideDownToast 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideDownToast {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
 
         /* User Section */
@@ -142,7 +168,7 @@
             transform: scale(1.05);
         }
 
-        /* Modal برای ورود و ثبت‌نام */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -197,34 +223,45 @@
             color: white;
         }
 
-        .modal-content input {
+        .form-group-input {
             margin-bottom: 15px;
-            width: 100%;
-        }
-
-        .password-container {
             position: relative;
             width: 100%;
-            margin-bottom: 15px;
         }
 
-        .password-container input {
+        .form-group-input input {
             width: 100%;
-            padding-right: 40px;
-            margin-bottom: 0;
+            padding: 12px;
+            padding-left: 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group-input input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255,107,107,0.3);
+        }
+
+        body.dark-mode .form-group-input input {
+            background: #2a2a3e;
+            color: white;
+            border-color: #444;
         }
 
         .toggle-password {
             position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 120px;                  
+              top: 3%;
             cursor: pointer;
             font-size: 18px;
             background: none;
             border: none;
             padding: 0;
             width: auto;
+            min-width: auto;
         }
 
         .modal-footer {
@@ -497,14 +534,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message.success {
@@ -529,7 +560,7 @@
             color: white;
         }
 
-        /* لیست من (سایدبار) */
+        /* Sidebar */
         .my-list-sidebar {
             position: fixed;
             left: -350px;
@@ -588,16 +619,13 @@
             .movies-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
-            
             .header h1 {
                 font-size: 2rem;
             }
-            
             .user-section {
                 flex-direction: column;
                 text-align: center;
             }
-            
             .my-list-sidebar {
                 width: 100%;
                 left: -100%;
@@ -610,9 +638,7 @@
         <!-- بخش کاربر پیشرفته -->
         <div class="user-section">
             <div class="user-profile">
-                <div class="user-avatar" id="userAvatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    👤
-                </div>
+                <div class="user-avatar" id="userAvatar">👤</div>
                 <div class="user-details">
                     <div class="user-name" id="userName">مهمان عزیز</div>
                     <div class="user-email" id="userEmail"></div>
@@ -629,7 +655,7 @@
             </div>
         </div>
 
-        <!-- سایدبار لیست من -->
+        <!-- Sidebar -->
         <div id="myListSidebar" class="my-list-sidebar">
             <div class="my-list-header">
                 <h3>🎬 فیلم‌های من</h3>
@@ -657,8 +683,10 @@
             <div class="modal-content">
                 <div class="close-modal" onclick="closeAuthModal()">✕</div>
                 <h2 id="modalTitle">ورود</h2>
-                <input type="email" id="authEmail" placeholder="ایمیل">
-                <div class="password-container">
+                <div class="form-group-input">
+                    <input type="email" id="authEmail" placeholder="ایمیل">
+                </div>
+                <div class="form-group-input">
                     <input type="password" id="authPassword" placeholder="رمز عبور (حداقل 6 کاراکتر)" maxlength="20">
                     <button class="toggle-password" onclick="togglePassword()">👁️</button>
                 </div>
@@ -771,6 +799,28 @@
         let currentMovies = [];
         let myMovies = JSON.parse(localStorage.getItem('myMovies')) || [];
 
+        // نمایش پیام خوش آمدگویی
+        function showWelcomeMessage(username) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.innerHTML = `🎉 خوش آمدی ${username}! 🎉`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.style.background = 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)';
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -782,19 +832,17 @@
             event.target.classList.add('active');
         }
 
-        function displayMovies(movies, containerId, showAddButton = false) {
+        function displayMovies(movies, containerId) {
             const container = document.getElementById(containerId);
             if (!movies || movies.length === 0) {
                 container.innerHTML = '<p style="text-align:center; padding:40px;">😔 هیچ فیلمی پیدا نشد...</p>';
                 return;
             }
-            
             container.innerHTML = movies.map(movie => `
                 <div class="movie-card" onclick="addToMyList(${JSON.stringify(movie).replace(/"/g, '&quot;')})">
                     <h3>🎬 ${movie.name}</h3>
                     <div class="genre">🎭 ${movie.genre}</div>
                     <div class="rating">⭐ ${movie.rating}/10</div>
-                    ${showAddButton ? `<button onclick="event.stopPropagation(); addToMyList(${JSON.stringify(movie).replace(/"/g, '&quot;')})">➕ افزودن به لیست من</button>` : ''}
                 </div>
             `).join('');
         }
@@ -805,7 +853,7 @@
                 currentMovies = await response.json();
                 displayMovies(currentMovies, 'moviesList');
             } catch(e) {
-                console.log('خطا در بارگیری فیلم‌ها:', e);
+                console.log('خطا:', e);
             }
         }
 
@@ -813,12 +861,10 @@
             const name = document.getElementById('searchName').value;
             const genre = document.getElementById('searchGenre').value;
             const rating = document.getElementById('searchRating').value;
-            
             let url = `${API_URL}/search/?`;
             if (name) url += `name=${name}&`;
             if (genre) url += `genre=${genre}&`;
             if (rating) url += `min_rating=${rating}&`;
-            
             const response = await fetch(url);
             const data = await response.json();
             displayMovies(data.results, 'searchResults');
@@ -847,32 +893,13 @@
             const data = await response.json();
             document.getElementById('statsResults').innerHTML = `
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>${data.total_movies}</h3>
-                        <p>🎬 تعداد فیلم‌ها</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>${data.average_rating}</h3>
-                        <p>⭐ میانگین امتیاز</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>${data.highest_rating}</h3>
-                        <p>🏆 بالاترین امتیاز</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>${data.lowest_rating}</h3>
-                        <p>📉 پایین‌ترین امتیاز</p>
-                    </div>
+                    <div class="stat-card"><h3>${data.total_movies}</h3><p>🎬 تعداد فیلم‌ها</p></div>
+                    <div class="stat-card"><h3>${data.average_rating}</h3><p>⭐ میانگین امتیاز</p></div>
+                    <div class="stat-card"><h3>${data.highest_rating}</h3><p>🏆 بالاترین امتیاز</p></div>
+                    <div class="stat-card"><h3>${data.lowest_rating}</h3><p>📉 پایین‌ترین امتیاز</p></div>
                 </div>
                 <h3>📊 توزیع ژانرها:</h3>
-                <div class="stats-grid">
-                    ${data.genres_distribution.map(g => `
-                        <div class="stat-card">
-                            <h3>${g.count}</h3>
-                            <p>🎭 ${g.genre}</p>
-                        </div>
-                    `).join('')}
-                </div>
+                <div class="stats-grid">${data.genres_distribution.map(g => `<div class="stat-card"><h3>${g.count}</h3><p>🎭 ${g.genre}</p></div>`).join('')}</div>
             `;
         }
 
@@ -880,19 +907,13 @@
             const name = document.getElementById('newName').value;
             const genre = document.getElementById('newGenre').value;
             const rating = parseFloat(document.getElementById('newRating').value);
-            
-            if (!name || !rating) {
-                alert('❌ لطفاً نام و امتیاز فیلم رو وارد کن!');
-                return;
-            }
-            
+            if (!name || !rating) { alert('❌ لطفاً نام و امتیاز فیلم رو وارد کن!'); return; }
             const response = await fetch(`${API_URL}/add_movie`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name, genre, rating})
             });
             const data = await response.json();
-            
             const resultDiv = document.getElementById('addResult');
             if (data.error) {
                 resultDiv.innerHTML = `<div class="message error">❌ ${data.error}</div>`;
@@ -900,22 +921,14 @@
                 resultDiv.innerHTML = `<div class="message success">✅ ${data.message} 🎉</div>`;
                 document.getElementById('newName').value = '';
                 document.getElementById('newRating').value = '';
-                setTimeout(() => {
-                    resultDiv.innerHTML = '';
-                    loadMovies();
-                }, 2000);
+                setTimeout(() => { resultDiv.innerHTML = ''; loadMovies(); }, 2000);
             }
         }
 
-        // ========== لیست من ==========
+        // لیست من
         function addToMyList(movie) {
             const token = localStorage.getItem('token');
-            if (!token) {
-                alert('❌ لطفاً ابتدا وارد شوید!');
-                openAuthModal();
-                return;
-            }
-            
+            if (!token) { alert('❌ لطفاً ابتدا وارد شوید!'); openAuthModal(); return; }
             if (!myMovies.some(m => m.id === movie.id)) {
                 myMovies.push(movie);
                 localStorage.setItem('myMovies', JSON.stringify(myMovies));
@@ -934,78 +947,55 @@
         }
 
         function updateMovieCount() {
-            const count = myMovies.length;
-            document.getElementById('movieCount').innerText = count;
-            if (count > 0) {
-                document.getElementById('userMovieCount').style.display = 'flex';
-            } else {
-                document.getElementById('userMovieCount').style.display = 'none';
-            }
+            document.getElementById('movieCount').innerText = myMovies.length;
+            document.getElementById('userMovieCount').style.display = myMovies.length > 0 ? 'flex' : 'none';
         }
 
-        function openMyList() {
-            displayMyList();
-            document.getElementById('myListSidebar').classList.add('active');
-        }
-
-        function closeMyList() {
-            document.getElementById('myListSidebar').classList.remove('active');
-        }
+        function openMyList() { displayMyList(); document.getElementById('myListSidebar').classList.add('active'); }
+        function closeMyList() { document.getElementById('myListSidebar').classList.remove('active'); }
 
         function displayMyList() {
             const container = document.getElementById('myListItems');
-            if (myMovies.length === 0) {
-                container.innerHTML = '<p style="color:white; text-align:center;">📭 فیلمی در لیست شما نیست</p>';
-                return;
-            }
-            container.innerHTML = myMovies.map(movie => `
-                <div class="my-list-item">
-                    <div>
-                        <strong>🎬 ${movie.name}</strong><br>
-                        <small>⭐ ${movie.rating}/10 | 🎭 ${movie.genre}</small>
-                    </div>
-                    <button onclick="removeFromMyList(${movie.id})">🗑️</button>
-                </div>
-            `).join('');
+            if (myMovies.length === 0) { container.innerHTML = '<p style="color:white; text-align:center;">📭 فیلمی در لیست شما نیست</p>'; return; }
+            container.innerHTML = myMovies.map(movie => `<div class="my-list-item"><div><strong>🎬 ${movie.name}</strong><br><small>⭐ ${movie.rating}/10 | 🎭 ${movie.genre}</small></div><button onclick="removeFromMyList(${movie.id})">🗑️</button></div>`).join('');
         }
 
-        // ========== تم تاریک/روشن ==========
+        // تم
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('themeBtn').innerHTML = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            document.getElementById('themeBtn').innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
         }
 
         function loadTheme() {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
+            if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeBtn').innerHTML = '☀️';
-            } else {
-                document.getElementById('themeBtn').innerHTML = '🌙';
             }
         }
 
-        // ========== آخرین بازدید ==========
+        // آخرین بازدید
         function setLastVisit() {
             const now = new Date();
-            const date = now.toLocaleDateString('fa-IR');
-            const time = now.toLocaleTimeString('fa-IR');
-            localStorage.setItem('lastVisit', `${date} ${time}`);
-            document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${date} - ${time}`;
+            localStorage.setItem('lastVisit', now.toLocaleDateString('fa-IR') + ' ' + now.toLocaleTimeString('fa-IR'));
+            document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${localStorage.getItem('lastVisit')}`;
         }
 
         function showLastVisit() {
-            const lastVisit = localStorage.getItem('lastVisit');
-            if (lastVisit) {
-                document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${lastVisit}`;
-            } else {
-                document.getElementById('lastVisit').innerHTML = '🌟 خوش آمدید';
-            }
+            document.getElementById('lastVisit').innerHTML = localStorage.getItem('lastVisit') ? `📅 آخرین بازدید: ${localStorage.getItem('lastVisit')}` : '🌟 خوش آمدید';
         }
 
-        // ========== بخش احراز هویت محلی ==========
+        // اعتبارسنجی
+        function validateEmail(email) {
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailPattern.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // احراز هویت
         function updateUserUI(email) {
             if (email) {
                 const name = email.split('@')[0];
@@ -1031,73 +1021,49 @@
             document.getElementById('authPassword').type = 'password';
         }
 
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
-        }
-
-        function togglePassword() {
-            const passInput = document.getElementById('authPassword');
-            passInput.type = passInput.type === 'password' ? 'text' : 'password';
-        }
+        function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
+        function togglePassword() { const p = document.getElementById('authPassword'); p.type = p.type === 'password' ? 'text' : 'password'; }
 
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
-            const title = document.getElementById('modalTitle');
+            document.getElementById('modalTitle').innerText = isLoginMode ? 'ورود' : 'ثبت‌نام';
             const btn = document.getElementById('authActionBtn');
-            const switchText = document.querySelector('.switch-mode');
-            
-            if (isLoginMode) {
-                title.innerText = 'ورود';
-                btn.innerText = 'ورود';
-                btn.setAttribute('onclick', 'login()');
-                switchText.innerText = 'ثبت‌نام ندارید؟ عضویت';
-            } else {
-                title.innerText = 'ثبت‌نام';
-                btn.innerText = 'عضویت';
-                btn.setAttribute('onclick', 'register()');
-                switchText.innerText = 'قبلاً عضو شدید؟ ورود';
-            }
-        }
-
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function validatePassword(password) {
-            return password.length >= 6;
+            btn.innerText = isLoginMode ? 'ورود' : 'عضویت';
+            btn.setAttribute('onclick', isLoginMode ? 'login()' : 'register()');
+            document.querySelector('.switch-mode').innerText = isLoginMode ? 'ثبت‌نام ندارید؟ عضویت' : 'قبلاً عضو شدید؟ ورود';
         }
 
         async function register() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
-            
             if (!email || !password) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>';
                 return;
             }
             if (!validateEmail(email)) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن! (مثال: name@domain.com)</div>';
                 return;
             }
             if (!validatePassword(password)) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ رمز عبور باید حداقل 6 کاراکتر باشد!</div>';
                 return;
             }
-            
             const response = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password})
             });
             const data = await response.json();
-            
             if (data.error) {
                 document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
             } else {
-                document.getElementById('authMessage').innerHTML = '<div class="message success">✅ ثبت‌نام موفق! حالا وارد شو.</div>';
+                showSuccessMessage('✅ ثبت‌نام شما با موفقیت انجام شد! اکنون وارد شوید.');
                 setTimeout(() => {
                     isLoginMode = true;
                     toggleAuthMode();
+                    document.getElementById('authEmail').value = email;
+                    document.getElementById('authPassword').value = '';
+                    document.getElementById('authMessage').innerHTML = '<div class="message success">✅ ثبت‌نام موفق! حالا وارد شوید.</div>';
                 }, 1500);
             }
         }
@@ -1105,7 +1071,6 @@
         async function login() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
-            
             if (!email || !password) {
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل و رمز عبور را وارد کن!</div>';
                 return;
@@ -1114,20 +1079,19 @@
                 document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
                 return;
             }
-            
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password})
             });
             const data = await response.json();
-            
             if (data.error) {
                 document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
             } else {
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('userEmail', email);
                 updateUserUI(email);
+                showWelcomeMessage(email.split('@')[0]);
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
                 closeAuthModal();
@@ -1136,14 +1100,8 @@
 
         function forgotPassword() {
             const email = document.getElementById('authEmail').value;
-            if (!email) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل خود را وارد کنید!</div>';
-                return;
-            }
-            if (!validateEmail(email)) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
-                return;
-            }
+            if (!email) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل خود را وارد کنید!</div>'; return; }
+            if (!validateEmail(email)) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>'; return; }
             document.getElementById('authMessage').innerHTML = `<div class="message success">✅ لینک بازیابی رمز عبور به ایمیل ${email} ارسال شد.</div>`;
         }
 
@@ -1153,6 +1111,7 @@
             updateUserUI(null);
             document.getElementById('loginBtn').style.display = 'inline-block';
             document.getElementById('logoutBtn').style.display = 'none';
+            showSuccessMessage('👋 شما از حساب خود خارج شدید!');
         }
 
         function checkAuth() {
@@ -1162,24 +1121,14 @@
                 updateUserUI(email);
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'inline-block';
-            } else {
-                updateUserUI(null);
             }
         }
 
-        // بستن مودال با کلیک بیرون
         window.onclick = function(event) {
-            const modal = document.getElementById('authModal');
-            if (event.target === modal) {
-                closeAuthModal();
-            }
-            const sidebar = document.getElementById('myListSidebar');
-            if (event.target === sidebar) {
-                closeMyList();
-            }
+            if (event.target === document.getElementById('authModal')) closeAuthModal();
+            if (event.target === document.getElementById('myListSidebar')) closeMyList();
         }
 
-        // بارگیری اولیه
         loadMovies();
         checkAuth();
         loadTheme();
