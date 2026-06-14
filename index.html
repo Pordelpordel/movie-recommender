@@ -40,6 +40,34 @@
             z-index: 1;
         }
 
+        /* User Section */
+        .user-section {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ffd700;
+        }
+
         /* Header */
         .header {
             text-align: center;
@@ -298,6 +326,15 @@
 </head>
 <body>
     <div class="container">
+        <!-- بخش کاربر -->
+        <div class="user-section">
+            <div class="user-info" id="userInfo"></div>
+            <div>
+                <button id="loginBtn" onclick="loginWithGoogle()" style="background:#fff; color:#1a1a2e;">🔑 ورود با گوگل</button>
+                <button id="logoutBtn" onclick="logout()" style="display:none; background:#ff6b6b;">🚪 خروج</button>
+            </div>
+        </div>
+
         <div class="header">
             <h1>🎬 <span>سینماچی</span></h1>
             <p>✨ هوشمندترین سیستم توصیه‌گر فیلم ایران ✨</p>
@@ -539,8 +576,40 @@
             }
         }
 
-        // بارگیری خودکار فیلم‌ها
+        // ========== بخش احراز هویت ==========
+        async function loginWithGoogle() {
+            window.location.href = `${API_URL}/login/google`;
+        }
+
+        async function logout() {
+            await fetch(`${API_URL}/logout`);
+            window.location.reload();
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/me`);
+                const data = await response.json();
+                if (data.user && !data.error) {
+                    document.getElementById('userInfo').innerHTML = `
+                        👋 خوش اومدی ${data.user.name}
+                        <img src="${data.user.picture}" alt="profile">
+                    `;
+                    document.getElementById('loginBtn').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('userInfo').innerHTML = '👤 مهمان';
+                    document.getElementById('loginBtn').style.display = 'inline-block';
+                    document.getElementById('logoutBtn').style.display = 'none';
+                }
+            } catch(e) {
+                console.log('Auth error:', e);
+            }
+        }
+
+        // بارگیری خودکار فیلم‌ها و بررسی وضعیت ورود
         loadMovies();
+        checkAuth();
     </script>
 </body>
 </html>
