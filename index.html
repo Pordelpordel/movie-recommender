@@ -4,17 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎬 سینماچی - سیستم توصیه‌گر فیلم حرفه‌ای</title>
-    <meta name="description" content="سیستم توصیه‌گر فیلم با هوش مصنوعی - سینماچی - بیش از 30 فیلم برتر جهان">
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazir&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Vazir', 'Tahoma', 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -22,7 +14,6 @@
             padding: 20px;
             position: relative;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -38,26 +29,17 @@
             pointer-events: none;
             animation: backgroundMove 20s linear infinite;
         }
-
         @keyframes backgroundMove {
             0% { background-position: 0 0, 0 0, 0 0; }
             100% { background-position: 100px 100px, 200px 200px, 0 0; }
         }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            min-height: calc(100vh - 40px);
-            display: flex;
-            flex-direction: column;
         }
-
-        .main-content {
-            flex: 1;
-        }
-
+        /* Toast Message */
         .toast-message {
             position: fixed;
             top: 20px;
@@ -72,133 +54,12 @@
             animation: slideDownToast 0.3s ease;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-
         @keyframes slideDownToast {
             from { opacity: 0; transform: translateX(-50%) translateY(-50px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* Footer Styles */
-        .footer {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 30px;
-            margin-top: 40px;
-            padding: 30px 20px 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .footer-section h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .footer-section p {
-            color: rgba(255,255,255,0.8);
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-section ul li a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-section ul li a:hover {
-            color: #ffd700;
-            transform: translateX(-5px);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            background: rgba(255,255,255,0.15);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            text-decoration: none;
-            font-size: 1.2rem;
-        }
-
-        .social-link:hover {
-            background: #ffd700;
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            color: rgba(255,255,255,0.6);
-            font-size: 0.8rem;
-        }
-
-        .footer-bottom a {
-            color: #ffd700;
-            text-decoration: none;
-        }
-
-        .footer-bottom a:hover {
-            text-decoration: underline;
-        }
-
-        .stats-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255,255,255,0.15);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        @media (max-width: 768px) {
-            .footer-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            .social-links {
-                justify-content: center;
-            }
-            .footer-section ul li a {
-                justify-content: center;
-            }
-        }
-    </style>
-    <!-- بقیه استایل‌ها مانند قبل است ... -->
-    <style>
-        /* تمام استایل‌های قبلی که قبلاً داشتید اینجا قرار می‌گیرد */
-        /* برای اختصار، استایل‌های قبلی رو حذف کردم ولی شما باید کامل کپی کنید */
+        /* User Section */
         .user-section {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(15px);
@@ -240,6 +101,7 @@
         .user-name { font-weight: bold; font-size: 1rem; color: #333; }
         .user-email { font-size: 0.75rem; opacity: 0.7; color: #555; }
         .last-visit { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; color: #777; }
+
         .user-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .user-movie-count {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -252,6 +114,8 @@
         }
         .user-movie-count:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
         .user-movie-count:active { transform: scale(0.98); }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -291,6 +155,7 @@
             transition: all 0.3s;
         }
         .close-modal:hover { color: #ff6b6b; transform: rotate(90deg); }
+
         .form-group-input {
             margin-bottom: 15px;
             position: relative;
@@ -325,6 +190,8 @@
             transition: all 0.3s;
         }
         .toggle-password:active { transform: translateY(-50%) scale(0.9); }
+
+        /* Password Strength Indicator */
         .password-strength {
             margin-top: 5px;
             font-size: 12px;
@@ -337,9 +204,11 @@
         .strength-bar.medium { background: #ffa700; }
         .strength-bar.strong { background: #00c851; }
         .strength-text { color: #666; font-size: 11px; }
+
         .password-rules { font-size: 11px; color: #888; text-align: right; margin-top: 5px; }
         .password-rules ul { list-style: none; padding-right: 0; }
         .password-rules li { margin: 3px 0; transition: all 0.3s; }
+
         .modal-footer {
             display: flex;
             justify-content: space-between;
@@ -356,6 +225,7 @@
         }
         .forgot-password:hover { text-decoration: underline; color: #667eea; }
         .forgot-password:active { transform: scale(0.98); }
+
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -384,6 +254,7 @@
         button:active::before { width: 300px; height: 300px; }
         button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(102,126,234,0.4); }
         button:active { transform: translateY(0); }
+
         .switch-mode {
             margin-top: 15px;
             color: #764ba2;
@@ -392,6 +263,8 @@
         }
         .switch-mode:hover { text-decoration: underline; color: #667eea; }
         .switch-mode:active { transform: scale(0.98); }
+
+        /* Header */
         .header {
             text-align: center;
             color: white;
@@ -406,6 +279,8 @@
         .header h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
         .header h1 span { color: #ffd700; }
         .header p { font-size: 1.1rem; opacity: 0.95; }
+
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 10px;
@@ -448,6 +323,8 @@
         }
         .tab-btn:hover { transform: translateY(-3px); }
         .tab-btn:active { transform: translateY(0); }
+
+        /* Content */
         .tab-content {
             display: none;
             background: rgba(255,255,255,0.95);
@@ -461,6 +338,8 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Forms */
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
         input, select {
@@ -476,6 +355,8 @@
             border-color: #764ba2;
             box-shadow: 0 0 10px rgba(118,75,162,0.3);
         }
+
+        /* Movie Cards */
         .movies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -509,6 +390,8 @@
         .movie-card h3 { font-size: 1.3rem; margin-bottom: 10px; color: #ffd700; }
         .movie-card .genre { color: rgba(255,255,255,0.9); font-weight: bold; margin-bottom: 8px; }
         .movie-card .rating { color: #ffd700; font-size: 1.4rem; font-weight: bold; }
+
+        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -527,14 +410,19 @@
         .stat-card:hover { transform: translateY(-5px); }
         .stat-card:active { transform: translateY(-2px) scale(0.98); }
         .stat-card h3 { font-size: 2.5rem; margin-bottom: 10px; }
+
         .loading { text-align: center; padding: 40px; font-size: 1.2rem; color: #764ba2; }
         .loading::after { content: '...'; animation: dots 1.5s steps(4, end) infinite; }
         @keyframes dots { 0%,20%{content:'.';} 40%{content:'..';} 60%,100%{content:'...';} }
+
         .message { padding: 15px; border-radius: 15px; margin-top: 20px; animation: slideDown 0.3s; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .message.success { background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); color: #155724; }
         .message.error { background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); color: #721c24; }
+
         h2 { color: #333; margin-bottom: 20px; font-size: 1.8rem; }
+
+        /* Sidebar */
         .my-list-sidebar {
             position: fixed;
             left: -400px;
@@ -588,365 +476,223 @@
             padding: 5px 10px;
             font-size: 12px;
         }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; }
+
         @media (max-width: 768px) {
             .movies-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
             .header h1 { font-size: 2rem; }
             .user-section { flex-direction: column; text-align: center; }
             .my-list-sidebar { width: 100%; left: -100%; }
         }
+        /* Footer Styles */
+        .footer {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            margin-top: 40px;
+            padding: 30px 20px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .footer-section h3 { color: #ffd700; margin-bottom: 15px; font-size: 1.2rem; }
+        .footer-section p { color: rgba(255,255,255,0.8); line-height: 1.6; font-size: 0.9rem; }
+        .footer-section ul { list-style: none; padding: 0; }
+        .footer-section ul li { margin-bottom: 10px; }
+        .footer-section ul li a { color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .footer-section ul li a:hover { color: #ffd700; transform: translateX(-5px); }
+        .social-links { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
+        .social-link {
+            background: rgba(255,255,255,0.15);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+        .social-link:hover { background: #ffd700; transform: translateY(-3px); }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+        }
+        .footer-bottom a { color: #ffd700; text-decoration: none; }
+        .footer-bottom a:hover { text-decoration: underline; }
+        .stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 768px) {
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+            .social-links { justify-content: center; }
+            .footer-section ul li a { justify-content: center; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="main-content">
-            <div class="user-section">
-                <div class="user-profile" onclick="if(!localStorage.getItem('token')) openAuthModal()">
-                    <div class="user-avatar" id="userAvatar">👤</div>
-                    <div class="user-details">
-                        <div class="user-name" id="userName">مهمان عزیز</div>
-                        <div class="user-email" id="userEmail"></div>
-                        <div class="last-visit" id="lastVisit"></div>
-                    </div>
-                </div>
-                <div class="user-actions">
-                    <div class="user-movie-count" id="userMovieCount" onclick="openMyList()" style="display:none;">
-                        🎬 لیست من: <span id="movieCount">0</span>
-                    </div>
-                    <button id="loginBtn" onclick="openAuthModal()" style="background:#fff; color:#764ba2;">🔑 ورود / ثبت‌نام</button>
-                    <button id="logoutBtn" onclick="logout()" style="display:none; background:#ff6b6b;">🚪 خروج</button>
+        <div class="user-section">
+            <div class="user-profile" onclick="if(!localStorage.getItem('token')) openAuthModal()">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">مهمان عزیز</div>
+                    <div class="user-email" id="userEmail"></div>
+                    <div class="last-visit" id="lastVisit"></div>
                 </div>
             </div>
-
-            <div id="myListSidebar" class="my-list-sidebar">
-                <div class="my-list-header">
-                    <h3>🎬 فیلم‌های من</h3>
-                    <button class="close-sidebar" onclick="closeMyList()">✕</button>
+            <div class="user-actions">
+                <div class="user-movie-count" id="userMovieCount" onclick="openMyList()" style="display:none;">
+                    🎬 لیست من: <span id="movieCount">0</span>
                 </div>
-                <div id="myListItems"></div>
-            </div>
-
-            <div class="header">
-                <h1>🎬 <span>سینماچی</span></h1>
-                <p>✨ هوشمندترین سیستم توصیه‌گر فیلم ایران ✨</p>
-            </div>
-
-            <div class="tabs">
-                <button class="tab-btn active" onclick="showTab('movies')">🎬 فیلم‌ها</button>
-                <button class="tab-btn" onclick="showTab('search')">🔍 جستجو</button>
-                <button class="tab-btn" onclick="showTab('recommend')">🎯 پیشنهاد</button>
-                <button class="tab-btn" onclick="showTab('top')">🏆 برترین‌ها</button>
-                <button class="tab-btn" onclick="showTab('stats')">📊 آمار</button>
-                <button class="tab-btn" onclick="showTab('add')">➕ افزودن</button>
-            </div>
-
-            <div id="authModal" class="modal">
-                <div class="modal-content">
-                    <div class="close-modal" onclick="closeAuthModal()">✕</div>
-                    <h2 id="modalTitle">ورود</h2>
-                    <div class="form-group-input">
-                        <input type="email" id="authEmail" placeholder="ایمیل">
-                    </div>
-                    <div class="form-group-input">
-                        <input type="password" id="authPassword" placeholder="رمز عبور (حداقل 8 کاراکتر)" oninput="checkPasswordStrength(this.value)">
-                        <button class="toggle-password" onclick="togglePassword()">👁️</button>
-                    </div>
-                    <div class="password-strength" id="passwordStrength" style="display:none;">
-                        <div class="strength-bar" id="bar1"></div>
-                        <div class="strength-bar" id="bar2"></div>
-                        <div class="strength-bar" id="bar3"></div>
-                    </div>
-                    <div class="strength-text" id="strengthText" style="display:none;"></div>
-                    <div class="password-rules" id="passwordRules" style="display:none;">
-                        <ul>
-                            <li id="rule-length">❌ حداقل ۸ کاراکتر</li>
-                            <li id="rule-uppercase">❌ حداقل یک حرف بزرگ (A-Z)</li>
-                            <li id="rule-lowercase">❌ حداقل یک حرف کوچک (a-z)</li>
-                            <li id="rule-number">❌ حداقل یک عدد (0-9)</li>
-                            <li id="rule-special">❌ حداقل یک کاراکتر خاص (@#$%^&*)</li>
-                        </ul>
-                    </div>
-                    <div class="modal-footer">
-                        <div></div>
-                        <div class="forgot-password" onclick="forgotPassword()">فراموش کردم رمز عبور را</div>
-                    </div>
-                    <button id="authActionBtn" onclick="login()">ورود</button>
-                    <div class="switch-mode" onclick="toggleAuthMode()">ثبت‌نام ندارید؟ عضویت</div>
-                    <div id="authMessage"></div>
-                </div>
-            </div>
-
-            <div id="forgotModal" class="modal">
-                <div class="modal-content">
-                    <div class="close-modal" onclick="closeForgotModal()">✕</div>
-                    <h2>🔐 بازیابی رمز عبور</h2>
-                    <div class="form-group-input">
-                        <input type="email" id="forgotEmail" placeholder="ایمیل خود را وارد کنید">
-                    </div>
-                    <button onclick="sendResetLink()">ارسال لینک بازیابی</button>
-                    <div id="forgotMessage"></div>
-                </div>
-            </div>
-
-            <!-- تب فیلم‌ها با 30 فیلم -->
-            <div id="movies" class="tab-content active">
-                <h2>🎬 گنجینه فیلم‌ها <span style="font-size:0.9rem;">(30 فیلم برتر جهان)</span></h2>
-                <button onclick="loadMovies()" style="margin-bottom: 20px;">🔄 بارگیری مجدد</button>
-                <div id="moviesList" class="movies-grid">
-                    <div class="loading">⏳ در حال بارگیری 30 فیلم برتر</div>
-                </div>
-            </div>
-
-            <div id="search" class="tab-content">
-                <h2>🔍 جستجوی هوشمند</h2>
-                <div class="form-group">
-                    <label>🎞️ نام فیلم</label>
-                    <input type="text" id="searchName" placeholder="مثال: ماتریکس">
-                </div>
-                <div class="form-group">
-                    <label>🎭 ژانر</label>
-                    <select id="searchGenre">
-                        <option value="">همه</option>
-                        <option>عاشقانه</option>
-                        <option>درام</option>
-                        <option>جنایی</option>
-                        <option>علمی تخیلی</option>
-                        <option>اکشن</option>
-                        <option>کمدی</option>
-                        <option>ترسناک</option>
-                        <option>ماجراجویی</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>⭐ حداقل امتیاز</label>
-                    <input type="number" id="searchRating" step="0.1" placeholder="مثال: 8">
-                </div>
-                <button onclick="searchMovies()">🔍 جستجو کن</button>
-                <div id="searchResults" class="movies-grid"></div>
-            </div>
-
-            <div id="recommend" class="tab-content">
-                <h2>🎯 پیشنهاد ویژه سینماچی</h2>
-                <div class="form-group">
-                    <label>🎭 ژانر مورد علاقه‌ات رو انتخاب کن</label>
-                    <select id="recommendGenre">
-                        <option>عاشقانه</option>
-                        <option>درام</option>
-                        <option>جنایی</option>
-                        <option>علمی تخیلی</option>
-                        <option>اکشن</option>
-                        <option>کمدی</option>
-                        <option>ترسناک</option>
-                        <option>ماجراجویی</option>
-                    </select>
-                </div>
-                <button onclick="recommendMovies()">✨ دریافت پیشنهاد ✨</button>
-                <div id="recommendResults" class="movies-grid"></div>
-            </div>
-
-            <div id="top" class="tab-content">
-                <h2>🏆 بهترین‌های سینما</h2>
-                <div class="form-group">
-                    <label>🔢 تعداد فیلم مورد نظر</label>
-                    <input type="number" id="topCount" value="5" min="1" max="20">
-                </div>
-                <button onclick="loadTopMovies()">🏆 نمایش برترین‌ها</button>
-                <div id="topResults" class="movies-grid"></div>
-            </div>
-
-            <div id="stats" class="tab-content">
-                <h2>📊 داشبورد تحلیلی</h2>
-                <button onclick="loadStats()">🔄 بارگیری آمار</button>
-                <div id="statsResults"></div>
-            </div>
-
-            <div id="add" class="tab-content">
-                <h2>➕ افزودن فیلم جدید به گنجینه</h2>
-                <div class="form-group">
-                    <label>🎞️ نام فیلم</label>
-                    <input type="text" id="newName" placeholder="نام فیلم رو وارد کن...">
-                </div>
-                <div class="form-group">
-                    <label>🎭 ژانر</label>
-                    <select id="newGenre">
-                        <option>عاشقانه</option>
-                        <option>درام</option>
-                        <option>جنایی</option>
-                        <option>علمی تخیلی</option>
-                        <option>اکشن</option>
-                        <option>کمدی</option>
-                        <option>ترسناک</option>
-                        <option>ماجراجویی</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>⭐ امتیاز (0 تا 10)</label>
-                    <input type="number" id="newRating" step="0.1" min="0" max="10" placeholder="مثال: 8.5">
-                </div>
-                <button onclick="addMovie()">➕ افزودن به سینماچی</button>
-                <div id="addResult"></div>
+                <button id="loginBtn" onclick="openAuthModal()" style="background:#fff; color:#764ba2;">🔑 ورود / ثبت‌نام</button>
+                <button id="logoutBtn" onclick="logout()" style="display:none; background:#ff6b6b;">🚪 خروج</button>
             </div>
         </div>
 
+        <div id="myListSidebar" class="my-list-sidebar">
+            <div class="my-list-header">
+                <h3>🎬 فیلم‌های من</h3>
+                <button class="close-sidebar" onclick="closeMyList()">✕</button>
+            </div>
+            <div id="myListItems"></div>
+        </div>
+
+        <div class="header">
+            <h1>🎬 <span>سینماچی</span></h1>
+            <p>✨ هوشمندترین سیستم توصیه‌گر فیلم ایران ✨</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('movies')">🎬 فیلم‌ها</button>
+            <button class="tab-btn" onclick="showTab('search')">🔍 جستجو</button>
+            <button class="tab-btn" onclick="showTab('recommend')">🎯 پیشنهاد</button>
+            <button class="tab-btn" onclick="showTab('top')">🏆 برترین‌ها</button>
+            <button class="tab-btn" onclick="showTab('stats')">📊 آمار</button>
+            <button class="tab-btn" onclick="showTab('add')">➕ افزودن</button>
+        </div>
+
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <div class="close-modal" onclick="closeAuthModal()">✕</div>
+                <h2 id="modalTitle">ورود</h2>
+                <div class="form-group-input">
+                    <input type="email" id="authEmail" placeholder="ایمیل">
+                </div>
+                <div class="form-group-input">
+                    <input type="password" id="authPassword" placeholder="رمز عبور (حداقل 8 کاراکتر)" oninput="checkPasswordStrength(this.value)">
+                    <button class="toggle-password" onclick="togglePassword()">👁️</button>
+                </div>
+                <div class="password-strength" id="passwordStrength" style="display:none;">
+                    <div class="strength-bar" id="bar1"></div>
+                    <div class="strength-bar" id="bar2"></div>
+                    <div class="strength-bar" id="bar3"></div>
+                </div>
+                <div class="strength-text" id="strengthText" style="display:none;"></div>
+                <div class="password-rules" id="passwordRules" style="display:none;">
+                    <ul>
+                        <li id="rule-length">❌ حداقل ۸ کاراکتر</li>
+                        <li id="rule-uppercase">❌ حداقل یک حرف بزرگ (A-Z)</li>
+                        <li id="rule-lowercase">❌ حداقل یک حرف کوچک (a-z)</li>
+                        <li id="rule-number">❌ حداقل یک عدد (0-9)</li>
+                        <li id="rule-special">❌ حداقل یک کاراکتر خاص (@#$%^&*)</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <div></div>
+                    <div class="forgot-password" onclick="forgotPassword()">فراموش کردم رمز عبور را</div>
+                </div>
+                <button id="authActionBtn" onclick="login()">ورود</button>
+                <div class="switch-mode" onclick="toggleAuthMode()">ثبت‌نام ندارید؟ عضویت</div>
+                <div id="authMessage"></div>
+            </div>
+        </div>
+
+        <div id="forgotModal" class="modal">
+            <div class="modal-content">
+                <div class="close-modal" onclick="closeForgotModal()">✕</div>
+                <h2>🔐 بازیابی رمز عبور</h2>
+                <div class="form-group-input">
+                    <input type="email" id="forgotEmail" placeholder="ایمیل خود را وارد کنید">
+                </div>
+                <button onclick="sendResetLink()">ارسال لینک بازیابی</button>
+                <div id="forgotMessage"></div>
+            </div>
+        </div>
+
+        <div id="movies" class="tab-content active">
+            <h2>🎬 گنجینه فیلم‌ها <span style="font-size:0.9rem;">(فیلم‌های برتر)</span></h2>
+            <button onclick="loadMovies()" style="margin-bottom: 20px;">🔄 بارگیری مجدد</button>
+            <div id="moviesList" class="movies-grid"><div class="loading">⏳ در حال بارگیری فیلم‌ها</div></div>
+        </div>
+
+        <div id="search" class="tab-content">
+            <h2>🔍 جستجوی هوشمند</h2>
+            <div class="form-group"><label>🎞️ نام فیلم</label><input type="text" id="searchName" placeholder="مثال: ماتریکس"></div>
+            <div class="form-group"><label>🎭 ژانر</label><select id="searchGenre"><option value="">همه</option><option>عاشقانه</option><option>درام</option><option>جنایی</option><option>علمی تخیلی</option><option>اکشن</option><option>کمدی</option><option>ترسناک</option><option>ماجراجویی</option></select></div>
+            <div class="form-group"><label>⭐ حداقل امتیاز</label><input type="number" id="searchRating" step="0.1" placeholder="مثال: 8"></div>
+            <button onclick="searchMovies()">🔍 جستجو کن</button><div id="searchResults" class="movies-grid"></div>
+        </div>
+
+        <div id="recommend" class="tab-content">
+            <h2>🎯 پیشنهاد ویژه سینماچی</h2>
+            <div class="form-group"><label>🎭 ژانر مورد علاقه‌ات رو انتخاب کن</label><select id="recommendGenre"><option>عاشقانه</option><option>درام</option><option>جنایی</option><option>علمی تخیلی</option><option>اکشن</option><option>کمدی</option><option>ترسناک</option><option>ماجراجویی</option></select></div>
+            <button onclick="recommendMovies()">✨ دریافت پیشنهاد ✨</button><div id="recommendResults" class="movies-grid"></div>
+        </div>
+
+        <div id="top" class="tab-content">
+            <h2>🏆 بهترین‌های سینما</h2>
+            <div class="form-group"><label>🔢 تعداد فیلم مورد نظر</label><input type="number" id="topCount" value="5" min="1" max="20"></div>
+            <button onclick="loadTopMovies()">🏆 نمایش برترین‌ها</button><div id="topResults" class="movies-grid"></div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <h2>📊 داشبورد تحلیلی</h2>
+            <button onclick="loadStats()">🔄 بارگیری آمار</button><div id="statsResults"></div>
+        </div>
+
+        <div id="add" class="tab-content">
+            <h2>➕ افزودن فیلم جدید به گنجینه</h2>
+            <div class="form-group"><label>🎞️ نام فیلم</label><input type="text" id="newName" placeholder="نام فیلم رو وارد کن..."></div>
+            <div class="form-group"><label>🎭 ژانر</label><select id="newGenre"><option>عاشقانه</option><option>درام</option><option>جنایی</option><option>علمی تخیلی</option><option>اکشن</option><option>کمدی</option><option>ترسناک</option><option>ماجراجویی</option></select></div>
+            <div class="form-group"><label>⭐ امتیاز (0 تا 10)</label><input type="number" id="newRating" step="0.1" min="0" max="10" placeholder="مثال: 8.5"></div>
+            <button onclick="addMovie()">➕ افزودن به سینماچی</button><div id="addResult"></div>
+        </div>
+        
         <!-- Footer -->
         <footer class="footer">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>🎬 درباره سینماچی</h3>
-                    <p>سینماچی یک سیستم توصیه‌گر فیلم هوشمند است که با استفاده از الگوریتم‌های پیشرفته، بهترین فیلم‌ها را بر اساس سلیقه شما پیشنهاد می‌دهد.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>🔗 لینک‌های مفید</h3>
-                    <ul>
-                        <li><a href="#" onclick="showTab('movies'); return false;">🎬 گنجینه فیلم‌ها</a></li>
-                        <li><a href="#" onclick="showTab('top'); return false;">🏆 برترین فیلم‌ها</a></li>
-                        <li><a href="#" onclick="showTab('recommend'); return false;">🎯 پیشنهاد فیلم</a></li>
-                        <li><a href="#" onclick="openAuthModal(); return false;">🔑 ورود / ثبت‌نام</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>📊 آمار سریع</h3>
-                    <p><span class="stats-badge">🎬 تعداد فیلم‌ها: <span id="footerMovieCount">0</span></span></p>
-                    <p><span class="stats-badge">⭐ میانگین امتیاز: <span id="footerAvgRating">0</span></span></p>
-                    <p><span class="stats-badge">🎭 ژانرها: 8+</span></p>
-                </div>
-                <div class="footer-section">
-                    <h3>📞 ارتباط با ما</h3>
-                    <ul>
-                        <li><a href="https://github.com/Pordelpordel" target="_blank">🐙 گیت‌هاب</a></li>
-                        <li><a href="mailto:m.pordell1383@gmail.com">📧 ایمیل</a></li>
-                    </ul>
-                    <div class="social-links">
-                        <a href="https://github.com/Pordelpordel" class="social-link" target="_blank">🐙</a>
-                        <a href="mailto:m.pordell1383@gmail.com" class="social-link">📧</a>
-                    </div>
-                </div>
+                <div class="footer-section"><h3>🎬 درباره سینماچی</h3><p>سینماچی یک سیستم توصیه‌گر فیلم هوشمند است که با استفاده از الگوریتم‌های پیشرفته، بهترین فیلم‌ها را بر اساس سلیقه شما پیشنهاد می‌دهد.</p></div>
+                <div class="footer-section"><h3>🔗 لینک‌های مفید</h3><ul><li><a href="#" onclick="showTab('movies'); return false;">🎬 گنجینه فیلم‌ها</a></li><li><a href="#" onclick="showTab('top'); return false;">🏆 برترین فیلم‌ها</a></li><li><a href="#" onclick="showTab('recommend'); return false;">🎯 پیشنهاد فیلم</a></li><li><a href="#" onclick="openAuthModal(); return false;">🔑 ورود / ثبت‌نام</a></li></ul></div>
+                <div class="footer-section"><h3>📊 آمار سریع</h3><p><span class="stats-badge">🎬 تعداد فیلم‌ها: <span id="footerMovieCount">0</span></span></p><p><span class="stats-badge">⭐ میانگین امتیاز: <span id="footerAvgRating">0</span></span></p><p><span class="stats-badge">🎭 ژانرها: 8+</span></p></div>
+                <div class="footer-section"><h3>📞 ارتباط با ما</h3><ul><li><a href="https://github.com/Pordelpordel" target="_blank">🐙 گیت‌هاب</a></li><li><a href="mailto:m.pordell1383@gmail.com">📧 ایمیل</a></li></ul><div class="social-links"><a href="https://github.com/Pordelpordel" class="social-link" target="_blank">🐙</a><a href="mailto:m.pordell1383@gmail.com" class="social-link">📧</a></div></div>
             </div>
-            <div class="footer-bottom">
-                <p>© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است. | طراحی و توسعه توسط <a href="https://github.com/Pordelpordel" target="_blank">مهسا پردل</a></p>
-                <p style="margin-top: 10px;">🚀 با استفاده از FastAPI | SQLite | Render | HTML/CSS/JS</p>
-            </div>
+            <div class="footer-bottom"><p>© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است. | طراحی و توسعه توسط <a href="https://github.com/Pordelpordel" target="_blank">محمد پوردل</a></p><p style="margin-top: 10px;">🚀 با استفاده از FastAPI | SQLite | Render | HTML/CSS/JS</p></div>
         </footer>
     </div>
 
     <script>
-        const API_URL = 'https://movie-recommender-final-ic8x.onrender.com'
+        const API_URL = '';
         let isLoginMode = true;
         let currentMovies = [];
         let myMovies = JSON.parse(localStorage.getItem('myMovies')) || [];
-
-        // لیست 30 فیلم برتر برای دیتابیس
-        const defaultMovies = [
-            { name: "رستگاری در شاوشنک", genre: "درام", rating: 9.3 },
-            { name: "پدرخوانده", genre: "جنایی", rating: 9.2 },
-            { name: "پدرخوانده ۲", genre: "جنایی", rating: 9.0 },
-            { name: "شوالیه تاریکی", genre: "اکشن", rating: 9.0 },
-            { name: "دوازده مرد خشمگین", genre: "درام", rating: 8.9 },
-            { name: "شلیندر لیست", genre: "درام", rating: 8.9 },
-            { name: "پالپ فیکشن", genre: "جنایی", rating: 8.9 },
-            { name: "جنگجویان کوچه", genre: "جنایی", rating: 8.8 },
-            { name: "فارست گامپ", genre: "درام", rating: 8.8 },
-            { name: "ماتریکس", genre: "علمی تخیلی", rating: 8.7 },
-            { name: "تایتانیک", genre: "عاشقانه", rating: 8.5 },
-            { name: "اینتراستلار", genre: "علمی تخیلی", rating: 8.6 },
-            { name: "تلقین", genre: "علمی تخیلی", rating: 8.8 },
-            { name: "باشگاه مشت زنی", genre: "درام", rating: 8.8 },
-            { name: "افسانه خوشایند", genre: "درام", rating: 8.8 },
-            { name: "محاکمه محاکمه", genre: "درام", rating: 8.7 },
-            { name: "شش قلوها", genre: "جنایی", rating: 8.7 },
-            { name: "بازی مرکب", genre: "ترسناک", rating: 8.5 },
-            { name: "بیگانه", genre: "علمی تخیلی", rating: 8.5 },
-            { name: "بلید رانر ۲۰۴۹", genre: "علمی تخیلی", rating: 8.0 },
-            { name: "ددپول", genre: "اکشن", rating: 8.0 },
-            { name: "انتقام جویان: پایان بازی", genre: "اکشن", rating: 8.4 },
-            { name: "پارک ژوراسیک", genre: "ماجراجویی", rating: 8.2 },
-            { name: "مرد عنکبوتی: به درون دنیای عنکبوتی", genre: "انیمیشن", rating: 8.4 },
-            { name: "تابستان داغ", genre: "کمدی", rating: 7.8 },
-            { name: "سگ‌های انباری", genre: "جنایی", rating: 8.1 },
-            { name: "غرور و تعصب", genre: "عاشقانه", rating: 8.1 },
-            { name: "عشق در زمان وبا", genre: "عاشقانه", rating: 7.9 },
-            { name: "مسافران", genre: "علمی تخیلی", rating: 7.6 },
-            { name: "سرگذشت نارنیا", genre: "ماجراجویی", rating: 7.9 }
-        ];
-
-        // تابع برای مقداردهی اولیه فیلم‌ها در دیتابیس
-        async function initializeMovies() {
-            try {
-                const response = await fetch(`${API_URL}/movies`);
-                const existingMovies = await response.json();
-                if (existingMovies.length === 0) {
-                    showToast('📀 در حال بارگیری 30 فیلم برتر...');
-                    for (const movie of defaultMovies) {
-                        await fetch(`${API_URL}/add_movie`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(movie)
-                        });
-                    }
-                    showToast('✅ 30 فیلم برتر با موفقیت اضافه شدند!');
-                }
-                loadMovies();
-            } catch(e) {
-                console.log('خطا در مقداردهی اولیه:', e);
-                displayMovies(defaultMovies, 'moviesList');
-            }
-        }
-
-        function updateFooterStats(movies) {
-            const total = movies.length;
-            const avg = (movies.reduce((sum, m) => sum + m.rating, 0) / total).toFixed(2);
-            document.getElementById('footerMovieCount').innerText = total;
-            document.getElementById('footerAvgRating').innerText = avg;
-        }
-
-        function checkPasswordStrength(password) {
-            const rules = {
-                length: password.length >= 8,
-                uppercase: /[A-Z]/.test(password),
-                lowercase: /[a-z]/.test(password),
-                number: /[0-9]/.test(password),
-                special: /[@#$%^&*]/.test(password)
-            };
-            
-            document.getElementById('rule-length').innerHTML = (rules.length ? '✅' : '❌') + ' حداقل ۸ کاراکتر';
-            document.getElementById('rule-uppercase').innerHTML = (rules.uppercase ? '✅' : '❌') + ' حداقل یک حرف بزرگ (A-Z)';
-            document.getElementById('rule-lowercase').innerHTML = (rules.lowercase ? '✅' : '❌') + ' حداقل یک حرف کوچک (a-z)';
-            document.getElementById('rule-number').innerHTML = (rules.number ? '✅' : '❌') + ' حداقل یک عدد (0-9)';
-            document.getElementById('rule-special').innerHTML = (rules.special ? '✅' : '❌') + ' حداقل یک کاراکتر خاص (@#$%^&*)';
-            
-            let score = Object.values(rules).filter(Boolean).length;
-            const bar1 = document.getElementById('bar1');
-            const bar2 = document.getElementById('bar2');
-            const bar3 = document.getElementById('bar3');
-            const strengthText = document.getElementById('strengthText');
-            
-            if (score === 0 || score === 1) {
-                bar1.className = 'strength-bar weak';
-                bar2.className = 'strength-bar';
-                bar3.className = 'strength-bar';
-                strengthText.innerHTML = 'ضعیف';
-                strengthText.style.color = '#ff4444';
-            } else if (score === 2 || score === 3) {
-                bar1.className = 'strength-bar medium';
-                bar2.className = 'strength-bar medium';
-                bar3.className = 'strength-bar';
-                strengthText.innerHTML = 'متوسط';
-                strengthText.style.color = '#ffa700';
-            } else if (score === 4 || score === 5) {
-                bar1.className = 'strength-bar strong';
-                bar2.className = 'strength-bar strong';
-                bar3.className = 'strength-bar strong';
-                strengthText.innerHTML = 'قوی';
-                strengthText.style.color = '#00c851';
-            }
-            return score >= 4;
-        }
-
-        function validatePassword(password) {
-            return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[@#$%^&*]/.test(password);
-        }
 
         function showToast(message, isError = false) {
             const toast = document.createElement('div');
@@ -956,7 +702,6 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-
         function showWelcomeMessage(username) { showToast(`🎉 خوش آمدی ${username}! 🎉`); }
 
         function showTab(tabName) {
@@ -968,152 +713,85 @@
 
         function displayMovies(movies, containerId) {
             const container = document.getElementById(containerId);
-            if (!movies || movies.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:40px;">😔 هیچ فیلمی پیدا نشد...</p>';
-                return;
-            }
-            container.innerHTML = movies.map(movie => `
-                <div class="movie-card" onclick='addToMyList(${JSON.stringify(movie).replace(/'/g, "\\'")})'>
-                    <h3>🎬 ${movie.name}</h3>
-                    <div class="genre">🎭 ${movie.genre}</div>
-                    <div class="rating">⭐ ${movie.rating}/10</div>
-                </div>
-            `).join('');
+            if (!movies || movies.length === 0) { container.innerHTML = '<p style="text-align:center; padding:40px;">😔 هیچ فیلمی پیدا نشد...</p>'; return; }
+            container.innerHTML = movies.map(movie => `<div class="movie-card" onclick='addToMyList(${JSON.stringify(movie).replace(/'/g, "\\'")})'><h3>🎬 ${movie.name}</h3><div class="genre">🎭 ${movie.genre}</div><div class="rating">⭐ ${movie.rating}/10</div></div>`).join('');
             updateFooterStats(movies);
         }
 
         async function loadMovies() {
             try {
-                const response = await fetch(`${API_URL}/movies`);
+                const response = await fetch(`/movies`);
                 currentMovies = await response.json();
-                if (currentMovies.length === 0) {
-                    displayMovies(defaultMovies, 'moviesList');
-                    updateFooterStats(defaultMovies);
-                } else {
-                    displayMovies(currentMovies, 'moviesList');
-                    updateFooterStats(currentMovies);
-                }
-            } catch(e) { 
-                displayMovies(defaultMovies, 'moviesList');
-                updateFooterStats(defaultMovies);
-                console.log('خطا:', e); 
-            }
+                displayMovies(currentMovies, 'moviesList');
+            } catch(e) { console.log('خطا:', e); displayMovies([], 'moviesList'); }
         }
 
         async function searchMovies() {
             const name = document.getElementById('searchName').value;
             const genre = document.getElementById('searchGenre').value;
             const rating = document.getElementById('searchRating').value;
-            let results = currentMovies.length > 0 ? currentMovies : defaultMovies;
-            
-            if (name) results = results.filter(m => m.name.includes(name));
-            if (genre) results = results.filter(m => m.genre === genre);
-            if (rating) results = results.filter(m => m.rating >= parseFloat(rating));
-            
-            displayMovies(results, 'searchResults');
+            let url = `/search/?`;
+            if (name) url += `name=${name}&`;
+            if (genre) url += `genre=${genre}&`;
+            if (rating) url += `min_rating=${rating}&`;
+            const response = await fetch(url);
+            const data = await response.json();
+            displayMovies(data.results, 'searchResults');
         }
 
         async function recommendMovies() {
             const genre = document.getElementById('recommendGenre').value;
-            const movies = currentMovies.length > 0 ? currentMovies : defaultMovies;
-            const filtered = movies.filter(m => m.genre === genre);
-            displayMovies(filtered, 'recommendResults');
+            const response = await fetch(`/recommend`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ genre: genre })
+            });
+            const data = await response.json();
+            displayMovies(data.پیشنهادها, 'recommendResults');
         }
 
         async function loadTopMovies() {
-            const count = parseInt(document.getElementById('topCount').value);
-            const movies = currentMovies.length > 0 ? currentMovies : defaultMovies;
-            const sorted = [...movies].sort((a, b) => b.rating - a.rating).slice(0, count);
-            displayMovies(sorted, 'topResults');
+            const count = document.getElementById('topCount').value;
+            const response = await fetch(`/top/${count}`);
+            const data = await response.json();
+            displayMovies(data.top, 'topResults');
         }
 
         async function loadStats() {
-            const movies = currentMovies.length > 0 ? currentMovies : defaultMovies;
-            const total_movies = movies.length;
-            const avg_rating = (movies.reduce((sum, m) => sum + m.rating, 0) / total_movies).toFixed(2);
-            const highest_rating = Math.max(...movies.map(m => m.rating));
-            const lowest_rating = Math.min(...movies.map(m => m.rating));
-            const genres_count = {};
-            movies.forEach(m => { genres_count[m.genre] = (genres_count[m.genre] || 0) + 1; });
-            const genres_distribution = Object.entries(genres_count).map(([genre, count]) => ({ genre, count }));
-            
-            document.getElementById('statsResults').innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card"><h3>${total_movies}</h3><p>🎬 تعداد فیلم‌ها</p></div>
-                    <div class="stat-card"><h3>${avg_rating}</h3><p>⭐ میانگین امتیاز</p></div>
-                    <div class="stat-card"><h3>${highest_rating}</h3><p>🏆 بالاترین امتیاز</p></div>
-                    <div class="stat-card"><h3>${lowest_rating}</h3><p>📉 پایین‌ترین امتیاز</p></div>
-                </div>
-                <h3>📊 توزیع ژانرها:</h3>
-                <div class="stats-grid">${genres_distribution.map(g => `<div class="stat-card"><h3>${g.count}</h3><p>🎭 ${g.genre}</p></div>`).join('')}</div>
-            `;
+            const response = await fetch(`/stats`);
+            const data = await response.json();
+            document.getElementById('statsResults').innerHTML = `<div class="stats-grid"><div class="stat-card"><h3>${data.total_movies}</h3><p>🎬 تعداد فیلم‌ها</p></div><div class="stat-card"><h3>${data.average_rating}</h3><p>⭐ میانگین امتیاز</p></div><div class="stat-card"><h3>${data.highest_rating}</h3><p>🏆 بالاترین امتیاز</p></div><div class="stat-card"><h3>${data.lowest_rating}</h3><p>📉 پایین‌ترین امتیاز</p></div></div><h3>📊 توزیع ژانرها:</h3><div class="stats-grid">${data.genres_distribution.map(g => `<div class="stat-card"><h3>${g.count}</h3><p>🎭 ${g.genre}</p></div>`).join('')}</div>`;
         }
 
-        // ========== تابع addMovie اصلاح شده با به‌روزرسانی خودکار ==========
         async function addMovie() {
             const name = document.getElementById('newName').value;
             const genre = document.getElementById('newGenre').value;
             const rating = parseFloat(document.getElementById('newRating').value);
-            
-            if (!name || !rating) { 
-                showToast('❌ لطفاً نام و امتیاز فیلم رو وارد کن!', true);
-                return; 
-            }
-            
-            if (rating < 0 || rating > 10) {
-                showToast('❌ امتیاز باید بین 0 تا 10 باشد!', true);
-                return;
-            }
-            
+            if (!name || !rating) { showToast('❌ لطفاً نام و امتیاز فیلم رو وارد کن!', true); return; }
+            if (rating < 0 || rating > 10) { showToast('❌ امتیاز باید بین 0 تا 10 باشد!', true); return; }
             const token = localStorage.getItem('token');
-            if (!token) {
-                showToast('❌ لطفاً ابتدا وارد شوید!', true);
-                openAuthModal();
-                return;
-            }
-            
+            if (!token) { showToast('❌ لطفاً ابتدا وارد شوید!', true); openAuthModal(); return; }
             try {
-                const response = await fetch(`${API_URL}/add_movie`, {
+                const response = await fetch(`/add_movie`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, genre, rating })
                 });
-                
                 const data = await response.json();
-                
-                if (data.error) {
-                    showToast(`❌ ${data.error}`, true);
-                } else {
-                    showToast(`✅ فیلم "${name}" با موفقیت اضافه شد! 🎉`);
-                    document.getElementById('newName').value = '';
-                    document.getElementById('newRating').value = '';
-                    
-                    setTimeout(() => {
-                        loadMovies();
-                        showToast('🔄 لیست فیلم‌ها به‌روزرسانی شد', false);
-                    }, 1500);
-                }
-            } catch(error) {
-                showToast('❌ خطا در ارتباط با سرور!', true);
-                console.log(error);
-            }
+                if (data.error) { showToast(`❌ ${data.error}`, true); }
+                else { showToast(`✅ فیلم "${name}" با موفقیت اضافه شد! 🎉`); document.getElementById('newName').value = ''; document.getElementById('newRating').value = ''; setTimeout(() => loadMovies(), 1500); }
+            } catch(error) { showToast('❌ خطا در ارتباط با سرور!', true); }
         }
 
         function addToMyList(movie) {
             const token = localStorage.getItem('token');
-            if (!token) { 
-                showToast('❌ لطفاً ابتدا وارد شوید!', true);
-                openAuthModal(); 
-                return; 
-            }
+            if (!token) { showToast('❌ لطفاً ابتدا وارد شوید!', true); openAuthModal(); return; }
             if (!myMovies.some(m => m.id === movie.id)) {
                 myMovies.push({ ...movie, id: Date.now() });
                 localStorage.setItem('myMovies', JSON.stringify(myMovies));
                 updateMovieCount();
                 showToast(`✅ ${movie.name} به لیست من اضافه شد!`);
-            } else {
-                showToast(`⚠️ ${movie.name} قبلاً در لیست شماست!`, true);
-            }
+            } else { showToast(`⚠️ ${movie.name} قبلاً در لیست شماست!`, true); }
         }
 
         function removeFromMyList(movieId) {
@@ -1129,28 +807,29 @@
             document.getElementById('movieCount').innerText = myMovies.length;
             document.getElementById('userMovieCount').style.display = myMovies.length > 0 ? 'flex' : 'none';
         }
+        function updateFooterStats(movies) {
+            const total = movies.length;
+            const avg = (movies.reduce((sum, m) => sum + m.rating, 0) / total).toFixed(2);
+            document.getElementById('footerMovieCount').innerText = total;
+            document.getElementById('footerAvgRating').innerText = avg;
+        }
 
         function openMyList() { displayMyList(); document.getElementById('myListSidebar').classList.add('active'); }
         function closeMyList() { document.getElementById('myListSidebar').classList.remove('active'); }
-
         function displayMyList() {
             const container = document.getElementById('myListItems');
-            if (myMovies.length === 0) { 
-                container.innerHTML = '<p style="color:white; text-align:center;">📭 فیلمی در لیست شما نیست</p>'; 
-                return; 
-            }
+            if (myMovies.length === 0) { container.innerHTML = '<p style="color:white; text-align:center;">📭 فیلمی در لیست شما نیست</p>'; return; }
             container.innerHTML = myMovies.map(movie => `<div class="my-list-item" onclick="removeFromMyList(${movie.id})"><div><strong>🎬 ${movie.name}</strong><br><small>⭐ ${movie.rating}/10 | 🎭 ${movie.genre}</small></div><button onclick="event.stopPropagation(); removeFromMyList(${movie.id})">🗑️</button></div>`).join('');
         }
 
+        // Authentication
         function setLastVisit() {
             const now = new Date();
             localStorage.setItem('lastVisit', now.toLocaleDateString('fa-IR') + ' ' + now.toLocaleTimeString('fa-IR'));
             document.getElementById('lastVisit').innerHTML = `📅 آخرین بازدید: ${localStorage.getItem('lastVisit')}`;
         }
-
         function showLastVisit() { document.getElementById('lastVisit').innerHTML = localStorage.getItem('lastVisit') || '🌟 خوش آمدید'; }
         function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-
         function updateUserUI(email) {
             if (email) {
                 const name = email.split('@')[0];
@@ -1179,18 +858,13 @@
             document.getElementById('passwordStrength').style.display = isRegisterMode ? 'flex' : 'none';
             document.getElementById('strengthText').style.display = isRegisterMode ? 'block' : 'none';
         }
-
         function closeAuthModal() { document.getElementById('authModal').classList.remove('active'); }
         function togglePassword() { const p = document.getElementById('authPassword'); p.type = p.type === 'password' ? 'text' : 'password'; }
         function openForgotModal() { document.getElementById('forgotModal').classList.add('active'); }
         function closeForgotModal() { document.getElementById('forgotModal').classList.remove('active'); }
-
         function sendResetLink() {
             const email = document.getElementById('forgotEmail').value;
-            if (!validateEmail(email)) {
-                document.getElementById('forgotMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کنید!</div>';
-                return;
-            }
+            if (!validateEmail(email)) { document.getElementById('forgotMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کنید!</div>'; return; }
             document.getElementById('forgotMessage').innerHTML = `<div class="message success">✅ لینک بازیابی رمز عبور به ایمیل ${email} ارسال شد.</div>`;
             setTimeout(() => closeForgotModal(), 2000);
         }
@@ -1207,21 +881,35 @@
             document.getElementById('strengthText').style.display = isLoginMode ? 'none' : 'block';
         }
 
+        function checkPasswordStrength(password) {
+            const rules = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[@#$%^&*]/.test(password)
+            };
+            document.getElementById('rule-length').innerHTML = (rules.length ? '✅' : '❌') + ' حداقل ۸ کاراکتر';
+            document.getElementById('rule-uppercase').innerHTML = (rules.uppercase ? '✅' : '❌') + ' حداقل یک حرف بزرگ (A-Z)';
+            document.getElementById('rule-lowercase').innerHTML = (rules.lowercase ? '✅' : '❌') + ' حداقل یک حرف کوچک (a-z)';
+            document.getElementById('rule-number').innerHTML = (rules.number ? '✅' : '❌') + ' حداقل یک عدد (0-9)';
+            document.getElementById('rule-special').innerHTML = (rules.special ? '✅' : '❌') + ' حداقل یک کاراکتر خاص (@#$%^&*)';
+            let score = Object.values(rules).filter(Boolean).length;
+            const bar1 = document.getElementById('bar1'); const bar2 = document.getElementById('bar2'); const bar3 = document.getElementById('bar3');
+            const strengthText = document.getElementById('strengthText');
+            if (score === 0 || score === 1) { bar1.className = 'strength-bar weak'; bar2.className = 'strength-bar'; bar3.className = 'strength-bar'; strengthText.innerHTML = 'ضعیف'; strengthText.style.color = '#ff4444'; }
+            else if (score === 2 || score === 3) { bar1.className = 'strength-bar medium'; bar2.className = 'strength-bar medium'; bar3.className = 'strength-bar'; strengthText.innerHTML = 'متوسط'; strengthText.style.color = '#ffa700'; }
+            else if (score === 4 || score === 5) { bar1.className = 'strength-bar strong'; bar2.className = 'strength-bar strong'; bar3.className = 'strength-bar strong'; strengthText.innerHTML = 'قوی'; strengthText.style.color = '#00c851'; }
+            return score >= 4;
+        }
+        function validatePassword(password) { return password.length >= 8 && /[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[@#$%^&*]/.test(password); }
+
         async function register() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
-            if (!email || !password) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>';
-                return;
-            }
-            if (!validateEmail(email)) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
-                return;
-            }
-            if (!validatePassword(password)) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ رمز عبور باید حداقل ۸ کاراکتر، شامل حروف بزرگ، کوچک، عدد و کاراکتر خاص باشد!</div>';
-                return;
-            }
+            if (!email || !password) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>'; return; }
+            if (!validateEmail(email)) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>'; return; }
+            if (!validatePassword(password)) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ رمز عبور باید حداقل ۸ کاراکتر، شامل حروف بزرگ، کوچک، عدد و کاراکتر خاص باشد!</div>'; return; }
             localStorage.setItem('token', 'demo_token_' + Date.now());
             localStorage.setItem('userEmail', email);
             updateUserUI(email);
@@ -1234,14 +922,8 @@
         async function login() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
-            if (!email || !password) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل و رمز عبور را وارد کن!</div>';
-                return;
-            }
-            if (!validateEmail(email)) {
-                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>';
-                return;
-            }
+            if (!email || !password) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً ایمیل و رمز عبور را وارد کن!</div>'; return; }
+            if (!validateEmail(email)) { document.getElementById('authMessage').innerHTML = '<div class="message error">❌ ایمیل معتبر وارد کن!</div>'; return; }
             localStorage.setItem('token', 'demo_token_' + Date.now());
             localStorage.setItem('userEmail', email);
             updateUserUI(email);
@@ -1252,7 +934,6 @@
         }
 
         function forgotPassword() { closeAuthModal(); openForgotModal(); }
-        
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('userEmail');
@@ -1261,7 +942,6 @@
             document.getElementById('logoutBtn').style.display = 'none';
             showToast('👋 شما از حساب خود خارج شدید!');
         }
-
         function checkAuth() {
             const token = localStorage.getItem('token');
             const email = localStorage.getItem('userEmail');
@@ -1278,7 +958,9 @@
             if (event.target === document.getElementById('myListSidebar')) closeMyList();
         }
 
-       
+        loadMovies();
+        checkAuth();
+        updateMovieCount();
     </script>
 </body>
 </html>
