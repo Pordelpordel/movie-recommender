@@ -1,11 +1,15 @@
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import get_db, MovieDB
 from sqlalchemy import func
-# CORS تنظیمات
+from fastapi.middleware.cors import CORSMiddleware
+
+# ========== اول: اپلیکیشن FastAPI را بسازید ==========
+app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
+
+# ========== دوم: CORS را تنظیم کنید ==========
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,9 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
-
-# مدل‌های Pydantic برای درخواست/پاسخ
+# ========== سوم: مدل‌های Pydantic ==========
 class MovieCreate(BaseModel):
     name: str
     genre: str
@@ -31,7 +33,7 @@ class MovieResponse(BaseModel):
 class GenreRequest(BaseModel):
     genre: str
 
-# اندپوینت‌ها
+# ========== چهارم: اندپوینت‌ها ==========
 @app.get("/")
 def root():
     return {"پیام": "به سیستم توصیه‌گر فیلم خوش آمدید"}
