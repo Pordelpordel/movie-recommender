@@ -1,10 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import timedelta
 from database import get_db, MovieDB
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
 
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
