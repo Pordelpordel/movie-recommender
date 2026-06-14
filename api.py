@@ -1,9 +1,18 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import get_db, MovieDB
 from sqlalchemy import func
+# CORS تنظیمات
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
 
