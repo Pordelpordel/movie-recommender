@@ -61,11 +61,55 @@
             gap: 10px;
         }
 
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #ffd700;
+        /* Modal برای ورود و ثبت‌نام */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #1a1a2e;
+        }
+
+        .modal-content input {
+            margin-bottom: 15px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .switch-mode {
+            margin-top: 15px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .switch-mode:hover {
+            color: #ff6b6b;
         }
 
         /* Header */
@@ -328,9 +372,9 @@
     <div class="container">
         <!-- بخش کاربر -->
         <div class="user-section">
-            <div class="user-info" id="userInfo"></div>
+            <div class="user-info" id="userInfo">👤 مهمان</div>
             <div>
-                <button id="loginBtn" onclick="loginWithGoogle()" style="background:#fff; color:#1a1a2e;">🔑 ورود با گوگل</button>
+                <button id="loginBtn" onclick="openAuthModal()" style="background:#fff; color:#1a1a2e;">🔑 ورود / ثبت‌نام</button>
                 <button id="logoutBtn" onclick="logout()" style="display:none; background:#ff6b6b;">🚪 خروج</button>
             </div>
         </div>
@@ -347,6 +391,18 @@
             <button class="tab-btn" onclick="showTab('top')">🏆 برترین‌ها</button>
             <button class="tab-btn" onclick="showTab('stats')">📊 آمار</button>
             <button class="tab-btn" onclick="showTab('add')">➕ افزودن</button>
+        </div>
+
+        <!-- Modal ورود/ثبت‌نام -->
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitle">ورود</h2>
+                <input type="text" id="authUsername" placeholder="نام کاربری">
+                <input type="password" id="authPassword" placeholder="رمز عبور">
+                <button id="authActionBtn" onclick="login()">ورود</button>
+                <div class="switch-mode" onclick="toggleAuthMode()">ثبت‌نام ندارید؟ عضویت</div>
+                <div id="authMessage"></div>
+            </div>
         </div>
 
         <!-- Tab: Movies -->
@@ -444,6 +500,7 @@
 
     <script>
         const API_URL = 'https://movie-recommender-final-ic8x.onrender.com';
+        let isLoginMode = true;
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -576,34 +633,104 @@
             }
         }
 
-        // ========== بخش احراز هویت ==========
-        async function loginWithGoogle() {
-            window.location.href = `${API_URL}/login/google`;
+        // ========== بخش احراز هویت محلی ==========
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+            document.getElementById('authMessage').innerHTML = '';
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('modalTitle');
+            const btn = document.getElementById('authActionBtn');
+            const switchText = document.querySelector('.switch-mode');
+            
+            if (isLoginMode) {
+                title.innerText = 'ورود';
+                btn.innerText = 'ورود';
+                btn.setAttribute('onclick', 'login()');
+                switchText.innerText = 'ثبت‌نام ندارید؟ عضویت';
+            } else {
+                title.innerText = 'ثبت‌نام';
+                btn.innerText = 'عضویت';
+                btn.setAttribute('onclick', 'register()');
+                switchText.innerText = 'قبلاً عضو شدید؟ ورود';
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            
+            if (!username || !password) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً همه فیلدها را پر کن!</div>';
+                return;
+            }
+            
+            const response = await fetch(`${API_URL}/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, password})
+            });
+            const data = await response.json();
+            
+            if (data.error) {
+                document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
+            } else {
+                document.getElementById('authMessage').innerHTML = `<div class="message success">✅ ثبت‌نام موفق! حالا وارد شو.</div>`;
+                setTimeout(() => {
+                    isLoginMode = true;
+                    toggleAuthMode();
+                }, 1500);
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            
+            if (!username || !password) {
+                document.getElementById('authMessage').innerHTML = '<div class="message error">❌ لطفاً نام کاربری و رمز عبور را وارد کن!</div>';
+                return;
+            }
+            
+            const response = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, password})
+            });
+            const data = await response.json();
+            
+            if (data.error) {
+                document.getElementById('authMessage').innerHTML = `<div class="message error">❌ ${data.error}</div>`;
+            } else {
+                localStorage.setItem('token', data.access_token);
+                document.getElementById('userInfo').innerHTML = `👤 خوش اومدی ${username}`;
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                closeAuthModal();
+            }
         }
 
         async function logout() {
-            await fetch(`${API_URL}/logout`);
-            window.location.reload();
+            localStorage.removeItem('token');
+            document.getElementById('userInfo').innerHTML = '👤 مهمان';
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('logoutBtn').style.display = 'none';
         }
 
-        async function checkAuth() {
-            try {
-                const response = await fetch(`${API_URL}/me`);
-                const data = await response.json();
-                if (data.user && !data.error) {
-                    document.getElementById('userInfo').innerHTML = `
-                        👋 خوش اومدی ${data.user.name}
-                        <img src="${data.user.picture}" alt="profile">
-                    `;
-                    document.getElementById('loginBtn').style.display = 'none';
-                    document.getElementById('logoutBtn').style.display = 'inline-block';
-                } else {
-                    document.getElementById('userInfo').innerHTML = '👤 مهمان';
-                    document.getElementById('loginBtn').style.display = 'inline-block';
-                    document.getElementById('logoutBtn').style.display = 'none';
-                }
-            } catch(e) {
-                console.log('Auth error:', e);
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('userInfo').innerHTML = '👤 کاربر عزیز';
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
             }
         }
 
