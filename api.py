@@ -1,24 +1,15 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from datetime import timedelta
 from database import get_db, MovieDB
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
-from fastapi.middleware.cors import CORSMiddleware
 
-# ========== اول: اپلیکیشن FastAPI را بسازید ==========
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
 
-# ========== دوم: CORS را تنظیم کنید ==========
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# ========== سوم: مدل‌های Pydantic ==========
+# مدل‌های Pydantic برای درخواست/پاسخ
 class MovieCreate(BaseModel):
     name: str
     genre: str
@@ -33,7 +24,7 @@ class MovieResponse(BaseModel):
 class GenreRequest(BaseModel):
     genre: str
 
-# ========== چهارم: اندپوینت‌ها ==========
+# اندپوینت‌ها
 @app.get("/")
 def root():
     return {"پیام": "به سیستم توصیه‌گر فیلم خوش آمدید"}
@@ -145,3 +136,50 @@ def get_statistics(db: Session = Depends(get_db)):
 def get_top_movies(count: int = 3, db: Session = Depends(get_db)):
     movies = db.query(MovieDB).order_by(MovieDB.rating.desc()).limit(count).all()
     return {"top": movies}
+# ========== بخش احراز هویت با گوگل ==========
+from authlib.integrations.starlette_client import OAuth
+from starlette.config import Config
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import Request
+import secrets
+
+# تنظیمات نشست (Session)
+app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32))
+
+# تنظیمات OAuth
+config_data = {
+    'GOOGLE_CLIENT_ID': 'YOUR_GOOGLE_CLIENT_ID',
+    'GOOGLE_CLIENT_SECRET': 'YOUR_GOOGLE_CLIENT_SECRET',
+}
+config = Config(environ=config_data)
+oauth = OAuth(config)
+oauth.register(
+    name='google',
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'},
+)
+
+@app.get("/login/google")
+async def login_google(request: Request):
+    redirect_uri = "https://movie-recommender-final-ic8x.onrender.com/auth/google"
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@app.get("/auth/google")
+async def auth_google(request: Request):
+    token = await oauth.google.authorize_access_token(request)
+    user = token.get('userinfo')
+    if user:
+        request.session['user'] = dict(user)
+    return {"user": user}
+
+@app.get("/logout")
+async def logout(request: Request):
+    request.session.pop('user', None)
+    return {"message": "خارج شدید"}
+
+@app.get("/me")
+async def get_current_user(request: Request):
+    user = request.session.get('user')
+    if not user:
+        return {"error": "وارد نشده‌اید"}
+    return {"user": user}
