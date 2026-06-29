@@ -13,17 +13,34 @@ import os
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
 
 # =============================================
-# نمایش صفحه اصلی (index.html)
+# نمایش صفحه اصلی (index.html) - با بررسی چند مسیر
 # =============================================
 @app.get("/")
 async def root():
-    # خواندن فایل index.html از پوشه frontend
-    try:
-        with open("frontend/index.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
-        return HTMLResponse(content=html_content)
-    except FileNotFoundError:
-        return {"پیام": "فایل index.html پیدا نشد"}
+    # تلاش برای پیدا کردن فایل index.html در مسیرهای مختلف
+    paths_to_try = [
+        "frontend/index.html",
+        "index.html",
+        "templates/index.html",
+        "static/index.html",
+        os.path.join(os.path.dirname(__file__), "frontend", "index.html"),
+        os.path.join(os.path.dirname(__file__), "index.html"),
+        "./frontend/index.html",
+        "../frontend/index.html",
+        "/app/frontend/index.html",  # مسیر در Render
+    ]
+    
+    for path in paths_to_try:
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    html_content = f.read()
+                return HTMLResponse(content=html_content)
+        except:
+            continue
+    
+    # اگر هیچکدام پیدا نشد
+    return {"پیام": f"فایل index.html پیدا نشد. مسیرهای بررسی شده: {paths_to_try}"}
 
 # =============================================
 # مدل‌های Pydantic برای درخواست/پاسخ
