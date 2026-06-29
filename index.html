@@ -1035,22 +1035,25 @@
         }
 
         // =============================================
-        // افزودن فیلم از TMDB - با api_key
+        // افزودن فیلم از TMDB - با بررسی کامل خطاها
         // =============================================
         async function addMovieFromTMDB(tmdbId) {
             showToast('⏳ در حال دریافت اطلاعات فیلم...');
 
             try {
+                // دریافت اطلاعات اصلی فیلم
                 const movieResponse = await fetch(
                     `${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=fa-IR`
                 );
 
                 if (!movieResponse.ok) {
-                    throw new Error('خطا در دریافت اطلاعات فیلم');
+                    throw new Error(`خطا در دریافت اطلاعات فیلم: ${movieResponse.status}`);
                 }
 
                 const movieData = await movieResponse.json();
+                console.log('📥 اطلاعات فیلم از TMDB:', movieData);
 
+                // دریافت ویدیوهای فیلم
                 const videoResponse = await fetch(
                     `${TMDB_BASE_URL}/movie/${tmdbId}/videos?api_key=${TMDB_API_KEY}`
                 );
@@ -1064,17 +1067,21 @@
                     }
                 }
 
+                // ساخت آبجکت فیلم
                 const newMovie = {
                     name: movieData.title,
                     genre: movieData.genres?.[0]?.name || 'نامشخص',
                     rating: movieData.vote_average || 0,
                     year: movieData.release_date ? movieData.release_date.split('-')[0] : 'نامشخص',
-                    director: 'نامشخص',
+                    director: movieData.director || 'نامشخص',
                     poster: movieData.poster_path ? TMDB_IMAGE_URL + movieData.poster_path : '',
                     video: videoUrl,
                     desc: movieData.overview || 'توضیحاتی برای این فیلم ثبت نشده است.'
                 };
 
+                console.log('📤 ارسال به سرور:', newMovie);
+
+                // ارسال به سرور
                 const response = await fetch('https://cinemachi-final.onrender.com/add_movie', {
                     method: 'POST',
                     headers: {
@@ -1083,8 +1090,12 @@
                     body: JSON.stringify(newMovie)
                 });
 
+                // بررسی پاسخ
+                const responseText = await response.text();
+                console.log('📨 پاسخ سرور:', response.status, responseText);
+
                 if (!response.ok) {
-                    throw new Error('خطا در افزودن فیلم به سرور');
+                    throw new Error(`خطا در افزودن فیلم: ${response.status} - ${responseText}`);
                 }
 
                 showToast(`🎬 فیلم "${movieData.title}" با موفقیت اضافه شد!`);
@@ -1094,7 +1105,7 @@
 
             } catch (error) {
                 console.error('❌ خطا:', error);
-                showToast('❌ خطا در افزودن فیلم');
+                showToast(`❌ خطا: ${error.message}`);
             }
         }
 
