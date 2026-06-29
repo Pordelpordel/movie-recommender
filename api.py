@@ -1,31 +1,58 @@
 from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import timedelta
 from database import get_db, MovieDB
-from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
 import os
 
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
 
 # =============================================
+# تنظیمات CORS - برای ارتباط با فرانت‌اند
+# =============================================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# =============================================
 # نمایش صفحه اصلی (index.html)
 # =============================================
 @app.get("/")
 async def root():
-    try:
-        with open("frontend/index.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
-        return HTMLResponse(content=html_content)
-    except FileNotFoundError:
-        return {"پیام": "فایل index.html در مسیر frontend/index.html پیدا نشد"}
+    # بررسی مسیرهای مختلف
+    possible_paths = [
+        "frontend/index.html",
+        "index.html",
+        "./frontend/index.html",
+        "../frontend/index.html",
+        os.path.join(os.path.dirname(__file__), "frontend", "index.html"),
+        os.path.join(os.path.dirname(__file__), "index.html"),
+    ]
+    
+    for path in possible_paths:
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    html_content = f.read()
+                return HTMLResponse(content=html_content)
+        except:
+            continue
+    
+    return JSONResponse(
+        status_code=404,
+        content={"پیام": "فایل index.html پیدا نشد. مسیرهای بررسی شده: " + ", ".join(possible_paths)}
+    )
 
 # =============================================
-# مدل‌های Pydantic برای درخواست/پاسخ
+# مدل‌های Pydantic
 # =============================================
 class MovieCreate(BaseModel):
     name: str
@@ -86,24 +113,27 @@ def get_genres(db: Session = Depends(get_db)):
 
 @app.post("/add_movie")
 def add_movie(movie: MovieCreate, db: Session = Depends(get_db)):
-    existing_movie = db.query(MovieDB).filter(MovieDB.name == movie.name).first()
-    if existing_movie:
-        return {"error": "فیلمی با این نام قبلاً وجود دارد"}
-    
-    db_movie = MovieDB(
-        name=movie.name,
-        genre=movie.genre,
-        rating=movie.rating,
-        year=movie.year,
-        director=movie.director,
-        poster=movie.poster,
-        video=movie.video,
-        desc=movie.desc
-    )
-    db.add(db_movie)
-    db.commit()
-    db.refresh(db_movie)
-    return {"message": "فیلم با موفقیت اضافه شد", "movie": db_movie}
+    try:
+        existing_movie = db.query(MovieDB).filter(MovieDB.name == movie.name).first()
+        if existing_movie:
+            return {"error": "فیلمی با این نام قبلاً وجود دارد"}
+        
+        db_movie = MovieDB(
+            name=movie.name,
+            genre=movie.genre,
+            rating=movie.rating,
+            year=movie.year,
+            director=movie.director,
+            poster=movie.poster,
+            video=movie.video,
+            desc=movie.desc
+        )
+        db.add(db_movie)
+        db.commit()
+        db.refresh(db_movie)
+        return {"message": "فیلم با موفقیت اضافه شد", "movie": db_movie}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.delete("/delete_movie/{movie_id}")
 def delete_movie(movie_id: int, db: Session = Depends(get_db)):
