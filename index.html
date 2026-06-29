@@ -1034,7 +1034,94 @@
             }
         }
 
-     addMovieFromTMDB
+     // =============================================
+// افزودن فیلم از TMDB - نسخه نهایی
+// =============================================
+async function addMovieFromTMDB(tmdbId) {
+    showToast('⏳ در حال دریافت اطلاعات فیلم...');
+
+    try {
+        // ۱. دریافت اطلاعات اصلی فیلم
+        const movieResponse = await fetch(
+            `${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=fa-IR`
+        );
+
+        if (!movieResponse.ok) {
+            throw new Error(`خطا در دریافت اطلاعات فیلم: ${movieResponse.status}`);
+        }
+
+        const movieData = await movieResponse.json();
+
+        // ۲. دریافت اطلاعات کارگردان
+        let director = 'نامشخص';
+        try {
+            const creditsResponse = await fetch(
+                `${TMDB_BASE_URL}/movie/${tmdbId}/credits?api_key=${TMDB_API_KEY}`
+            );
+            if (creditsResponse.ok) {
+                const creditsData = await creditsResponse.json();
+                const directorInfo = creditsData.crew?.find(person => person.job === 'Director');
+                if (directorInfo) {
+                    director = directorInfo.name;
+                }
+            }
+        } catch (e) {
+            console.log('⚠️ کارگردان پیدا نشد');
+        }
+
+        // ۳. دریافت تریلر
+        let videoUrl = '';
+        try {
+            const videoResponse = await fetch(
+                `${TMDB_BASE_URL}/movie/${tmdbId}/videos?api_key=${TMDB_API_KEY}`
+            );
+            if (videoResponse.ok) {
+                const videoData = await videoResponse.json();
+                const trailer = videoData.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                if (trailer) {
+                    videoUrl = `https://www.youtube.com/embed/${trailer.key}`;
+                }
+            }
+        } catch (e) {
+            console.log('⚠️ تریلر پیدا نشد');
+        }
+
+        // ۴. ساخت آبجکت فیلم
+        const newMovie = {
+            name: movieData.title,
+            genre: movieData.genres?.[0]?.name || 'نامشخص',
+            rating: movieData.vote_average || 0,
+            year: movieData.release_date ? movieData.release_date.split('-')[0] : 'نامشخص',
+            director: director,
+            poster: movieData.poster_path ? TMDB_IMAGE_URL + movieData.poster_path : '',
+            video: videoUrl,
+            desc: movieData.overview || 'توضیحاتی برای این فیلم ثبت نشده است.'
+        };
+
+        // ۵. ارسال به سرور
+        const response = await fetch('https://cinemachi-final.onrender.com/add_movie', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newMovie)
+        });
+
+        const responseText = await response.text();
+        console.log('📨 پاسخ سرور:', response.status, responseText);
+
+        if (!response.ok) {
+            throw new Error(`خطا در افزودن فیلم: ${response.status}`);
+        }
+
+        showToast(`🎬 فیلم "${movieData.title}" با موفقیت اضافه شد!`);
+        document.getElementById('tmdbResults').innerHTML = '';
+        document.getElementById('searchTmdbInput').value = '';
+        await loadMovies();
+
+    } catch (error) {
+        console.error('❌ خطا:', error);
+        showToast(`❌ خطا: ${error.message}`);
+    }
+}
 
         // =============================================
         // افزودن فیلم دستی
