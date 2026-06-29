@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -9,10 +8,10 @@ from database import get_db, MovieDB
 from sqlalchemy import func
 import os
 
-app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
+app = FastAPI(title="سیستم توصیه‌گر فیلم")
 
 # =============================================
-# تنظیمات CORS - برای ارتباط با فرانت‌اند
+# تنظیمات CORS
 # =============================================
 app.add_middleware(
     CORSMiddleware,
@@ -27,29 +26,13 @@ app.add_middleware(
 # =============================================
 @app.get("/")
 async def root():
-    # بررسی مسیرهای مختلف
-    possible_paths = [
-        "frontend/index.html",
-        "index.html",
-        "./frontend/index.html",
-        "../frontend/index.html",
-        os.path.join(os.path.dirname(__file__), "frontend", "index.html"),
-        os.path.join(os.path.dirname(__file__), "index.html"),
-    ]
-    
-    for path in possible_paths:
-        try:
-            if os.path.exists(path):
-                with open(path, "r", encoding="utf-8") as f:
-                    html_content = f.read()
-                return HTMLResponse(content=html_content)
-        except:
-            continue
-    
-    return JSONResponse(
-        status_code=404,
-        content={"پیام": "فایل index.html پیدا نشد. مسیرهای بررسی شده: " + ", ".join(possible_paths)}
-    )
+    try:
+        # فایل را از کنار api.py می‌خواند
+        with open("index.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content)
+    except FileNotFoundError:
+        return {"پیام": "فایل index.html در کنار api.py پیدا نشد"}
 
 # =============================================
 # مدل‌های Pydantic
@@ -84,125 +67,39 @@ class GenreRequest(BaseModel):
 
 @app.get("/movies", response_model=List[MovieResponse])
 def get_all_movies(db: Session = Depends(get_db)):
-    movies = db.query(MovieDB).all()
-    return movies
-
-@app.get("/movie/{name}")
-def get_movie_by_name(name: str, db: Session = Depends(get_db)):
-    movie = db.query(MovieDB).filter(MovieDB.name == name).first()
-    if not movie:
-        return {"error": "فیلمی با این نام یافت نشد"}
-    return movie
-
-@app.post("/recommend")
-def recommend_film(request: GenreRequest, db: Session = Depends(get_db)):
-    movies = db.query(MovieDB).filter(MovieDB.genre == request.genre).all()
-    if not movies:
-        return {"پیشنهادها": [], "message": "فیلمی با این ژانر یافت نشد"}
-    return {"پیشنهادها": movies}
-
-@app.get("/recommend/rating/{min_rating}")
-def recommend_by_rating(min_rating: float, db: Session = Depends(get_db)):
-    movies = db.query(MovieDB).filter(MovieDB.rating >= min_rating).all()
-    return {"count": len(movies), "پیشنهادها": movies}
-
-@app.get("/genres")
-def get_genres(db: Session = Depends(get_db)):
-    genres = db.query(MovieDB.genre).distinct().all()
-    return {"genres": [g[0] for g in genres]}
+    return db.query(MovieDB).all()
 
 @app.post("/add_movie")
 def add_movie(movie: MovieCreate, db: Session = Depends(get_db)):
-    try:
-        existing_movie = db.query(MovieDB).filter(MovieDB.name == movie.name).first()
-        if existing_movie:
-            return {"error": "فیلمی با این نام قبلاً وجود دارد"}
-        
-        db_movie = MovieDB(
-            name=movie.name,
-            genre=movie.genre,
-            rating=movie.rating,
-            year=movie.year,
-            director=movie.director,
-            poster=movie.poster,
-            video=movie.video,
-            desc=movie.desc
-        )
-        db.add(db_movie)
-        db.commit()
-        db.refresh(db_movie)
-        return {"message": "فیلم با موفقیت اضافه شد", "movie": db_movie}
-    except Exception as e:
-        return {"error": str(e)}
-
-@app.delete("/delete_movie/{movie_id}")
-def delete_movie(movie_id: int, db: Session = Depends(get_db)):
-    movie = db.query(MovieDB).filter(MovieDB.id == movie_id).first()
-    if not movie:
-        return {"error": "فیلمی با این شناسه یافت نشد"}
+    existing = db.query(MovieDB).filter(MovieDB.name == movie.name).first()
+    if existing:
+        return {"error": "فیلمی با این نام قبلاً وجود دارد"}
     
-    db.delete(movie)
-    db.commit()
-    return {"message": f"فیلم '{movie.name}' با موفقیت حذف شد"}
-
-@app.put("/update_movie/{movie_id}")
-def update_movie(movie_id: int, movie: MovieCreate, db: Session = Depends(get_db)):
-    db_movie = db.query(MovieDB).filter(MovieDB.id == movie_id).first()
-    if not db_movie:
-        return {"error": "فیلمی با این شناسه یافت نشد"}
-    
-    db_movie.name = movie.name
-    db_movie.genre = movie.genre
-    db_movie.rating = movie.rating
-    db_movie.year = movie.year
-    db_movie.director = movie.director
-    db_movie.poster = movie.poster
-    db_movie.video = movie.video
-    db_movie.desc = movie.desc
-    
+    db_movie = MovieDB(
+        name=movie.name,
+        genre=movie.genre,
+        rating=movie.rating,
+        year=movie.year,
+        director=movie.director,
+        poster=movie.poster,
+        video=movie.video,
+        desc=movie.desc
+    )
+    db.add(db_movie)
     db.commit()
     db.refresh(db_movie)
-    return {"message": "فیلم با موفقیت به‌روزرسانی شد", "movie": db_movie}
+    return {"message": "فیلم با موفقیت اضافه شد", "movie": db_movie}
 
-@app.get("/search/")
-def search_movies(
-    name: str = None,
-    genre: str = None,
-    min_rating: float = None,
-    max_rating: float = None,
-    db: Session = Depends(get_db)
-):
-    query = db.query(MovieDB)
-    
-    if name:
-        query = query.filter(MovieDB.name.contains(name))
-    if genre:
-        query = query.filter(MovieDB.genre == genre)
-    if min_rating:
-        query = query.filter(MovieDB.rating >= min_rating)
-    if max_rating:
-        query = query.filter(MovieDB.rating <= max_rating)
-    
-    results = query.all()
-    return {"count": len(results), "results": results}
+# =============================================
+# سایر اندپوینت‌ها
+# =============================================
+@app.post("/recommend")
+def recommend_film(request: GenreRequest, db: Session = Depends(get_db)):
+    movies = db.query(MovieDB).filter(MovieDB.genre == request.genre).all()
+    return {"پیشنهادها": movies}
 
 @app.get("/stats")
 def get_statistics(db: Session = Depends(get_db)):
-    total_movies = db.query(MovieDB).count()
-    avg_rating = db.query(func.avg(MovieDB.rating)).scalar()
-    max_rating = db.query(func.max(MovieDB.rating)).scalar()
-    min_rating = db.query(func.min(MovieDB.rating)).scalar()
-    genres_count = db.query(MovieDB.genre, func.count(MovieDB.genre)).group_by(MovieDB.genre).all()
-    
-    return {
-        "total_movies": total_movies,
-        "average_rating": round(avg_rating, 2) if avg_rating else 0,
-        "highest_rating": max_rating,
-        "lowest_rating": min_rating,
-        "genres_distribution": [{"genre": g[0], "count": g[1]} for g in genres_count]
-    }
-
-@app.get("/top/{count}")
-def get_top_movies(count: int = 3, db: Session = Depends(get_db)):
-    movies = db.query(MovieDB).order_by(MovieDB.rating.desc()).limit(count).all()
-    return {"top": movies}
+    total = db.query(MovieDB).count()
+    avg = db.query(func.avg(MovieDB.rating)).scalar()
+    return {"total_movies": total, "average_rating": round(avg, 2) if avg else 0}
