@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -6,28 +8,53 @@ from datetime import timedelta
 from database import get_db, MovieDB
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import func
+import os
 
 app = FastAPI(title="سیستم توصیه‌گر فیلم", description="API برای پیشنهاد فیلم بر اساس ژانر و امتیاز")
 
+# =============================================
+# نمایش صفحه اصلی (index.html)
+# =============================================
+@app.get("/")
+async def root():
+    # خواندن فایل index.html از پوشه frontend
+    try:
+        with open("frontend/index.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content)
+    except FileNotFoundError:
+        return {"پیام": "فایل index.html پیدا نشد"}
+
+# =============================================
 # مدل‌های Pydantic برای درخواست/پاسخ
+# =============================================
 class MovieCreate(BaseModel):
     name: str
     genre: str
     rating: float
+    year: Optional[str] = None
+    director: Optional[str] = None
+    poster: Optional[str] = None
+    video: Optional[str] = None
+    desc: Optional[str] = None
 
 class MovieResponse(BaseModel):
     id: int
     name: str
     genre: str
     rating: float
+    year: Optional[str] = None
+    director: Optional[str] = None
+    poster: Optional[str] = None
+    video: Optional[str] = None
+    desc: Optional[str] = None
 
 class GenreRequest(BaseModel):
     genre: str
 
+# =============================================
 # اندپوینت‌ها
-@app.get("/")
-def root():
-    return {"پیام": "به سیستم توصیه‌گر فیلم خوش آمدید"}
+# =============================================
 
 @app.get("/movies", response_model=List[MovieResponse])
 def get_all_movies(db: Session = Depends(get_db)):
@@ -64,7 +91,16 @@ def add_movie(movie: MovieCreate, db: Session = Depends(get_db)):
     if existing_movie:
         return {"error": "فیلمی با این نام قبلاً وجود دارد"}
     
-    db_movie = MovieDB(name=movie.name, genre=movie.genre, rating=movie.rating)
+    db_movie = MovieDB(
+        name=movie.name,
+        genre=movie.genre,
+        rating=movie.rating,
+        year=movie.year,
+        director=movie.director,
+        poster=movie.poster,
+        video=movie.video,
+        desc=movie.desc
+    )
     db.add(db_movie)
     db.commit()
     db.refresh(db_movie)
@@ -89,6 +125,11 @@ def update_movie(movie_id: int, movie: MovieCreate, db: Session = Depends(get_db
     db_movie.name = movie.name
     db_movie.genre = movie.genre
     db_movie.rating = movie.rating
+    db_movie.year = movie.year
+    db_movie.director = movie.director
+    db_movie.poster = movie.poster
+    db_movie.video = movie.video
+    db_movie.desc = movie.desc
     
     db.commit()
     db.refresh(db_movie)
@@ -136,50 +177,3 @@ def get_statistics(db: Session = Depends(get_db)):
 def get_top_movies(count: int = 3, db: Session = Depends(get_db)):
     movies = db.query(MovieDB).order_by(MovieDB.rating.desc()).limit(count).all()
     return {"top": movies}
-# ========== بخش احراز هویت با گوگل ==========
-from authlib.integrations.starlette_client import OAuth
-from starlette.config import Config
-from starlette.middleware.sessions import SessionMiddleware
-from fastapi import Request
-import secrets
-
-# تنظیمات نشست (Session)
-app.add_middleware(SessionMiddleware, secret_key=secrets.token_urlsafe(32))
-
-# تنظیمات OAuth
-config_data = {
-    'GOOGLE_CLIENT_ID': 'YOUR_GOOGLE_CLIENT_ID',
-    'GOOGLE_CLIENT_SECRET': 'YOUR_GOOGLE_CLIENT_SECRET',
-}
-config = Config(environ=config_data)
-oauth = OAuth(config)
-oauth.register(
-    name='google',
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'},
-)
-
-@app.get("/login/google")
-async def login_google(request: Request):
-    redirect_uri = "https://movie-recommender-final-ic8x.onrender.com/auth/google"
-    return await oauth.google.authorize_redirect(request, redirect_uri)
-
-@app.get("/auth/google")
-async def auth_google(request: Request):
-    token = await oauth.google.authorize_access_token(request)
-    user = token.get('userinfo')
-    if user:
-        request.session['user'] = dict(user)
-    return {"user": user}
-
-@app.get("/logout")
-async def logout(request: Request):
-    request.session.pop('user', None)
-    return {"message": "خارج شدید"}
-
-@app.get("/me")
-async def get_current_user(request: Request):
-    user = request.session.get('user')
-    if not user:
-        return {"error": "وارد نشده‌اید"}
-    return {"user": user}
