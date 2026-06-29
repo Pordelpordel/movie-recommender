@@ -1034,8 +1034,8 @@
             }
         }
 
-     // =============================================
-// افزودن فیلم از TMDB - نسخه نهایی
+  // =============================================
+// افزودن فیلم از TMDB - دریافت کارگردان + تریلر
 // =============================================
 async function addMovieFromTMDB(tmdbId) {
     showToast('⏳ در حال دریافت اطلاعات فیلم...');
@@ -1098,6 +1098,8 @@ async function addMovieFromTMDB(tmdbId) {
             desc: movieData.overview || 'توضیحاتی برای این فیلم ثبت نشده است.'
         };
 
+        console.log('📤 ارسال به سرور:', newMovie);
+
         // ۵. ارسال به سرور
         const response = await fetch('https://cinemachi-final.onrender.com/add_movie', {
             method: 'POST',
@@ -1122,7 +1124,6 @@ async function addMovieFromTMDB(tmdbId) {
         showToast(`❌ خطا: ${error.message}`);
     }
 }
-
         // =============================================
         // افزودن فیلم دستی
         // =============================================
