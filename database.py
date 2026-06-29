@@ -1,27 +1,15 @@
-from sqlalchemy import create_engine, Column, String, Float, Integer
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-
-DATABASE_URL = "sqlite:///./database.db"
-
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+from sqlalchemy import Column, Integer, String, Float
+from database import Base
 
 class MovieDB(Base):
     __tablename__ = "movies"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    genre = Column(String, index=True)
-    rating = Column(Float)
-
-# ایجاد جدول‌ها (این خط باید حتماً باشد)
-Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    name = Column(String, nullable=False)
+    genre = Column(String, nullable=False)
+    rating = Column(Float, default=0)
+    year = Column(String, nullable=True)
+    director = Column(String, nullable=True)
+    poster = Column(String, nullable=True)
+    video = Column(String, nullable=True)
+    desc = Column(String, nullable=True)
