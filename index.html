@@ -923,29 +923,30 @@
         // نمایش فیلم‌ها
         // =============================================
         function displayMovies(moviesList, containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            if (!moviesList || moviesList.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:50px; color:#888; font-size:1.2rem;">😔 هیچ فیلمی پیدا نشد</div>';
-                return;
-            }
-            container.innerHTML = moviesList.map(m => {
-                const userRating = userRatings[`${currentUser || 'guest'}_${m.id}`]?.rating;
-                const isFav = isFavorite(m.id);
-                const posterUrl = m.poster && m.poster.startsWith('http') ? m.poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
-                return `
-                    <div class="movie-card" onclick="openMovieDetail(${m.id})">
-                        ${isFav ? '<div class="favorite-badge">❤️</div>' : ''}
-                        <img class="movie-poster" src="${posterUrl}" 
-                             alt="${m.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'">
-                        <h3>${m.name}</h3>
-                        <div class="genre-tag">🎭 ${m.genre}</div>
-                        <div class="rating">${getRatingEmoji(m.rating)} ${m.rating}/10</div>
-                        ${userRating ? `<div class="user-rating-badge">⭐ شما: ${userRating}/10</div>` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (!moviesList || moviesList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:50px; color:#888; font-size:1.2rem;">😔 هیچ فیلمی پیدا نشد</div>';
+        return;
+    }
+    
+    container.innerHTML = moviesList.map(m => {
+        const userRating = userRatings[`${currentUser || 'guest'}_${m.id}`]?.rating;
+        const isFav = isFavorite(m.id);
+        const posterUrl = m.poster && m.poster.startsWith('http') ? m.poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
+        return `
+            <div class="movie-card" onclick="openMovieDetail(${m.id})">
+                ${isFav ? '<div class="favorite-badge">❤️</div>' : ''}
+                <img class="movie-poster" src="${posterUrl}" 
+                     alt="${m.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'">
+                <h3>${m.name}</h3>
+                <div class="genre-tag">🎭 ${m.genre}</div>
+                <div class="rating">${getRatingEmoji(m.rating)} ${m.rating}/10</div>
+                ${userRating ? `<div class="user-rating-badge">⭐ شما: ${userRating}/10</div>` : ''}
+            </div>
+        `;
+    }).join('');
+}
 
         // =============================================
         // مدیریت تب‌ها
@@ -1273,16 +1274,28 @@ async function addMovieManually() {
         }
 
        // =============================================
-// تابع پخش ویدیو در صفحه جزئیات فیلم
+// باز کردن صفحه جزئیات فیلم
 // =============================================
 function openMovieDetail(movieId) {
+    console.log('🔍 کلیک روی فیلم با ID:', movieId);
+    console.log('📋 لیست فیلم‌ها:', movies);
+    
+    // پیدا کردن فیلم با شناسه
     const movie = movies.find(m => m.id === movieId);
-    if (!movie) { showToast('❌ فیلم پیدا نشد'); return; }
+    
+    if (!movie) {
+        console.error('❌ فیلم با ID', movieId, 'پیدا نشد!');
+        showToast('❌ فیلم پیدا نشد');
+        return;
+    }
+    
+    console.log('✅ فیلم پیدا شد:', movie);
     currentDetailMovie = movie;
     
+    // تنظیم عنوان
     document.getElementById('detailTitle').textContent = `🎬 ${movie.name}`;
     
-    // نمایش پوستر
+    // تنظیم پوستر
     const posterEl = document.getElementById('detailPoster');
     if (movie.poster && movie.poster.startsWith('http')) {
         posterEl.src = movie.poster;
@@ -1290,15 +1303,14 @@ function openMovieDetail(movieId) {
         posterEl.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
     }
     
-    document.getElementById('detailGenre').textContent = movie.genre;
+    // تنظیم اطلاعات
+    document.getElementById('detailGenre').textContent = movie.genre || 'نامشخص';
     document.getElementById('detailYear').textContent = movie.year || 'نامشخص';
     document.getElementById('detailDirector').textContent = movie.director || 'نامشخص';
     document.getElementById('detailRating').textContent = `${getRatingEmoji(movie.rating)} ${movie.rating}/10`;
     document.getElementById('detailDesc').textContent = movie.desc || 'توضیحاتی برای این فیلم ثبت نشده است.';
-
-    // =============================================
-    // پخش ویدیو
-    // =============================================
+    
+    // تنظیم ویدیو
     const video = document.getElementById('detailVideo');
     const source = document.getElementById('videoSource');
     const errorDiv = document.getElementById('videoError');
@@ -1306,7 +1318,6 @@ function openMovieDetail(movieId) {
     if (movie.video && movie.video.startsWith('http')) {
         let videoUrl = movie.video;
         
-        // اگر لینک YouTube باشد، تبدیل به embed
         if (videoUrl.includes('youtube.com/watch?v=')) {
             const videoId = videoUrl.split('v=')[1]?.split('&')[0];
             if (videoId) {
@@ -1314,7 +1325,6 @@ function openMovieDetail(movieId) {
             }
         }
         
-        // اگر لینک YouTube Shorts باشد، تبدیل به embed
         if (videoUrl.includes('youtu.be/')) {
             const videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0];
             if (videoId) {
@@ -1333,8 +1343,8 @@ function openMovieDetail(movieId) {
         source.src = '';
         video.load();
     }
-
-    // دکمه علاقه‌مندی
+    
+    // تنظیم دکمه علاقه‌مندی
     const favBtn = document.getElementById('detailFavBtn');
     if (isFavorite(movie.id)) {
         favBtn.textContent = '✅ در لیست علاقه‌مندی‌ها';
@@ -1343,14 +1353,23 @@ function openMovieDetail(movieId) {
         favBtn.textContent = '❤️ افزودن به علاقه‌مندی‌ها';
         favBtn.className = '';
     }
-
+    
+    // نمایش امتیاز کاربر
     const userRating = userRatings[`${currentUser || 'guest'}_${movie.id}`]?.rating;
     document.getElementById('userRatingDisplay').textContent = userRating ? `⭐ ${userRating}/10` : 'ثبت نشده';
-
+    
+    // نمایش نظرات
     updateDetailReviews();
-
-    document.getElementById('movieDetailPage').classList.add('active');
-    document.body.style.overflow = 'hidden';
+    
+    // نمایش صفحه جزئیات
+    const detailPage = document.getElementById('movieDetailPage');
+    if (detailPage) {
+        detailPage.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        console.log('✅ صفحه جزئیات نمایش داده شد');
+    } else {
+        console.error('❌ عنصر movieDetailPage پیدا نشد!');
+    }
 }
         // =============================================
         // امتیاز و نظر
