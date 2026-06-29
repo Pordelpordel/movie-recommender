@@ -203,6 +203,7 @@
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: #1a1a2e;
@@ -210,6 +211,7 @@
             font-size: 1.2rem;
             border-radius: 20px;
         }
+        .video-error .icon { font-size: 4rem; margin-bottom: 10px; }
         .detail-actions {
             display: flex;
             gap: 12px;
@@ -511,6 +513,16 @@
             from { transform: translateX(100px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+
+        /* Fallback styles for missing content */
+        .no-poster {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #666;
+        }
         
         @media (max-width: 768px) {
             .movies-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
@@ -672,7 +684,7 @@
                 </div>
                 <div class="detail-content">
                     <div class="detail-poster">
-                        <img id="detailPoster" src="" alt="پوستر فیلم">
+                        <img id="detailPoster" src="" alt="پوستر فیلم" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'">
                     </div>
                     <div class="detail-info">
                         <p><strong>🎭 ژانر:</strong> <span id="detailGenre"></span></p>
@@ -684,7 +696,10 @@
                             <video id="detailVideo" controls controlsList="nodownload" style="width:100%; height:100%;">
                                 <source id="videoSource" src="" type="video/mp4">
                             </video>
-                            <div id="videoError" class="video-error" style="display:none;">🎬 ویدیو در دسترس نیست</div>
+                            <div id="videoError" class="video-error" style="display:none;">
+                                <div class="icon">🎬</div>
+                                <div>ویدیو در دسترس نیست</div>
+                            </div>
                         </div>
                         <p><strong>📝 خلاصه:</strong> <span id="detailDesc"></span></p>
                         <div class="detail-actions">
@@ -874,11 +889,12 @@
             container.innerHTML = moviesList.map(m => {
                 const userRating = userRatings[`${currentUser || 'guest'}_${m.id}`]?.rating;
                 const isFav = isFavorite(m.id);
+                const posterUrl = m.poster && m.poster.startsWith('http') ? m.poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
                 return `
                     <div class="movie-card" onclick="openMovieDetail(${m.id})">
                         ${isFav ? '<div class="favorite-badge">❤️</div>' : ''}
-                        <img class="movie-poster" src="${m.poster || 'https://via.placeholder.com/300x450?text=No+Image'}" 
-                             alt="${m.name}" onerror="this.src='https://via.placeholder.com/300x450?text=🎬+No+Image'">
+                        <img class="movie-poster" src="${posterUrl}" 
+                             alt="${m.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'">
                         <h3>${m.name}</h3>
                         <div class="genre-tag">🎭 ${m.genre}</div>
                         <div class="rating">${getRatingEmoji(m.rating)} ${m.rating}/10</div>
@@ -955,7 +971,7 @@
             let results = movies;
             if (name) results = results.filter(m => m.name.includes(name));
             if (genre) results = results.filter(m => m.genre === genre);
-            if (rating) results = results.filter(m => m.rating >= rating);
+            if (!isNaN(rating)) results = results.filter(m => m.rating >= rating);
             displayMovies(results, 'searchResults');
         }
 
@@ -1029,7 +1045,7 @@
             const director = document.getElementById('newDirector').value.trim() || 'کاربر';
 
             if (!name) { showToast('❌ لطفاً نام فیلم را وارد کنید'); return; }
-            if (!rating || rating < 0 || rating > 10) { showToast('❌ امتیاز باید بین ۰ تا ۱۰ باشد'); return; }
+            if (isNaN(rating) || rating < 0 || rating > 10) { showToast('❌ امتیاز باید بین ۰ تا ۱۰ باشد'); return; }
 
             const newMovie = {
                 name: name,
@@ -1037,7 +1053,7 @@
                 rating: rating,
                 year: year,
                 director: director,
-                poster: poster || 'https://via.placeholder.com/300x450?text=🎬+New+Movie',
+                poster: poster || '',
                 video: video || '',
                 desc: `فیلم "${name}" توسط کاربر به سینماچی اضافه شد. ژانر: ${genre}، امتیاز: ${rating}`
             };
@@ -1092,7 +1108,14 @@
             currentDetailMovie = movie;
             
             document.getElementById('detailTitle').textContent = `🎬 ${movie.name}`;
-            document.getElementById('detailPoster').src = movie.poster || 'https://via.placeholder.com/300x450?text=No+Image';
+            
+            const posterEl = document.getElementById('detailPoster');
+            if (movie.poster && movie.poster.startsWith('http')) {
+                posterEl.src = movie.poster;
+            } else {
+                posterEl.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
+            }
+            
             document.getElementById('detailGenre').textContent = movie.genre;
             document.getElementById('detailYear').textContent = movie.year || 'نامشخص';
             document.getElementById('detailDirector').textContent = movie.director || 'نامشخص';
@@ -1102,7 +1125,8 @@
             const video = document.getElementById('detailVideo');
             const source = document.getElementById('videoSource');
             const errorDiv = document.getElementById('videoError');
-            if (movie.video) {
+            
+            if (movie.video && movie.video.startsWith('http')) {
                 source.src = movie.video;
                 video.load();
                 video.play().catch(() => {
@@ -1387,10 +1411,11 @@
                 
                 if (data && data.length > 0) {
                     localStorage.setItem('cinemachi_movies', JSON.stringify(data));
+                    movies = data;
+                    displayMovies(movies, 'moviesList');
+                    const countEl = document.getElementById('movieCount');
+                    if (countEl) countEl.textContent = movies.length;
                     showToast(`✅ ${data.length} فیلم از سرور دریافت شد!`);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
                 } else {
                     showToast('⚠️ سرور فیلمی برنگرداند! دیتابیس خالی است.');
                 }
@@ -1406,10 +1431,8 @@
         (async function init() {
             checkAuth();
             
-            // ابتدا سعی کن از سرور بارگذاری کنی
             await loadMovies();
             
-            // اگر فیلم‌ها در localStorage نبود یا کمتر از ۵ فیلم بود، از سرور دریافت کن
             const cachedMovies = localStorage.getItem('cinemachi_movies');
             if (cachedMovies) {
                 try {
