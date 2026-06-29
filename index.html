@@ -1372,14 +1372,64 @@
         };
 
         // =============================================
-        // راه‌اندازی اولیه
+        // دریافت مجدد فیلم‌ها از سرور (Force Reload)
         // =============================================
-        checkAuth();
-        loadMovies();
-        displayFavorites();
+        async function forceReload() {
+            try {
+                showToast('⏳ در حال دریافت مجدد فیلم‌ها از سرور...');
+                const response = await fetch('https://cinemachi-final.onrender.com/movies');
+                
+                if (!response.ok) {
+                    throw new Error(`خطا: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    localStorage.setItem('cinemachi_movies', JSON.stringify(data));
+                    showToast(`✅ ${data.length} فیلم از سرور دریافت شد!`);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showToast('⚠️ سرور فیلمی برنگرداند! دیتابیس خالی است.');
+                }
+            } catch (error) {
+                console.error('❌ خطا در forceReload:', error);
+                showToast('❌ خطا در دریافت فیلم‌ها از سرور');
+            }
+        }
 
-        console.log('🎬 سینماچی با موفقیت بارگذاری شد!');
-        console.log(`📊 ${movies.length} فیلم در گنجینه موجود است.`);
+        // =============================================
+        // راه‌اندازی اولیه (فقط یک بار)
+        // =============================================
+        (async function init() {
+            checkAuth();
+            
+            // ابتدا سعی کن از سرور بارگذاری کنی
+            await loadMovies();
+            
+            // اگر فیلم‌ها در localStorage نبود یا کمتر از ۵ فیلم بود، از سرور دریافت کن
+            const cachedMovies = localStorage.getItem('cinemachi_movies');
+            if (cachedMovies) {
+                try {
+                    const parsed = JSON.parse(cachedMovies);
+                    if (parsed.length < 5) {
+                        console.log('⏳ تعداد فیلم‌ها کم است، دریافت مجدد از سرور...');
+                        await forceReload();
+                    }
+                } catch(e) {
+                    await forceReload();
+                }
+            } else {
+                await forceReload();
+            }
+            
+            displayFavorites();
+            
+            console.log('🎬 سینماچی با موفقیت بارگذاری شد!');
+            console.log(`📊 ${movies.length} فیلم در گنجینه موجود است.`);
+        })();
     </script>
 </body>
 </html>
