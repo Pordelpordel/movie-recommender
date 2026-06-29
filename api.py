@@ -11,14 +11,14 @@ import os
 app = FastAPI(title="سیستم توصیه‌گر فیلم")
 
 # =============================================
-# تنظیمات CORS
+# تنظیمات CORS - مهم برای ارتباط با فرانت‌اند
 # =============================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # اجازه به همه دامنه‌ها
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # اجازه به همه متدها (GET, POST, ...)
+    allow_headers=["*"],  # اجازه به همه هدرها
 )
 
 # =============================================
@@ -27,7 +27,6 @@ app.add_middleware(
 @app.get("/")
 async def root():
     try:
-        # فایل را از کنار api.py می‌خواند
         with open("index.html", "r", encoding="utf-8") as f:
             html_content = f.read()
         return HTMLResponse(content=html_content)
@@ -90,9 +89,6 @@ def add_movie(movie: MovieCreate, db: Session = Depends(get_db)):
     db.refresh(db_movie)
     return {"message": "فیلم با موفقیت اضافه شد", "movie": db_movie}
 
-# =============================================
-# سایر اندپوینت‌ها
-# =============================================
 @app.post("/recommend")
 def recommend_film(request: GenreRequest, db: Session = Depends(get_db)):
     movies = db.query(MovieDB).filter(MovieDB.genre == request.genre).all()
