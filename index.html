@@ -1634,99 +1634,177 @@ async function searchMovies() {
         // =============================================
         // جستجو در OMDb (بدون نیاز به پراکسی)
         // =============================================
-        async function searchMovies() {
-            const query = document.getElementById('searchInput').value.trim();
-            const container = document.getElementById('searchResults');
-            const statusEl = document.getElementById('searchStatus');
+        // =============================================
+// تنظیمات و داده‌ها - بخش اصلاح شده
+// =============================================
 
-            if (!query) {
-                container.innerHTML = '';
-                statusEl.textContent = '';
-                return;
-            }
+// استفاده از OMDb API (کاملاً رایگان و بدون نیاز به پراکسی)
+// برای دریافت کلید رایگان به http://www.omdbapi.com/apikey.aspx مراجعه کنید
+const OMDb_API_KEY = 'fa8e2d6b'; // کلید رایگان OMDb
+const OMDb_BASE_URL = 'https://www.omdbapi.com/';
+const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
-            if (searchMode === 'local') {
-                statusEl.textContent = '📚 جستجو در کتابخانه...';
-                const results = movies.filter(m => 
-                    m.name.toLowerCase().includes(query.toLowerCase()) || 
-                    (m.nameEn && m.nameEn.toLowerCase().includes(query.toLowerCase())) ||
-                    m.genre.includes(query) ||
-                    m.director.includes(query)
-                );
-                
-                if (results.length === 0) {
-                    container.innerHTML = `
-                        <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
-                            <div style="font-size:3rem; margin-bottom:10px;">📚</div>
-                            <h3 style="font-size:1.1rem;">فیلمی در کتابخانه پیدا نشد</h3>
-                            <p style="font-size:0.85rem; margin-top:5px;">از حالت جستجوی TMDB برای پیدا کردن فیلم‌های جدید استفاده کنید</p>
-                        </div>
-                    `;
-                    statusEl.textContent = `📚 ۰ نتیجه پیدا شد`;
-                } else {
-                    displayMovies(results, 'searchResults');
-                    statusEl.textContent = `📚 ${results.length} فیلم در کتابخانه پیدا شد`;
-                }
-                return;
-            }
+let movies = [];
+let favorites = [];
+let watchlist = [];
+let watched = [];
+let userRatings = {};
+let comments = {};
+let currentDetailMovie = null;
+let currentPage = 1;
+const ITEMS_PER_PAGE = 8;
+let searchMode = 'tmdb'; // 'tmdb' یا 'local'
 
-            // جستجو در OMDb (بدون CORS)
-            statusEl.textContent = '⏳ در حال جستجو در OMDb...';
-            container.innerHTML = '<div style="text-align:center; padding:25px; color:#888; grid-column:1/-1;">⏳ در حال جستجو...</div>';
+// =============================================
+// تابع جستجو - نسخه اصلاح شده کامل
+// =============================================
+async function searchMovies() {
+    const query = document.getElementById('searchInput').value.trim();
+    const container = document.getElementById('searchResults');
+    const statusEl = document.getElementById('searchStatus');
 
-            try {
-                const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&s=${encodeURIComponent(query)}&type=movie`;
-                console.log('درخواست به OMDb:', url);
-                
-                const response = await fetch(url);
-                const data = await response.json();
+    if (!query) {
+        container.innerHTML = '';
+        statusEl.textContent = '';
+        return;
+    }
 
-                if (data.Response === 'True' && data.Search && data.Search.length > 0) {
-                    const results = data.Search.slice(0, 12);
-                    container.innerHTML = results.map(m => `
-                        <div class="search-result-item" onclick="addFromOMDb('${m.imdbID}')">
-                            <img src="${m.Poster !== 'N/A' ? m.Poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.Title}" loading="lazy">
-                            <h4>${m.Title}</h4>
-                            <div class="year">📅 ${m.Year || 'نامشخص'}</div>
-                            ${m.Type ? `<div style="font-size:0.7rem; color:#888;">${m.Type === 'movie' ? '🎬 فیلم' : '📺 سریال'}</div>` : ''}
-                            <div style="display:flex; gap:4px; justify-content:center; margin-top:6px; flex-wrap:wrap;">
-                                <a href="https://www.imdb.com/title/${m.imdbID}/" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">🎬 IMDb</a>
-                                <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.Title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
-                            </div>
-                            <button class="btn-primary" style="margin-top:6px; padding:4px 16px; font-size:0.75rem; width:100%;" onclick="event.stopPropagation(); addFromOMDb('${m.imdbID}')">➕ افزودن به کتابخانه</button>
-                        </div>
-                    `).join('');
-                    statusEl.textContent = `🎬 ${results.length} نتیجه از OMDb پیدا شد`;
-                } else {
-                    container.innerHTML = `
-                        <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
-                            <div style="font-size:3rem; margin-bottom:10px;">😔</div>
-                            <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
-                            <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید</p>
-                            <p style="font-size:0.8rem; color:#999; margin-top:8px;">💡 نکته: نام فیلم را به انگلیسی وارد کنید (مثلاً: The Matrix)</p>
-                            <button class="btn-success" style="margin-top:10px;" onclick="searchMode='local'; searchMovies();">📚 جستجو در کتابخانه</button>
-                        </div>
-                    `;
-                    statusEl.textContent = '😔 نتیجه‌ای پیدا نشد';
-                }
-
-            } catch (error) {
-                console.error('OMDb error:', error);
-                container.innerHTML = `
-                    <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
-                        <div style="font-size:3rem; margin-bottom:10px;">❌</div>
-                        <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
-                        <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور OMDb. لطفاً دوباره تلاش کنید.</p>
-                        <p style="font-size:0.8rem; color:#999; margin-top:5px;">💡 ممکن است محدودیت روزانه API به پایان رسیده باشد.</p>
-                        <div style="display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;">
-                            <button class="btn-primary" onclick="searchMovies()">🔄 تلاش مجدد</button>
-                            <button class="btn-success" onclick="searchMode='local'; searchMovies();">📚 جستجو در کتابخانه</button>
-                        </div>
-                    </div>
-                `;
-                statusEl.textContent = '❌ خطا در ارتباط با سرور';
-            }
+    // ===== حالت جستجوی کتابخانه =====
+    if (searchMode === 'local') {
+        statusEl.textContent = '📚 جستجو در کتابخانه...';
+        const results = movies.filter(m => 
+            m.name.toLowerCase().includes(query.toLowerCase()) || 
+            (m.nameEn && m.nameEn.toLowerCase().includes(query.toLowerCase())) ||
+            m.genre.includes(query) ||
+            m.director.includes(query)
+        );
+        
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
+                    <div style="font-size:3rem; margin-bottom:10px;">📚</div>
+                    <h3 style="font-size:1.1rem;">فیلمی در کتابخانه پیدا نشد</h3>
+                    <p style="font-size:0.85rem; margin-top:5px;">از حالت جستجوی TMDB برای پیدا کردن فیلم‌های جدید استفاده کنید</p>
+                </div>
+            `;
+            statusEl.textContent = `📚 ۰ نتیجه پیدا شد`;
+        } else {
+            displayMovies(results, 'searchResults');
+            statusEl.textContent = `📚 ${results.length} فیلم در کتابخانه پیدا شد`;
         }
+        return;
+    }
+
+    // ===== جستجو در OMDb (بدون مشکل CORS) =====
+    statusEl.textContent = '⏳ در حال جستجو در پایگاه داده فیلم...';
+    container.innerHTML = '<div style="text-align:center; padding:25px; color:#888; grid-column:1/-1;">⏳ در حال جستجو...</div>';
+
+    try {
+        const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&s=${encodeURIComponent(query)}&type=movie`;
+        console.log('درخواست به OMDb:', url);
+        
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.Response === 'True' && data.Search && data.Search.length > 0) {
+            const results = data.Search.slice(0, 12);
+            container.innerHTML = results.map(m => `
+                <div class="search-result-item" onclick="addFromOMDb('${m.imdbID}')">
+                    <img src="${m.Poster !== 'N/A' ? m.Poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.Title}" loading="lazy">
+                    <h4>${m.Title}</h4>
+                    <div class="year">📅 ${m.Year || 'نامشخص'}</div>
+                    ${m.Type ? `<div style="font-size:0.7rem; color:#888;">${m.Type === 'movie' ? '🎬 فیلم' : '📺 سریال'}</div>` : ''}
+                    <div style="display:flex; gap:4px; justify-content:center; margin-top:6px; flex-wrap:wrap;">
+                        <a href="https://www.imdb.com/title/${m.imdbID}/" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">🎬 IMDb</a>
+                        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.Title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
+                    </div>
+                    <button class="btn-primary" style="margin-top:6px; padding:4px 16px; font-size:0.75rem; width:100%;" onclick="event.stopPropagation(); addFromOMDb('${m.imdbID}')">➕ افزودن به کتابخانه</button>
+                </div>
+            `).join('');
+            statusEl.textContent = `🎬 ${results.length} نتیجه پیدا شد`;
+        } else {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
+                    <div style="font-size:3rem; margin-bottom:10px;">😔</div>
+                    <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
+                    <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید</p>
+                    <p style="font-size:0.8rem; color:#999; margin-top:8px;">💡 نکته: نام فیلم را به انگلیسی وارد کنید (مثلاً: The Matrix)</p>
+                    <button class="btn-success" style="margin-top:10px;" onclick="searchMode='local'; searchMovies();">📚 جستجو در کتابخانه</button>
+                </div>
+            `;
+            statusEl.textContent = '😔 نتیجه‌ای پیدا نشد';
+        }
+
+    } catch (error) {
+        console.error('خطای جستجو:', error);
+        container.innerHTML = `
+            <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
+                <div style="font-size:3rem; margin-bottom:10px;">❌</div>
+                <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
+                <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور. لطفاً دوباره تلاش کنید.</p>
+                <p style="font-size:0.8rem; color:#999; margin-top:5px;">💡 ممکن است محدودیت روزانه API به پایان رسیده باشد.</p>
+                <div style="display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;">
+                    <button class="btn-primary" onclick="searchMovies()">🔄 تلاش مجدد</button>
+                    <button class="btn-success" onclick="searchMode='local'; searchMovies();">📚 جستجو در کتابخانه</button>
+                </div>
+            </div>
+        `;
+        statusEl.textContent = '❌ خطا در ارتباط با سرور';
+    }
+}
+
+// =============================================
+// افزودن از OMDb
+// =============================================
+async function addFromOMDb(imdbId) {
+    try {
+        showToast('⏳ در حال دریافت اطلاعات فیلم...');
+        
+        const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&i=${imdbId}&plot=full`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.Response === 'False') {
+            throw new Error(data.Error || 'خطا در دریافت اطلاعات');
+        }
+
+        const genre = data.Genre ? data.Genre.split(',')[0].trim() : 'نامشخص';
+        
+        const newMovie = {
+            id: getNextId(),
+            name: data.Title || 'نامشخص',
+            nameEn: data.Title || 'نامشخص',
+            genre: genre,
+            rating: parseFloat(data.imdbRating) || 0,
+            year: data.Year || 'نامشخص',
+            director: data.Director || 'نامشخص',
+            duration: parseInt(data.Runtime) || 0,
+            cast: data.Actors || 'نامشخص',
+            poster: data.Poster !== 'N/A' ? data.Poster : '',
+            desc: data.Plot || 'توضیحاتی برای این فیلم ثبت نشده است.',
+            status: 'released',
+            imdb_id: imdbId
+        };
+
+        movieLinks[newMovie.id] = {
+            imdb: `https://www.imdb.com/title/${imdbId}/`,
+            trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.Title)}+trailer`,
+            watch: `https://www.imdb.com/title/${imdbId}/`
+        };
+
+        movies.push(newMovie);
+        saveMovies();
+        applyFilters();
+        showToast(`🎬 فیلم "${data.Title}" با موفقیت اضافه شد!`);
+        document.getElementById('searchResults').innerHTML = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchStatus').textContent = '';
+
+    } catch (error) {
+        console.error('خطا در افزودن فیلم:', error);
+        showToast('❌ خطا در افزودن فیلم: ' + error.message);
+    }
+}
 
         // =============================================
         // افزودن از OMDb
