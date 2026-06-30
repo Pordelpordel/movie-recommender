@@ -989,15 +989,20 @@
         <!-- ===== تب جستجو ===== -->
         <div id="search" class="tab-content">
             <h2>🔍 جستجو در TMDB</h2>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                <button class="btn-primary" onclick="searchMode='tmdb'; searchMovies()" style="flex:1;">🎬 جستجو در TMDB</button>
+                <button class="btn-success" onclick="searchMode='local'; searchMovies()" style="flex:1;">📚 جستجو در کتابخانه</button>
+            </div>
             <div class="form-group">
-                <label>نام فیلم (به انگلیسی)</label>
-                <input type="text" id="searchInput" placeholder="مثال: The Matrix" oninput="searchMovies()">
+                <label>نام فیلم</label>
+                <input type="text" id="searchInput" placeholder="مثال: The Matrix یا ماتریکس" oninput="searchMovies()">
                 <div id="searchSuggestions" style="background:white; border-radius:10px; margin-top:5px; max-height:180px; overflow-y:auto; display:none; box-shadow:0 5px 15px rgba(0,0,0,0.1);"></div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="btn-primary" onclick="searchMovies()">🔍 جستجو</button>
                 <button class="btn-danger" onclick="clearSearch()">🗑️ پاک کردن</button>
             </div>
+            <div id="searchStatus" style="margin-top:8px; font-size:0.85rem; color:#888;"></div>
             <div id="searchResults" class="search-results-grid" style="margin-top:15px;"></div>
         </div>
 
@@ -1346,139 +1351,26 @@
         // =============================================
         // تنظیمات و داده‌ها
         // =============================================
-       // =============================================
-// جستجو در TMDB (با چندین پراکسی و مدیریت خطا)
-// =============================================
-
-const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-
-// لیست پراکسی‌های مختلف (به ترتیب اولویت)
-const PROXIES = [
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.io/?',
-    'https://thingproxy.freeboard.io/fetch/',
-    'https://cors-anywhere.herokuapp.com/'
-];
-
-let currentProxyIndex = 0;
-
-async function fetchWithProxy(url) {
-    // تلاش با پراکسی‌های مختلف
-    for (let i = 0; i < PROXIES.length; i++) {
-        try {
-            const proxyUrl = PROXIES[i] + url;
-            console.log(`تلاش با پراکسی ${i+1}:`, PROXIES[i]);
-            
-            const response = await fetch(proxyUrl, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                // timeout بعد از 10 ثانیه
-                signal: AbortSignal.timeout(10000)
-            });
-            
-            if (response.ok) {
-                currentProxyIndex = i;
-                return await response.json();
-            }
-        } catch (error) {
-            console.log(`پراکسی ${i+1} ناموفق:`, error.message);
-            continue;
-        }
-    }
-    throw new Error('همه پراکسی‌ها ناموفق بودند');
-}
-
-async function searchMovies() {
-    const query = document.getElementById('searchInput').value.trim();
-    const container = document.getElementById('searchResults');
-    const suggestions = document.getElementById('searchSuggestions');
-
-    if (!query) {
-        container.innerHTML = '';
-        suggestions.style.display = 'none';
-        return;
-    }
-
-    // نمایش پیشنهادات
-    try {
-        const suggestUrl = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR&page=1`;
-        const suggestData = await fetchWithProxy(suggestUrl);
+        const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
         
-        if (suggestData.results && suggestData.results.length > 0) {
-            suggestions.style.display = 'block';
-            suggestions.innerHTML = suggestData.results.slice(0, 5).map(m => `
-                <div style="padding:8px 14px; cursor:pointer; border-bottom:1px solid #eee; transition:background 0.2s; color:#333;" 
-                     onmouseover="this.style.background='#f0f0f0'" 
-                     onmouseout="this.style.background='white'"
-                     onclick="document.getElementById('searchInput').value='${m.title.replace(/'/g, "\\'")}'; suggestions.style.display='none'; searchMovies();">
-                    ${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'})
-                </div>
-            `).join('');
-        } else {
-            suggestions.style.display = 'none';
-        }
-    } catch(e) {
-        suggestions.style.display = 'none';
-    }
+        // استفاده از OMDb API به عنوان جایگزین (نیاز به API Key رایگان)
+        // برای دریافت کلید رایگان به http://www.omdbapi.com/apikey.aspx مراجعه کنید
+        const OMDb_API_KEY = 'fa8e2d6b'; // کلید رایگان OMDb
+        const OMDb_BASE_URL = 'https://www.omdbapi.com/';
 
-    container.innerHTML = '<div style="text-align:center; padding:25px; color:#888;">⏳ در حال جستجو...</div>';
+        let movies = [];
+        let favorites = [];
+        let watchlist = [];
+        let watched = [];
+        let userRatings = {};
+        let comments = {};
+        let currentDetailMovie = null;
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 8;
+        let searchMode = 'tmdb'; // 'tmdb' یا 'local'
 
-    try {
-        const url = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`;
-        const data = await fetchWithProxy(url);
-        
-        if (!data.results || data.results.length === 0) {
-            container.innerHTML = `
-                <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
-                    <div style="font-size:3rem; margin-bottom:10px;">😔</div>
-                    <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
-                    <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید</p>
-                    <p style="font-size:0.8rem; color:#999; margin-top:8px;">💡 نکته: نام فیلم را به انگلیسی وارد کنید (مثلاً: The Sea)</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = data.results.map(m => `
-            <div class="search-result-item" onclick="addFromTMDB(${m.id})">
-                <img src="${m.poster_path ? TMDB_IMAGE_URL + m.poster_path : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy">
-                <h4>${m.title}</h4>
-                <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
-                <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
-                <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
-                    <a href="https://www.imdb.com/find?q=${encodeURIComponent(m.title)}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">IMDb</a>
-                    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
-                </div>
-                <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ افزودن</button>
-            </div>
-        `).join('');
-
-    } catch (error) {
-        console.error('Search error:', error);
-        container.innerHTML = `
-            <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
-                <div style="font-size:3rem; margin-bottom:10px;">❌</div>
-                <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
-                <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور TMDB. لطفاً دوباره تلاش کنید.</p>
-                <div style="margin-top:10px; font-size:0.8rem; color:#888;">
-                    <p>💡 نکات:</p>
-                    <ul style="list-style:none; padding:0; text-align:right;">
-                        <li>• نام فیلم را به انگلیسی وارد کنید (مثلاً: The Sea)</li>
-                        <li>• از اتصال اینترنت خود مطمئن شوید</li>
-                        <li>• ممکن است پراکسی موقتاً غیرفعال باشد</li>
-                    </ul>
-                </div>
-                <button class="btn-primary" style="margin-top:15px;" onclick="searchMovies()">🔄 تلاش مجدد</button>
-            </div>
-        `;
-        showToast('❌ خطا در ارتباط با TMDB. لطفاً دوباره تلاش کنید.');
-    }
-}
         // =============================================
         // دیکشنری لینک‌های فیلم‌ها
         // =============================================
@@ -1717,105 +1609,174 @@ async function searchMovies() {
         }
 
         // =============================================
-        // جستجو در TMDB (با پراکسی و مدیریت خطا)
+        // جستجو - دو حالت: TMDB و کتابخانه داخلی
         // =============================================
-        let searchTimeout = null;
-
         async function searchMovies() {
             const query = document.getElementById('searchInput').value.trim();
             const container = document.getElementById('searchResults');
-            const suggestions = document.getElementById('searchSuggestions');
+            const statusEl = document.getElementById('searchStatus');
 
             if (!query) {
                 container.innerHTML = '';
-                suggestions.style.display = 'none';
+                statusEl.textContent = '';
                 return;
             }
 
-            // نمایش پیشنهادات
-            try {
-                const suggestUrl = `${CORS_PROXY}${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR&page=1`;
-                const suggestResponse = await fetch(suggestUrl);
-                const suggestData = await suggestResponse.json();
-                if (suggestData.results && suggestData.results.length > 0) {
-                    suggestions.style.display = 'block';
-                    suggestions.innerHTML = suggestData.results.slice(0, 5).map(m => `
-                        <div style="padding:8px 14px; cursor:pointer; border-bottom:1px solid #eee; transition:background 0.2s; color:#333;" 
-                             onmouseover="this.style.background='#f0f0f0'" 
-                             onmouseout="this.style.background='white'"
-                             onclick="document.getElementById('searchInput').value='${m.title.replace(/'/g, "\\'")}'; suggestions.style.display='none'; searchMovies();">
-                            ${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'})
-                        </div>
-                    `).join('');
-                } else {
-                    suggestions.style.display = 'none';
-                }
-            } catch(e) {
-                suggestions.style.display = 'none';
-            }
-
-            container.innerHTML = '<div style="text-align:center; padding:25px; color:#888;">⏳ در حال جستجو...</div>';
-
-            try {
-                // استفاده از پراکسی برای دور زدن CORS
-                const url = `${CORS_PROXY}${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`;
+            if (searchMode === 'local') {
+                // جستجو در کتابخانه داخلی
+                statusEl.textContent = '📚 جستجو در کتابخانه...';
+                const results = movies.filter(m => 
+                    m.name.toLowerCase().includes(query.toLowerCase()) || 
+                    (m.nameEn && m.nameEn.toLowerCase().includes(query.toLowerCase())) ||
+                    m.genre.includes(query) ||
+                    m.director.includes(query)
+                );
                 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                if (!data.results || data.results.length === 0) {
+                if (results.length === 0) {
                     container.innerHTML = `
                         <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
-                            <div style="font-size:3rem; margin-bottom:10px;">😔</div>
-                            <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
-                            <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید</p>
+                            <div style="font-size:3rem; margin-bottom:10px;">📚</div>
+                            <h3 style="font-size:1.1rem;">فیلمی در کتابخانه پیدا نشد</h3>
+                            <p style="font-size:0.85rem; margin-top:5px;">از حالت جستجوی TMDB برای پیدا کردن فیلم‌های جدید استفاده کنید</p>
                         </div>
                     `;
-                    return;
+                    statusEl.textContent = `📚 ${results.length} نتیجه پیدا شد`;
+                } else {
+                    displayMovies(results, 'searchResults');
+                    statusEl.textContent = `📚 ${results.length} فیلم در کتابخانه پیدا شد`;
+                }
+                return;
+            }
+
+            // جستجو در TMDB با OMDb به عنوان جایگزین
+            statusEl.textContent = '⏳ در حال جستجو در TMDB...';
+            container.innerHTML = '<div style="text-align:center; padding:25px; color:#888; grid-column:1/-1;">⏳ در حال جستجو...</div>';
+
+            try {
+                // ابتدا تلاش با OMDb (معمولاً بدون مشکل CORS کار می‌کند)
+                const omdbUrl = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&s=${encodeURIComponent(query)}&type=movie`;
+                const response = await fetch(omdbUrl);
+                const data = await response.json();
+
+                if (data.Response === 'True' && data.Search && data.Search.length > 0) {
+                    // نتایج OMDb
+                    const results = data.Search.slice(0, 12);
+                    container.innerHTML = results.map(m => `
+                        <div class="search-result-item" onclick="addFromOMDb('${m.imdbID}')">
+                            <img src="${m.Poster !== 'N/A' ? m.Poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.Title}" loading="lazy">
+                            <h4>${m.Title}</h4>
+                            <div class="year">${m.Year || 'نامشخص'}</div>
+                            <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+                                <a href="https://www.imdb.com/title/${m.imdbID}/" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">IMDb</a>
+                            </div>
+                            <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromOMDb('${m.imdbID}')">➕ افزودن</button>
+                        </div>
+                    `).join('');
+                    statusEl.textContent = `🎬 ${results.length} نتیجه از OMDb پیدا شد`;
+                } else {
+                    // اگر OMDb نتیجه‌ای نداشت، تلاش با TMDB
+                    throw new Error('OMDb no results');
                 }
 
-                container.innerHTML = data.results.map(m => `
-                    <div class="search-result-item" onclick="addFromTMDB(${m.id})">
-                        <img src="${m.poster_path ? TMDB_IMAGE_URL + m.poster_path : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy">
-                        <h4>${m.title}</h4>
-                        <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
-                        <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
-                        <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
-                            <a href="https://www.imdb.com/find?q=${encodeURIComponent(m.title)}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">IMDb</a>
-                            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
-                        </div>
-                        <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ افزودن</button>
-                    </div>
-                `).join('');
-
             } catch (error) {
-                console.error('Search error:', error);
-                container.innerHTML = `
-                    <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
-                        <div style="font-size:3rem; margin-bottom:10px;">❌</div>
-                        <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
-                        <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور TMDB. لطفاً دوباره تلاش کنید.</p>
-                        <button class="btn-primary" style="margin-top:10px;" onclick="searchMovies()">🔄 تلاش مجدد</button>
-                    </div>
-                `;
-                showToast('❌ خطا در ارتباط با TMDB. لطفاً دوباره تلاش کنید.');
+                // اگر OMDb کار نکرد، سعی با TMDB از طریق پراکسی
+                try {
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`)}`;
+                    const tmdbResponse = await fetch(proxyUrl);
+                    const tmdbData = await tmdbResponse.json();
+
+                    if (tmdbData.results && tmdbData.results.length > 0) {
+                        container.innerHTML = tmdbData.results.slice(0, 12).map(m => `
+                            <div class="search-result-item" onclick="addFromTMDB(${m.id})">
+                                <img src="${m.poster_path ? TMDB_IMAGE_URL + m.poster_path : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy">
+                                <h4>${m.title}</h4>
+                                <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
+                                <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
+                                <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+                                    <a href="https://www.imdb.com/find?q=${encodeURIComponent(m.title)}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">IMDb</a>
+                                    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
+                                </div>
+                                <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ افزودن</button>
+                            </div>
+                        `).join('');
+                        statusEl.textContent = `🎬 ${tmdbData.results.length} نتیجه از TMDB پیدا شد`;
+                    } else {
+                        container.innerHTML = `
+                            <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
+                                <div style="font-size:3rem; margin-bottom:10px;">😔</div>
+                                <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
+                                <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید یا از جستجوی کتابخانه استفاده کنید</p>
+                            </div>
+                        `;
+                        statusEl.textContent = '😔 نتیجه‌ای پیدا نشد';
+                    }
+                } catch (tmdbError) {
+                    console.error('TMDB error:', tmdbError);
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
+                            <div style="font-size:3rem; margin-bottom:10px;">❌</div>
+                            <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
+                            <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور. لطفاً از حالت جستجوی کتابخانه استفاده کنید.</p>
+                            <button class="btn-success" style="margin-top:10px;" onclick="searchMode='local'; searchMovies();">📚 جستجو در کتابخانه</button>
+                        </div>
+                    `;
+                    statusEl.textContent = '❌ خطا در ارتباط با سرور';
+                }
             }
         }
 
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').innerHTML = '';
-            document.getElementById('searchSuggestions').style.display = 'none';
+        // =============================================
+        // افزودن از OMDb
+        // =============================================
+        async function addFromOMDb(imdbId) {
+            try {
+                showToast('⏳ در حال دریافت اطلاعات فیلم...');
+                
+                const url = `${OMDb_BASE_URL}?apikey=${OMDb_API_KEY}&i=${imdbId}&plot=full`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.Response === 'False') {
+                    throw new Error(data.Error || 'خطا در دریافت اطلاعات');
+                }
+
+                // تعیین ژانر از داده‌های OMDb
+                const genre = data.Genre ? data.Genre.split(',')[0].trim() : 'نامشخص';
+                
+                const newMovie = {
+                    id: getNextId(),
+                    name: data.Title || 'نامشخص',
+                    nameEn: data.Title || 'نامشخص',
+                    genre: genre,
+                    rating: parseFloat(data.imdbRating) || 0,
+                    year: data.Year || 'نامشخص',
+                    director: data.Director || 'نامشخص',
+                    duration: parseInt(data.Runtime) || 0,
+                    cast: data.Actors || 'نامشخص',
+                    poster: data.Poster !== 'N/A' ? data.Poster : '',
+                    desc: data.Plot || 'توضیحاتی برای این فیلم ثبت نشده است.',
+                    status: 'released',
+                    imdb_id: imdbId
+                };
+
+                movieLinks[newMovie.id] = {
+                    imdb: `https://www.imdb.com/title/${imdbId}/`,
+                    trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.Title)}+trailer`,
+                    watch: `https://www.imdb.com/title/${imdbId}/`
+                };
+
+                movies.push(newMovie);
+                saveMovies();
+                applyFilters();
+                showToast(`🎬 فیلم "${data.Title}" با موفقیت اضافه شد!`);
+                document.getElementById('searchResults').innerHTML = '';
+                document.getElementById('searchInput').value = '';
+                document.getElementById('searchStatus').textContent = '';
+
+            } catch (error) {
+                console.error('Add movie error:', error);
+                showToast('❌ خطا در افزودن فیلم: ' + error.message);
+            }
         }
 
         // =============================================
@@ -1825,8 +1786,8 @@ async function searchMovies() {
             try {
                 showToast('⏳ در حال دریافت اطلاعات فیلم...');
                 
-                const url = `${CORS_PROXY}${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=fa-IR`;
-                const response = await fetch(url);
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=fa-IR`)}`;
+                const response = await fetch(proxyUrl);
                 if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
                 const data = await response.json();
 
@@ -1866,12 +1827,18 @@ async function searchMovies() {
                 showToast(`🎬 فیلم "${data.title}" با موفقیت اضافه شد!`);
                 document.getElementById('searchResults').innerHTML = '';
                 document.getElementById('searchInput').value = '';
-                document.getElementById('searchSuggestions').style.display = 'none';
+                document.getElementById('searchStatus').textContent = '';
 
             } catch (error) {
                 console.error('Add movie error:', error);
                 showToast('❌ خطا در افزودن فیلم');
             }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('searchStatus').textContent = '';
         }
 
         // =============================================
@@ -2446,12 +2413,16 @@ async function searchMovies() {
                 },
                 search: {
                     title: '🔍 جستجو در TMDB',
-                    placeholder: 'نام فیلم (به انگلیسی)',
+                    placeholder: 'نام فیلم',
                     searchBtn: '🔍 جستجو',
                     clearBtn: '🗑️ پاک کردن',
                     loading: '⏳ در حال جستجو...',
                     notFound: '😔 فیلمی پیدا نشد',
-                    error: '❌ خطا در جستجو'
+                    error: '❌ خطا در جستجو',
+                    tmdb: '🎬 جستجو در TMDB',
+                    local: '📚 جستجو در کتابخانه',
+                    statusLocal: '📚 {count} فیلم در کتابخانه پیدا شد',
+                    statusTmdb: '🎬 {count} نتیجه پیدا شد'
                 },
                 add: {
                     title: '➕ افزودن فیلم',
@@ -2616,12 +2587,16 @@ async function searchMovies() {
                 },
                 search: {
                     title: '🔍 Search in TMDB',
-                    placeholder: 'Movie name (in English)',
+                    placeholder: 'Movie name',
                     searchBtn: '🔍 Search',
                     clearBtn: '🗑️ Clear',
                     loading: '⏳ Searching...',
                     notFound: '😔 No movies found',
-                    error: '❌ Search error'
+                    error: '❌ Search error',
+                    tmdb: '🎬 Search in TMDB',
+                    local: '📚 Search in Library',
+                    statusLocal: '📚 {count} movies found in library',
+                    statusTmdb: '🎬 {count} results found'
                 },
                 add: {
                     title: '➕ Add Movie',
