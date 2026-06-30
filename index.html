@@ -662,6 +662,24 @@
         }
         .profile-stat-box .num { font-size: 1.6rem; font-weight: bold; }
         .profile-stat-box .label { font-size: 0.75rem; opacity: 0.85; }
+        /* ===== دکمه خروج ===== */
+        .logout-btn {
+            background: linear-gradient(135deg, #ff6b6b, #c0392b);
+            color: white;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        .logout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+        }
 
         /* ===== دکمه بازگشت به بالا ===== */
         #goToTop {
@@ -901,7 +919,7 @@
             <h2>👤 پروفایل کاربر</h2>
             <div style="text-align:center; padding:15px;">
                 <div style="font-size:3.5rem;">👤</div>
-                <h3 id="profileName" style="font-size:1.1rem;">کاربر مهمان</h3>
+                <h3 id="profileName" style="font-size:1.1rem;">m.pordell1383</h3>
                 <p id="profileJoinDate" style="color:#888; font-size:0.85rem;">تاریخ عضویت: امروز</p>
                 <div class="profile-stats">
                     <div class="profile-stat-box" style="background:linear-gradient(135deg,#667eea,#764ba2);">
@@ -918,6 +936,8 @@
                     </div>
                 </div>
                 <button class="btn-danger" style="margin-top:15px; font-size:0.8rem; padding:6px 18px;" onclick="resetProfile()">🔄 بازنشانی همه داده‌ها</button>
+                <!-- دکمه خروج اضافه شده -->
+                <button class="logout-btn" onclick="logoutUser()">🚪 خروج</button>
             </div>
         </div>
 
@@ -1653,6 +1673,15 @@
             if (!confirm('⚠️ آیا مطمئن هستید؟ همه داده‌ها بازنشانی می‌شوند.')) return;
             localStorage.clear();
             location.reload();
+        }
+
+        // ===== تابع خروج =====
+        function logoutUser() {
+            if (confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) {
+                showToast('🚪 شما از سیستم خارج شدید. با آرزوی بازگشت!');
+                // پاک کردن اطلاعات کاربری (یا هر action دیگر)
+                // در اینجا فقط یک پیام نشان داده می‌شود
+            }
         }
 
         // =============================================
