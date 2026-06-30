@@ -1346,22 +1346,139 @@
         // =============================================
         // تنظیمات و داده‌ها
         // =============================================
-        const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
-        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-        // استفاده از پراکسی برای دور زدن CORS
-        const CORS_PROXY = 'https://corsproxy.io/?';
+       // =============================================
+// جستجو در TMDB (با چندین پراکسی و مدیریت خطا)
+// =============================================
 
-        let movies = [];
-        let favorites = [];
-        let watchlist = [];
-        let watched = [];
-        let userRatings = {};
-        let comments = {};
-        let currentDetailMovie = null;
-        let currentPage = 1;
-        const ITEMS_PER_PAGE = 8;
+const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
+// لیست پراکسی‌های مختلف (به ترتیب اولویت)
+const PROXIES = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://thingproxy.freeboard.io/fetch/',
+    'https://cors-anywhere.herokuapp.com/'
+];
+
+let currentProxyIndex = 0;
+
+async function fetchWithProxy(url) {
+    // تلاش با پراکسی‌های مختلف
+    for (let i = 0; i < PROXIES.length; i++) {
+        try {
+            const proxyUrl = PROXIES[i] + url;
+            console.log(`تلاش با پراکسی ${i+1}:`, PROXIES[i]);
+            
+            const response = await fetch(proxyUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                // timeout بعد از 10 ثانیه
+                signal: AbortSignal.timeout(10000)
+            });
+            
+            if (response.ok) {
+                currentProxyIndex = i;
+                return await response.json();
+            }
+        } catch (error) {
+            console.log(`پراکسی ${i+1} ناموفق:`, error.message);
+            continue;
+        }
+    }
+    throw new Error('همه پراکسی‌ها ناموفق بودند');
+}
+
+async function searchMovies() {
+    const query = document.getElementById('searchInput').value.trim();
+    const container = document.getElementById('searchResults');
+    const suggestions = document.getElementById('searchSuggestions');
+
+    if (!query) {
+        container.innerHTML = '';
+        suggestions.style.display = 'none';
+        return;
+    }
+
+    // نمایش پیشنهادات
+    try {
+        const suggestUrl = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR&page=1`;
+        const suggestData = await fetchWithProxy(suggestUrl);
+        
+        if (suggestData.results && suggestData.results.length > 0) {
+            suggestions.style.display = 'block';
+            suggestions.innerHTML = suggestData.results.slice(0, 5).map(m => `
+                <div style="padding:8px 14px; cursor:pointer; border-bottom:1px solid #eee; transition:background 0.2s; color:#333;" 
+                     onmouseover="this.style.background='#f0f0f0'" 
+                     onmouseout="this.style.background='white'"
+                     onclick="document.getElementById('searchInput').value='${m.title.replace(/'/g, "\\'")}'; suggestions.style.display='none'; searchMovies();">
+                    ${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'})
+                </div>
+            `).join('');
+        } else {
+            suggestions.style.display = 'none';
+        }
+    } catch(e) {
+        suggestions.style.display = 'none';
+    }
+
+    container.innerHTML = '<div style="text-align:center; padding:25px; color:#888;">⏳ در حال جستجو...</div>';
+
+    try {
+        const url = `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`;
+        const data = await fetchWithProxy(url);
+        
+        if (!data.results || data.results.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#888; grid-column:1/-1;">
+                    <div style="font-size:3rem; margin-bottom:10px;">😔</div>
+                    <h3 style="font-size:1.1rem;">فیلمی پیدا نشد</h3>
+                    <p style="font-size:0.85rem; margin-top:5px;">سعی کنید با کلمات دیگری جستجو کنید</p>
+                    <p style="font-size:0.8rem; color:#999; margin-top:8px;">💡 نکته: نام فیلم را به انگلیسی وارد کنید (مثلاً: The Sea)</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.results.map(m => `
+            <div class="search-result-item" onclick="addFromTMDB(${m.id})">
+                <img src="${m.poster_path ? TMDB_IMAGE_URL + m.poster_path : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy">
+                <h4>${m.title}</h4>
+                <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
+                <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
+                <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+                    <a href="https://www.imdb.com/find?q=${encodeURIComponent(m.title)}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000; display:inline-block;">IMDb</a>
+                    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff; display:inline-block;">▶️ تریلر</a>
+                </div>
+                <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ افزودن</button>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Search error:', error);
+        container.innerHTML = `
+            <div style="text-align:center; padding:30px; color:#ff6b6b; grid-column:1/-1;">
+                <div style="font-size:3rem; margin-bottom:10px;">❌</div>
+                <h3 style="font-size:1.1rem;">خطا در جستجو</h3>
+                <p style="font-size:0.85rem; margin-top:5px;">مشکل در ارتباط با سرور TMDB. لطفاً دوباره تلاش کنید.</p>
+                <div style="margin-top:10px; font-size:0.8rem; color:#888;">
+                    <p>💡 نکات:</p>
+                    <ul style="list-style:none; padding:0; text-align:right;">
+                        <li>• نام فیلم را به انگلیسی وارد کنید (مثلاً: The Sea)</li>
+                        <li>• از اتصال اینترنت خود مطمئن شوید</li>
+                        <li>• ممکن است پراکسی موقتاً غیرفعال باشد</li>
+                    </ul>
+                </div>
+                <button class="btn-primary" style="margin-top:15px;" onclick="searchMovies()">🔄 تلاش مجدد</button>
+            </div>
+        `;
+        showToast('❌ خطا در ارتباط با TMDB. لطفاً دوباره تلاش کنید.');
+    }
+}
         // =============================================
         // دیکشنری لینک‌های فیلم‌ها
         // =============================================
