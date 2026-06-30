@@ -150,7 +150,7 @@
             margin-top: 15px;
         }
         .movie-card {
-            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(145deg,#4525 0%, #768 100%);
             border-radius: 18px;
             padding: 12px;
             color: white;
@@ -340,6 +340,30 @@
             font-size: 0.85rem;
         }
         .btn-warning:hover { transform: scale(1.05); }
+        .btn-trailer {
+            background: #e50914;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .btn-trailer:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(229,9,20,0.4); }
+        .btn-imdb {
+            background: #f5c518;
+            color: #000;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .btn-imdb:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(245,197,24,0.4); }
 
         /* ===== فیلترها ===== */
         .filter-bar {
@@ -497,6 +521,23 @@
             margin-top: 12px;
         }
         .modal-content .actions button { flex: 1; min-width: 100px; font-size: 0.8rem; padding: 7px 14px; }
+        .modal-content .link-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .modal-content .link-group a {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .modal-content .link-group a:hover { transform: scale(1.05); }
 
         /* ===== سیستم ستاره‌ای ===== */
         .star-rating {
@@ -624,7 +665,7 @@
             border: none;
             border-radius: 8px;
             background: rgba(255,255,255,0.12);
-            color: white;
+            color: black;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.85rem;
@@ -940,19 +981,29 @@
                 <div class="detail-row"><strong>❤️ وضعیت:</strong> <span id="detailFavStatus">ثبت نشده</span></div>
                 <div class="detail-row"><strong>📋 لیست تماشا:</strong> <span id="detailWatchlistStatus">ثبت نشده</span></div>
 
+                <!-- لینک‌های مشاهده و تریلر -->
+                <div class="detail-row">
+                    <strong>🔗 لینک‌ها:</strong>
+                    <div class="link-group">
+                        <a id="detailTrailerLink" href="#" target="_blank" class="btn-trailer" style="color:white;">▶️ یوتیوب</a>
+                        <a id="detailImdbLink" href="#" target="_blank" class="btn-imdb" style="color:#000;">🎬 IMDb</a>
+                        <a id="detailWatchLink" href="#" target="_blank" class="btn-primary" style="background:linear-gradient(135deg,#4caf50,#2e7d32);">👁️ مشاهده</a>
+                    </div>
+                </div>
+
                 <!-- سیستم امتیازدهی ستاره‌ای -->
                 <div class="detail-row">
                     <strong>⭐ امتیاز شما:</strong>
                     <div class="star-rating" id="userRating">
-                        <input type="radio" name="stars" id="star5" value="5" onchange="rateMovie(currentDetailMovie.id, 5)">
+                        <input type="radio" name="stars" id="star5" value="5" onchange="rateMovie(currentDetailMovie?.id, 5)">
                         <label for="star5">★</label>
-                        <input type="radio" name="stars" id="star4" value="4" onchange="rateMovie(currentDetailMovie.id, 4)">
+                        <input type="radio" name="stars" id="star4" value="4" onchange="rateMovie(currentDetailMovie?.id, 4)">
                         <label for="star4">★</label>
-                        <input type="radio" name="stars" id="star3" value="3" onchange="rateMovie(currentDetailMovie.id, 3)">
+                        <input type="radio" name="stars" id="star3" value="3" onchange="rateMovie(currentDetailMovie?.id, 3)">
                         <label for="star3">★</label>
-                        <input type="radio" name="stars" id="star2" value="2" onchange="rateMovie(currentDetailMovie.id, 2)">
+                        <input type="radio" name="stars" id="star2" value="2" onchange="rateMovie(currentDetailMovie?.id, 2)">
                         <label for="star2">★</label>
-                        <input type="radio" name="stars" id="star1" value="1" onchange="rateMovie(currentDetailMovie.id, 1)">
+                        <input type="radio" name="stars" id="star1" value="1" onchange="rateMovie(currentDetailMovie?.id, 1)">
                         <label for="star1">★</label>
                     </div>
                     <div id="userRatingDisplay" style="text-align:center; color:#888; font-size:0.85rem;">هنوز امتیاز نداده‌اید</div>
@@ -1012,6 +1063,46 @@
         const ITEMS_PER_PAGE = 8;
 
         // =============================================
+        // دیکشنری لینک‌های فیلم‌ها (IMDb و تریلر)
+        // =============================================
+        const movieLinks = {
+            // فیلم‌های پیش‌فرض
+            1: { imdb: 'https://www.imdb.com/title/tt0111161/', trailer: 'https://www.youtube.com/watch?v=6hB3S9bIaco', watch: 'https://www.imdb.com/title/tt0111161/' },
+            2: { imdb: 'https://www.imdb.com/title/tt0068646/', trailer: 'https://www.youtube.com/watch?v=sY1S34973zA', watch: 'https://www.imdb.com/title/tt0068646/' },
+            3: { imdb: 'https://www.imdb.com/title/tt0468569/', trailer: 'https://www.youtube.com/watch?v=EXeTwQWrcwY', watch: 'https://www.imdb.com/title/tt0468569/' },
+            4: { imdb: 'https://www.imdb.com/title/tt0109830/', trailer: 'https://www.youtube.com/watch?v=bLvqoHBptjg', watch: 'https://www.imdb.com/title/tt0109830/' },
+            5: { imdb: 'https://www.imdb.com/title/tt1375666/', trailer: 'https://www.youtube.com/watch?v=YoHD9XEInc0', watch: 'https://www.imdb.com/title/tt1375666/' },
+            6: { imdb: 'https://www.imdb.com/title/tt0133093/', trailer: 'https://www.youtube.com/watch?v=vKQi3bBA1y8', watch: 'https://www.imdb.com/title/tt0133093/' },
+            7: { imdb: 'https://www.imdb.com/title/tt0816692/', trailer: 'https://www.youtube.com/watch?v=zSWdZVtXT7E', watch: 'https://www.imdb.com/title/tt0816692/' },
+            8: { imdb: 'https://www.imdb.com/title/tt0120338/', trailer: 'https://www.youtube.com/watch?v=2e-eXJ6HgkQ', watch: 'https://www.imdb.com/title/tt0120338/' },
+            9: { imdb: 'https://www.imdb.com/title/tt15398776/', trailer: 'https://www.youtube.com/watch?v=uYPbbksJxIg', watch: 'https://www.imdb.com/title/tt15398776/' },
+            10: { imdb: 'https://www.imdb.com/title/tt1517268/', trailer: 'https://www.youtube.com/watch?v=pBk4NYhWNMM', watch: 'https://www.imdb.com/title/tt1517268/' }
+        };
+
+        function getMovieLinks(id) {
+            // اول از دیکشنری فیلم‌های پیش‌فرض
+            if (movieLinks[id]) return movieLinks[id];
+            
+            // برای فیلم‌های اضافه شده از TMDB، لینک IMDb رو از TMDB می‌گیریم
+            const movie = movies.find(m => m.id === id);
+            if (movie && movie.imdb_id) {
+                return {
+                    imdb: `https://www.imdb.com/title/${movie.imdb_id}/`,
+                    trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(movie.nameEn || movie.name)}+trailer`,
+                    watch: `https://www.imdb.com/title/${movie.imdb_id}/`
+                };
+            }
+            
+            // لینک پیش‌فرض جستجو
+            const name = movie ? movie.nameEn || movie.name : '';
+            return {
+                imdb: `https://www.imdb.com/find?q=${encodeURIComponent(name)}`,
+                trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+trailer`,
+                watch: `https://www.google.com/search?q=${encodeURIComponent(name)}+فیلم`
+            };
+        }
+
+        // =============================================
         // توابع اصلی
         // =============================================
         function loadMoviesFromStorage() {
@@ -1022,7 +1113,7 @@
                     return;
                 } catch(e) {}
             }
-            // فیلم‌های پیش‌فرض با ترتیب مشخص
+            // فیلم‌های پیش‌فرض با ترتیب مشخص و لینک‌ها
             movies = [
                 { id: 1, name: "رستگاری در شاوشنک", nameEn: "The Shawshank Redemption", genre: "درام", rating: 9.3, year: "۱۹۹۴", director: "فرانک دارابونت", duration: 142, cast: "تیم رابینز، مورگان فریمن", poster: "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", desc: "داستان اندی دوفرسن، بانکی که به اشتباه به جرم قتل همسرش محکوم می‌شود و در زندان شاوشنک امید را زنده نگه می‌دارد.", status: "released" },
                 { id: 2, name: "پدرخوانده", nameEn: "The Godfather", genre: "جنایی", rating: 9.2, year: "۱۹۷۲", director: "فرانسیس فورد کاپولا", duration: 175, cast: "مارلون براندو، آل پاچینو", poster: "https://image.tmdb.org/t/p/w500/rPdtLWNsZmAtoZl9PK7S2wE3qiS.jpg", desc: "خانوادهٔ کورلئونه، یکی از قدرتمندترین خانواده‌های مافیایی نیویورک، درگیر جنگ قدرت و خیانت می‌شوند.", status: "released" },
@@ -1278,7 +1369,11 @@
                         <h4>${m.title}</h4>
                         <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
                         <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
-                        <button class="btn-primary" style="margin-top:6px; padding:4px 16px; font-size:0.75rem;">➕ افزودن</button>
+                        <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+                            <a href="https://www.imdb.com/title/${m.imdb_id || ''}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000;">IMDb</a>
+                            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff;">▶️ تریلر</a>
+                        </div>
+                        <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ افزودن</button>
                     </div>
                 `).join('');
 
@@ -1317,8 +1412,24 @@
                     cast: data.production_companies?.[0]?.name || 'نامشخص',
                     poster: data.poster_path ? TMDB_IMAGE_URL + data.poster_path : '',
                     desc: data.overview || 'توضیحاتی برای این فیلم ثبت نشده است.',
-                    status: data.status === 'Released' ? 'released' : 'coming'
+                    status: data.status === 'Released' ? 'released' : 'coming',
+                    imdb_id: data.imdb_id || null
                 };
+
+                // ذخیره لینک‌ها در دیکشنری
+                if (data.imdb_id) {
+                    movieLinks[newMovie.id] = {
+                        imdb: `https://www.imdb.com/title/${data.imdb_id}/`,
+                        trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.original_title)}+trailer`,
+                        watch: `https://www.imdb.com/title/${data.imdb_id}/`
+                    };
+                } else {
+                    movieLinks[newMovie.id] = {
+                        imdb: `https://www.imdb.com/find?q=${encodeURIComponent(data.original_title)}`,
+                        trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.original_title)}+trailer`,
+                        watch: `https://www.google.com/search?q=${encodeURIComponent(data.original_title)}+فیلم`
+                    };
+                }
 
                 movies.push(newMovie);
                 saveMovies();
@@ -1350,8 +1461,9 @@
             if (!name) { showToast('❌ لطفاً نام فیلم را وارد کنید'); return; }
             if (isNaN(rating) || rating < 0 || rating > 10) { showToast('❌ امتیاز باید بین ۰ تا ۱۰ باشد'); return; }
 
+            const newId = getNextId();
             const newMovie = {
-                id: getNextId(),
+                id: newId,
                 name: name,
                 nameEn: name,
                 genre: genre,
@@ -1363,6 +1475,13 @@
                 poster: '',
                 desc: desc || 'توضیحاتی برای این فیلم ثبت نشده است.',
                 status: status || 'released'
+            };
+
+            // لینک‌های پیش‌فرض برای فیلم دستی
+            movieLinks[newId] = {
+                imdb: `https://www.imdb.com/find?q=${encodeURIComponent(name)}`,
+                trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+trailer`,
+                watch: `https://www.google.com/search?q=${encodeURIComponent(name)}+فیلم`
             };
 
             movies.push(newMovie);
@@ -1391,6 +1510,7 @@
             watched = watched.filter(w => w !== id);
             delete userRatings[id];
             delete comments[id];
+            delete movieLinks[id];
             saveMovies();
             saveFavorites();
             saveWatchlist();
@@ -1674,6 +1794,12 @@
             document.getElementById('detailDesc').textContent = movie.desc || 'توضیحاتی برای این فیلم ثبت نشده است.';
             document.getElementById('detailStatus').textContent = getStatusText(movie.status);
 
+            // لینک‌ها
+            const links = getMovieLinks(id);
+            document.getElementById('detailTrailerLink').href = links.trailer;
+            document.getElementById('detailImdbLink').href = links.imdb;
+            document.getElementById('detailWatchLink').href = links.watch;
+
             // امتیاز کاربر
             const userRating = userRatings[id] || 0;
             document.querySelectorAll('#userRating input').forEach(input => {
@@ -1749,6 +1875,7 @@
         // سیستم امتیازدهی ستاره‌ای
         // =============================================
         function rateMovie(id, rating) {
+            if (!id) return;
             userRatings[id] = rating;
             saveRatings();
             document.getElementById('userRatingDisplay').textContent = `امتیاز شما: ${'★'.repeat(rating)}${'☆'.repeat(5-rating)}`;
