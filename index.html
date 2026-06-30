@@ -1348,23 +1348,52 @@
         // =============================================
         // تنظیمات و داده‌ها
         // =============================================
-        // استفاده از OMDb API (کاملاً رایگان و بدون نیاز به پراکسی)
-        // برای دریافت کلید رایگان به http://www.omdbapi.com/apikey.aspx مراجعه کنید
-        const OMDb_API_KEY = 'fa8e2d6b';
-        const OMDb_BASE_URL = 'https://www.omdbapi.com/';
-        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+        // =============================================
+// جستجو در TMDB با استفاده از پراکسی
+// =============================================
 
-        let movies = [];
-        let favorites = [];
-        let watchlist = [];
-        let watched = [];
-        let userRatings = {};
-        let comments = {};
-        let currentDetailMovie = null;
-        let currentPage = 1;
-        const ITEMS_PER_PAGE = 8;
-        let searchMode = 'tmdb';
+const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
+// لیست پراکسی‌های مختلف
+const PROXIES = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://thingproxy.freeboard.io/fetch/',
+    'https://cors-anywhere.herokuapp.com/'
+];
+
+async function searchTMDB(query) {
+    // تلاش با پراکسی‌های مختلف
+    for (let proxy of PROXIES) {
+        try {
+            const url = `${proxy}${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`;
+            const response = await fetch(url);
+            if (response.ok) {
+                return await response.json();
+            }
+        } catch (e) {
+            console.log('پراکسی ناموفق:', proxy);
+            continue;
+        }
+    }
+    throw new Error('همه پراکسی‌ها ناموفق بودند');
+}
+
+// استفاده
+async function searchMovies() {
+    const query = document.getElementById('searchInput').value.trim();
+    try {
+        const data = await searchTMDB(query);
+        if (data.results && data.results.length > 0) {
+            // نمایش نتایج
+            console.log('نتایج:', data.results);
+        }
+    } catch (error) {
+        console.error('خطا:', error);
+        showToast('❌ خطا در جستجو. لطفاً از حالت کتابخانه استفاده کنید.');
+    }
+}
         // =============================================
         // دیکشنری لینک‌های فیلم‌ها
         // =============================================
