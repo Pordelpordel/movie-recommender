@@ -3,60 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 سینماچی - سیستم کامل مدیریت فیلم</title>
+    <title>🎬 سینماچی</title>
     <style>
-        /* ===== تنظیمات پایه ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Tahoma', 'Vazir', sans-serif;
+            font-family: 'Tahoma', sans-serif;
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             min-height: 100vh;
             padding: 20px;
-            transition: background 0.3s, color 0.3s;
         }
-        body.light-mode {
-            background: #f0f0f0;
-            color: #333;
-        }
-        body.en-mode {
-            direction: ltr;
-            text-align: left;
-        }
-        body.en-mode .container { direction: ltr; text-align: left; }
-        body.en-mode .header { direction: ltr; text-align: center; }
-        body.en-mode .tabs { direction: ltr; }
-        body.en-mode .filter-bar { direction: ltr; }
-        body.en-mode .form-group { text-align: left; }
-        body.en-mode .login-box { direction: ltr; text-align: center; }
-        body.en-mode .login-box .form-group { text-align: left; }
-        body.en-mode .modal-content { direction: ltr; text-align: left; }
-        body.en-mode .modal-content .close-modal { left: auto; right: 15px; }
-        body.en-mode .movie-card { direction: ltr; }
-        body.en-mode .star-rating { direction: ltr; }
-        body.en-mode .footer { direction: ltr; }
-        
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* ===== هدر ===== */
         .header {
             text-align: center;
             background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
             border-radius: 30px;
-            padding: 25px 20px;
+            padding: 25px;
             margin-bottom: 25px;
             color: white;
-            transition: all 0.3s;
-        }
-        body.light-mode .header {
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .header h1 { font-size: 2.5rem; }
         .header h1 span { color: #ffd700; }
-        .header .subtitle { color: rgba(255,255,255,0.8); margin-top: 5px; font-size: 1rem; }
-        body.light-mode .header .subtitle { color: #666; }
         .header .badge-group {
             display: flex;
             justify-content: center;
@@ -65,118 +32,82 @@
             margin-top: 10px;
         }
         .header .badge {
-            display: inline-block;
             background: rgba(255,215,0,0.15);
             padding: 5px 16px;
             border-radius: 50px;
-            font-size: 0.85rem;
             color: #ffd700;
             border: 1px solid rgba(255,215,0,0.2);
         }
-        body.light-mode .header .badge {
-            background: rgba(255,215,0,0.1);
-            color: #b8860b;
-            border-color: rgba(255,215,0,0.3);
-        }
-        .header .logout-header-btn {
+        .header .logout-btn {
             background: rgba(255,0,0,0.2);
             border: 1px solid rgba(255,0,0,0.3);
             color: #ff6b6b;
-            padding: 4px 14px;
+            padding: 5px 16px;
             border-radius: 50px;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-            margin-right: 5px;
-        }
-        .header .logout-header-btn:hover {
-            background: rgba(255,0,0,0.4);
-            transform: scale(1.05);
-        }
-        body.en-mode .header .logout-header-btn { margin-right: 0; margin-left: 5px; }
-
-        /* ===== دکمه تغییر تم ===== */
-        .theme-toggle {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 999;
-            background: rgba(255,255,255,0.15);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-            color: white;
-        }
-        body.light-mode .theme-toggle {
-            background: rgba(0,0,0,0.08);
-            border-color: rgba(0,0,0,0.1);
-            color: #333;
-        }
-        .theme-toggle:hover { transform: scale(1.1) rotate(20deg); }
-        body.en-mode .theme-toggle { left: auto; right: 15px; }
-
-        /* ===== تب‌ها ===== */
-        .tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .tab-btn {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.85);
-            border: none;
-            border-radius: 50px;
-            color: #555;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
             font-size: 0.85rem;
-        }
-        body.light-mode .tab-btn {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            color: #555;
-        }
-        .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .tab-btn.active { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white;
-            box-shadow: 0 5px 20px rgba(102,126,234,0.3);
-        }
-        
-        /* ===== محتوای تب‌ها ===== */
-        .tab-content {
+            border: 1px solid rgba(255,0,0,0.3);
             display: none;
-            background: rgba(255,255,255,0.95);
-            border-radius: 25px;
-            padding: 25px;
-            min-height: 300px;
-            transition: all 0.3s;
         }
-        body.light-mode .tab-content {
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        .header .logout-btn:hover { background: rgba(255,0,0,0.4); }
+        
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+        .login-box {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 400px;
+            width: 90%;
+            color: white;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .tab-content h2 {
-            color: #333;
+        .login-box h2 { color: #ffd700; font-size: 1.8rem; margin-bottom: 10px; }
+        .login-box p { color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 1rem;
             margin-bottom: 15px;
-            font-size: 1.4rem;
         }
-        body.light-mode .tab-content h2 { color: #333; }
+        .login-box input:focus {
+            border-color: #ffd700;
+            outline: none;
+        }
+        .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ffd700, #f9a825);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .login-box .login-btn:hover { transform: scale(1.02); }
+        .login-box .error-msg {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
 
-        /* ===== کارت‌های فیلم ===== */
         .movies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
@@ -188,124 +119,21 @@
             border-radius: 18px;
             padding: 12px;
             color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
             text-align: center;
+            cursor: pointer;
             box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s;
         }
-        body.light-mode .movie-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
-            color: #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-        .movie-card:hover { 
-            transform: translateY(-6px) scale(1.02); 
-            box-shadow: 0 15px 40px rgba(102,126,234,0.3);
-        }
-        body.light-mode .movie-card:hover {
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-        }
-        .movie-card h3 { 
-            color: #ffd700; 
-            margin: 6px 0 4px; 
-            font-size: 0.95rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.2em;
-            line-height: 1.1;
-        }
-        body.light-mode .movie-card h3 { color: #764ba2; }
+        .movie-card:hover { transform: translateY(-5px); }
+        .movie-card h3 { color: #ffd700; margin: 6px 0; font-size: 0.95rem; }
         .movie-card .genre-tag {
-            display: inline-block;
             background: rgba(255,255,255,0.15);
             padding: 2px 10px;
             border-radius: 50px;
             font-size: 0.7rem;
+            display: inline-block;
         }
-        body.light-mode .movie-card .genre-tag {
-            background: rgba(118,75,162,0.1);
-            color: #764ba2;
-        }
-        .movie-card .rating { 
-            font-size: 1rem; 
-            font-weight: bold; 
-            color: #ffd700; 
-            margin: 4px 0;
-        }
-        body.light-mode .movie-card .rating { color: #f9a825; }
-        .movie-card .delete-btn {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: rgba(255,0,0,0.7);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            color: white;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.3s;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .movie-card .delete-btn:hover { transform: scale(1.2); background: #ff0000; }
-        .movie-card .fav-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255,215,0,0.2);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            color: white;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        body.light-mode .movie-card .fav-btn { color: #666; }
-        .movie-card .fav-btn.active { background: rgba(255,215,0,0.7); color: white; }
-        .movie-card .fav-btn:hover { transform: scale(1.2); }
-        .movie-card .watchlist-btn {
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-            background: rgba(255,255,255,0.15);
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            color: white;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        body.light-mode .movie-card .watchlist-btn { color: #666; background: rgba(0,0,0,0.05); }
-        .movie-card .watchlist-btn.active { background: rgba(255,215,0,0.6); color: white; }
-        .movie-card .watchlist-btn:hover { transform: scale(1.2); }
-        .movie-card .watched-badge {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            font-size: 16px;
-            z-index: 5;
-        }
+        .movie-card .rating { color: #ffd700; font-weight: bold; margin: 4px 0; }
         .movie-poster {
             width: 100%;
             height: 200px;
@@ -323,9 +151,7 @@
         }
         .status-badge.showing { background: #4caf50; color: white; }
         .status-badge.released { background: #2196f3; color: white; }
-        .status-badge.coming { background: #ff9800; color: white; }
 
-        /* ===== دکمه‌ها ===== */
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -334,72 +160,10 @@
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
+            margin: 5px;
         }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
-        .btn-danger {
-            background: #ff6b6b;
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .btn-danger:hover { transform: scale(1.05); }
-        .btn-success {
-            background: #4caf50;
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .btn-success:hover { transform: scale(1.05); }
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .btn-warning:hover { transform: scale(1.05); }
-        .btn-trailer {
-            background: #e50914;
-            color: white;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .btn-trailer:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(229,9,20,0.4); }
-        .btn-imdb {
-            background: #f5c518;
-            color: #000;
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .btn-imdb:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(245,197,24,0.4); }
+        .btn-primary:hover { transform: scale(1.05); }
 
-        /* ===== فیلترها ===== */
         .filter-bar {
             display: flex;
             gap: 8px;
@@ -414,205 +178,42 @@
             background: white;
             font-size: 0.8rem;
             min-width: 100px;
-            transition: all 0.3s;
-        }
-        .filter-bar select:focus, .filter-bar input:focus {
-            border-color: #764ba2;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(118,75,162,0.12);
         }
         .filter-bar input[type="text"] { flex: 1; min-width: 120px; }
 
-        /* ===== فرم‌ها ===== */
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: bold; color: #333; font-size: 0.9rem; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            font-family: inherit;
-            background: white;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #764ba2;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(118,75,162,0.12);
-        }
-        .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
-        .form-row .form-group { flex: 1; min-width: 130px; }
-
-        /* ===== جستجو ===== */
-        .search-results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-        .search-result-item {
-            background: rgba(255,255,255,0.95);
-            border-radius: 12px;
-            padding: 12px;
+        .tab-btn {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.85);
+            border: none;
+            border-radius: 50px;
+            color: #555;
             cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            font-weight: bold;
+            margin: 3px;
         }
-        body.light-mode .search-result-item {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
-        .search-result-item:hover {
-            border-color: #ffd700;
-            transform: scale(1.03);
-        }
-        .search-result-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background: #1a1a2e;
-        }
-        .search-result-item h4 { color: #333; font-weight: bold; margin: 4px 0; font-size: 0.9rem; }
-        .search-result-item .year { color: #888; font-size: 0.75rem; }
-        .search-result-item .rating { color: #ffd700; font-weight: bold; }
 
-        /* ===== مودال ===== */
-        .modal {
+        .tab-content {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.75);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 15px;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            background: rgba(255,255,255,0.95);
             border-radius: 25px;
             padding: 25px;
-            max-width: 550px;
-            width: 100%;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.08);
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
+            min-height: 300px;
         }
-        body.light-mode .modal-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-        .modal-content h2 { color: #ffd700; margin-bottom: 15px; text-align: center; font-size: 1.3rem; }
-        body.light-mode .modal-content h2 { color: #764ba2; }
-        .modal-content .close-modal {
-            position: absolute;
-            top: 12px;
-            left: 15px;
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.6);
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-        body.light-mode .modal-content .close-modal { color: #666; }
-        .modal-content .close-modal:hover { color: #ff6b6b; transform: rotate(90deg); }
-        body.en-mode .modal-content .close-modal { left: auto; right: 15px; }
-        .modal-content .detail-row { 
-            margin: 6px 0; 
-            padding: 8px 12px; 
-            background: rgba(255,255,255,0.04); 
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-        body.light-mode .modal-content .detail-row { background: rgba(0,0,0,0.03); }
-        .modal-content .detail-row strong { color: #ffd700; display: inline-block; min-width: 70px; font-size: 0.85rem; }
-        body.light-mode .modal-content .detail-row strong { color: #764ba2; }
-        .modal-content .poster-container { text-align: center; margin: 8px 0; }
-        .modal-content .poster-container img { 
-            max-width: 100%; 
-            max-height: 220px; 
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-        .modal-content .rating-stars { color: #ffd700; font-size: 1.2rem; }
-        .modal-content .actions { 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-            justify-content: center;
-            margin-top: 12px;
-        }
-        .modal-content .actions button { flex: 1; min-width: 100px; font-size: 0.8rem; padding: 7px 14px; }
-        .modal-content .link-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 8px;
-        }
-        .modal-content .link-group a {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-        }
-        .modal-content .link-group a:hover { transform: scale(1.05); }
+        .tab-content.active { display: block; }
 
-        /* ===== سیستم ستاره‌ای ===== */
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: center;
-            gap: 6px;
-            font-size: 1.8rem;
-            margin: 8px 0;
+        .footer {
+            background: rgba(0,0,0,0.3);
+            border-radius: 25px;
+            margin-top: 30px;
+            padding: 20px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
         }
-        .star-rating input { display: none; }
-        .star-rating label {
-            cursor: pointer;
-            color: #555;
-            transition: all 0.2s;
-        }
-        body.light-mode .star-rating label { color: #ccc; }
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
-            color: #ffd700;
-            transform: scale(1.15);
-        }
-        body.en-mode .star-rating { flex-direction: row; }
 
-        /* ===== نظرات ===== */
-        .comment {
-            background: rgba(255,255,255,0.05);
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin: 6px 0;
-        }
-        body.light-mode .comment { background: #f5f5f5; }
-        .comment .comment-meta { font-size: 0.75rem; color: #888; margin-bottom: 3px; }
-        .comment .comment-text { margin: 3px 0; font-size: 0.9rem; }
-        .comment .sentiment-positive { color: #4caf50; font-size: 0.75rem; }
-        .comment .sentiment-negative { color: #ff6b6b; font-size: 0.75rem; }
-        .comment .sentiment-neutral { color: #ff9800; font-size: 0.75rem; }
-
-        /* ===== توست ===== */
         .toast {
             position: fixed;
             bottom: 25px;
@@ -621,1047 +222,146 @@
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             z-index: 5000;
-            animation: slideInRight 0.4s ease;
             border-right: 4px solid #ffd700;
-            max-width: 320px;
-            font-size: 0.9rem;
         }
-        body.light-mode .toast { background: white; color: #333; border-right-color: #764ba2; }
-        body.en-mode .toast { right: auto; left: 25px; border-right: none; border-left: 4px solid #ffd700; }
-        @keyframes slideInRight {
-            from { transform: translateX(120px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        body.en-mode .toast { animation: slideInLeft 0.4s ease; }
-        @keyframes slideInLeft {
-            from { transform: translateX(-120px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* ===== آمار ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-        .stats-card {
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            color: white;
-            transition: all 0.3s;
-        }
-        .stats-card:hover { transform: translateY(-3px); }
-        .stats-card .stat-icon { font-size: 1.5rem; }
-        .stats-card .stat-number { font-size: 1.3rem; font-weight: bold; }
-        .stats-card .stat-label { font-size: 0.75rem; opacity: 0.85; }
-
-        /* ===== فوتر ===== */
-        .footer {
-            background: rgba(0,0,0,0.3);
-            border-radius: 25px;
-            margin-top: 30px;
-            padding: 20px 15px 15px;
-            color: rgba(255,255,255,0.5);
-            text-align: center;
-            font-size: 0.85rem;
-        }
-        body.light-mode .footer {
-            background: rgba(0,0,0,0.04);
-            color: #888;
-        }
-        .footer a { color: #ffd700; text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
-        .footer .lang-btns { margin-top: 8px; }
-        .footer .lang-btns button {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #ffd700;
-            padding: 4px 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            margin: 0 3px;
-            transition: all 0.3s;
-            font-size: 0.8rem;
-        }
-        body.light-mode .footer .lang-btns button {
-            background: rgba(0,0,0,0.04);
-            border-color: rgba(0,0,0,0.08);
-            color: #764ba2;
-        }
-        .footer .lang-btns button:hover { background: #ffd700; color: #1a1a2e; }
-        .footer .lang-btns button.active-lang {
-            background: #ffd700;
-            color: #1a1a2e;
-            border-color: #ffd700;
-        }
-        body.light-mode .footer .lang-btns button.active-lang {
-            background: #764ba2;
-            color: white;
-            border-color: #764ba2;
-        }
-
-        /* ===== صفحه‌بندی ===== */
-        .pagination {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .pagination button {
-            padding: 6px 14px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.12);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        body.light-mode .pagination button {
-            background: #e8e8e8;
-            color: #333;
-        }
-        .pagination button:hover { background: #764ba2; color: white; }
-        .pagination button.active { background: #ffd700; color: #1a1a2e; }
-
-        /* ===== حالت خالی ===== */
         .empty-state {
             text-align: center;
             padding: 40px 15px;
             color: #888;
         }
-        .empty-state .icon { font-size: 3rem; display: block; margin-bottom: 10px; }
-        .empty-state h3 { color: #aaa; margin-bottom: 8px; font-size: 1.1rem; }
+        .empty-state .icon { font-size: 3rem; display: block; }
+        .empty-state h3 { color: #aaa; }
 
-        /* ===== پروفایل ===== */
-        .profile-stats {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .profile-stat-box {
-            padding: 15px 25px;
-            border-radius: 12px;
-            color: white;
-            min-width: 80px;
-            text-align: center;
-        }
-        .profile-stat-box .num { font-size: 1.6rem; font-weight: bold; }
-        .profile-stat-box .label { font-size: 0.75rem; opacity: 0.85; }
-        .profile-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        .profile-actions button { min-width: 120px; }
-
-        /* ===== دکمه بازگشت به بالا ===== */
-        #goToTop {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(102,126,234,0.4);
-            display: none;
-            z-index: 999;
-            transition: all 0.3s;
-        }
-        #goToTop:hover { transform: scale(1.1); }
-        body.en-mode #goToTop { right: auto; left: 25px; }
-
-        /* ===== ورود با ایمیل ===== */
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(10px);
-        }
-        .login-box {
-            background: linear-gradient(145deg, #1a1a2e, #16213e);
-            padding: 40px 35px;
-            border-radius: 30px;
-            max-width: 400px;
-            width: 90%;
-            color: white;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        body.light-mode .login-box {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-        .login-box h2 { color: #ffd700; margin-bottom: 10px; font-size: 1.8rem; }
-        body.light-mode .login-box h2 { color: #764ba2; }
-        .login-box p { color: rgba(255,255,255,0.6); margin-bottom: 20px; font-size: 0.9rem; }
-        body.light-mode .login-box p { color: #888; }
-        .login-box .form-group { margin-bottom: 15px; text-align: right; }
-        .login-box .form-group label { color: rgba(255,255,255,0.8); display: block; margin-bottom: 5px; }
-        body.light-mode .login-box .form-group label { color: #555; }
-        .login-box .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        body.light-mode .login-box .form-group input {
-            background: #f5f5f5;
-            color: #333;
-            border-color: #e0e0e0;
-        }
-        .login-box .form-group input:focus {
-            border-color: #ffd700;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
-        }
-        .login-box .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #ffd700, #f9a825);
-            color: #1a1a2e;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .login-box .login-btn:hover { transform: scale(1.02); box-shadow: 0 5px 20px rgba(255,215,0,0.3); }
-        .login-box .error-msg {
-            color: #ff6b6b;
-            font-size: 0.85rem;
-            margin-top: 10px;
-            display: none;
-        }
-        .login-box .user-info {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .login-box .user-info button {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        body.light-mode .login-box .user-info button {
-            background: rgba(0,0,0,0.05);
-            color: #333;
-            border-color: #ddd;
-        }
-        .login-box .user-info button:hover { background: #ff6b6b; color: white; border-color: #ff6b6b; }
-        .login-box .user-email {
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        body.light-mode .login-box .user-email { color: #764ba2; }
-        body.en-mode .login-box { direction: ltr; text-align: center; }
-        body.en-mode .login-box .form-group { text-align: left; }
-
-        /* ===== ریسپانسیو ===== */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .header { padding: 15px; }
             .header h1 { font-size: 1.8rem; }
-            .header .subtitle { font-size: 0.85rem; }
-            .movies-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-            .tab-btn { padding: 6px 12px; font-size: 0.75rem; }
-            .modal-content { padding: 15px; margin: 10px; }
-            .form-row { flex-direction: column; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .filter-bar select, .filter-bar input { min-width: 70px; font-size: 0.75rem; padding: 5px 10px; }
+            .movies-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
             .movie-poster { height: 150px; }
-            .theme-toggle { width: 38px; height: 38px; font-size: 16px; top: 8px; left: 8px; }
-            .toast { right: 10px; left: 10px; bottom: 10px; max-width: none; font-size: 0.8rem; }
-            .tab-content { padding: 15px; }
-            body.en-mode .theme-toggle { left: auto; right: 8px; }
-            body.en-mode #goToTop { right: auto; left: 10px; }
-            body.en-mode .toast { right: auto; left: 10px; }
-            .profile-actions { flex-direction: column; align-items: center; }
         }
         @media (max-width: 480px) {
             .movies-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .movie-card { padding: 8px; }
             .movie-poster { height: 120px; }
-            .movie-card h3 { font-size: 0.8rem; height: 1.8em; }
+            .movie-card h3 { font-size: 0.8rem; }
             .header h1 { font-size: 1.4rem; }
-            .header .badge { font-size: 0.65rem; padding: 3px 10px; }
-            .modal-content { padding: 12px; }
-            .modal-content h2 { font-size: 1.1rem; }
-            .star-rating { font-size: 1.4rem; }
-            .profile-stat-box { padding: 10px 15px; min-width: 60px; }
-            .profile-stat-box .num { font-size: 1.2rem; }
-            .pagination button { padding: 4px 10px; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
+
     <!-- ===== صفحه ورود ===== -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <h2 id="loginTitle">🎬 سینماچی</h2>
-            <p id="loginDesc">با ایمیل خود وارد شوید تا اطلاعاتتان ذخیره شود</p>
-            <div class="form-group">
-                <label id="loginEmailLabel">📧 ایمیل</label>
-                <input type="email" id="loginEmail" placeholder="example@gmail.com" value="">
-            </div>
-            <button class="login-btn" onclick="loginUser()" id="loginBtn">🚀 ورود / ثبت نام</button>
-            <div class="error-msg" id="loginError">لطفاً یک ایمیل معتبر وارد کنید</div>
-            <div class="user-info" id="userInfo" style="display:none;">
-                <div id="userInfoText">👤 کاربر: <span class="user-email" id="displayEmail"></span></div>
-                <button onclick="logoutUser()" id="logoutBtn">🚪 خروج</button>
-            </div>
+            <h2>🎬 سینماچی</h2>
+            <p>با ایمیل خود وارد شوید</p>
+            <input type="email" id="loginEmail" placeholder="example@gmail.com">
+            <button class="login-btn" onclick="loginUser()">🚀 ورود</button>
+            <div class="error-msg" id="loginError">لطفاً ایمیل معتبر وارد کنید</div>
         </div>
     </div>
-
-    <!-- ===== دکمه تغییر تم ===== -->
-    <button class="theme-toggle" onclick="toggleTheme()" title="تغییر تم">🌓</button>
 
     <div class="container">
         <!-- ===== هدر ===== -->
         <div class="header">
-            <h1>🎬 <span id="appName">سینماچی</span></h1>
-            <p class="subtitle" id="headerSubtitle">✨ هوشمندترین سیستم مدیریت فیلم ایران ✨</p>
+            <h1>🎬 <span>سینماچی</span></h1>
             <div class="badge-group">
-                <span class="badge">🎬 <span id="movieCount">0</span> <span id="labelMovies">فیلم</span></span>
-                <span class="badge">❤️ <span id="favCount">0</span> <span id="labelFavorites">علاقه‌مندی</span></span>
-                <span class="badge">📋 <span id="watchlistCount">0</span> <span id="labelWatchlist">لیست تماشا</span></span>
-                <span class="badge">✅ <span id="watchedCount">0</span> <span id="labelWatched">دیده‌شده</span></span>
-                <span class="badge" style="background:rgba(100,200,255,0.2); border-color:rgba(100,200,255,0.3);">
-                    👤 <span id="headerUser">مهمان</span>
-                    <button class="logout-header-btn" onclick="logoutUser()" id="headerLogoutBtn" style="display:none;">🚪 خروج</button>
-                </span>
+                <span class="badge">🎬 <span id="movieCount">0</span> فیلم</span>
+                <span class="badge">👤 <span id="headerUser">مهمان</span></span>
+                <button class="logout-btn" onclick="logoutUser()" id="logoutBtn">🚪 خروج</button>
             </div>
         </div>
 
         <!-- ===== تب‌ها ===== -->
-        <div class="tabs" id="mainTabs">
-            <button class="tab-btn active" data-tab="movies" id="tabMovies">🎬 فیلم‌ها</button>
-            <button class="tab-btn" data-tab="search" id="tabSearch">🔍 جستجو</button>
-            <button class="tab-btn" data-tab="add" id="tabAdd">➕ افزودن</button>
-            <button class="tab-btn" data-tab="recommend" id="tabRecommend">🎯 پیشنهاد</button>
-            <button class="tab-btn" data-tab="top" id="tabTop">🏆 برترین‌ها</button>
-            <button class="tab-btn" data-tab="favorites" id="tabFavorites">❤️ علاقه‌مندی</button>
-            <button class="tab-btn" data-tab="watchlist" id="tabWatchlist">📋 لیست تماشا</button>
-            <button class="tab-btn" data-tab="stats" id="tabStats">📊 آمار</button>
-            <button class="tab-btn" data-tab="profile" id="tabProfile">👤 پروفایل</button>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:25px; justify-content:center;">
+            <button class="tab-btn active" onclick="showTab('movies')">🎬 فیلم‌ها</button>
+            <button class="tab-btn" onclick="showTab('add')">➕ افزودن</button>
         </div>
 
         <!-- ===== تب فیلم‌ها ===== -->
         <div id="movies" class="tab-content active">
-            <h2 id="moviesTitle">🎬 گنجینه فیلم‌ها</h2>
+            <h2>🎬 گنجینه فیلم‌ها</h2>
             <div class="filter-bar">
-                <button class="btn-primary" onclick="applyFilters()" id="btnReload">🔄 بارگیری</button>
+                <button class="btn-primary" onclick="applyFilters()">🔄 بارگیری</button>
                 <select id="filterGenre" onchange="applyFilters()">
-                    <option value="" id="optAllGenres">همه ژانرها</option>
+                    <option value="">همه ژانرها</option>
                     <option>درام</option><option>اکشن</option><option>کمدی</option>
                     <option>عاشقانه</option><option>علمی تخیلی</option><option>جنایی</option>
-                    <option>ماجراجویی</option><option>ترسناک</option><option>فانتزی</option>
-                    <option>انیمیشن</option><option>مستند</option>
-                </select>
-                <select id="filterYear" onchange="applyFilters()">
-                    <option value="" id="optAllYears">همه سال‌ها</option>
-                    <option>۲۰۲۶</option><option>۲۰۲۵</option><option>۲۰۲۴</option>
-                    <option>۲۰۲۳</option><option>۲۰۲۲</option><option>۲۰۲۱</option>
-                    <option>۲۰۲۰</option><option>۲۰۱۹</option><option>۲۰۱۸</option>
-                    <option>۲۰۱۷</option><option>۲۰۱۶</option><option>۲۰۱۵</option>
-                    <option>۲۰۱۴</option><option>۲۰۱۳</option><option>۲۰۱۲</option>
-                    <option>۲۰۱۱</option><option>۲۰۱۰</option>
-                </select>
-                <select id="filterRating" onchange="applyFilters()">
-                    <option value="" id="optAllRatings">همه امتیازها</option>
-                    <option value="9">۹+ ⭐</option>
-                    <option value="8">۸+ ⭐</option>
-                    <option value="7">۷+ 👍</option>
-                    <option value="6">۶+</option>
-                    <option value="5">۵+</option>
-                </select>
-                <select id="sortMovies" onchange="applyFilters()">
-                    <option value="rating-desc" id="sortRatingDesc">امتیاز (نزولی)</option>
-                    <option value="rating-asc" id="sortRatingAsc">امتیاز (صعودی)</option>
-                    <option value="year-desc" id="sortYearDesc">سال (جدید)</option>
-                    <option value="year-asc" id="sortYearAsc">سال (قدیم)</option>
-                    <option value="name" id="sortName">نام</option>
                 </select>
                 <input type="text" id="searchInputQuick" placeholder="🔍 جستجوی سریع..." oninput="applyFilters()">
             </div>
             <div id="moviesList" class="movies-grid"></div>
-            <div id="pagination" class="pagination"></div>
         </div>
 
-        <!-- ===== تب جستجو ===== -->
-        <div id="search" class="tab-content">
-            <h2 id="searchTitle">🔍 جستجو در TMDB</h2>
-            <div class="form-group">
-                <label id="searchLabel">نام فیلم (به انگلیسی)</label>
-                <input type="text" id="searchInput" placeholder="مثال: The Matrix" oninput="searchMovies()">
-                <div id="searchSuggestions" style="background:white; border-radius:10px; margin-top:5px; max-height:180px; overflow-y:auto; display:none; box-shadow:0 5px 15px rgba(0,0,0,0.1);"></div>
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn-primary" onclick="searchMovies()" id="btnSearch">🔍 جستجو</button>
-                <button class="btn-danger" onclick="clearSearch()" id="btnClear">🗑️ پاک کردن</button>
-            </div>
-            <div id="searchResults" class="search-results-grid" style="margin-top:15px;"></div>
-        </div>
-
-        <!-- ===== تب افزودن دستی ===== -->
+        <!-- ===== تب افزودن ===== -->
         <div id="add" class="tab-content">
-            <h2 id="addTitle">➕ افزودن فیلم</h2>
-            <div class="form-row">
-                <div class="form-group"><label id="addNameLabel">نام فیلم</label><input type="text" id="newName" placeholder="نام فیلم"></div>
-                <div class="form-group"><label id="addGenreLabel">ژانر</label>
-                    <select id="newGenre">
-                        <option>درام</option><option>اکشن</option><option>کمدی</option>
-                        <option>عاشقانه</option><option>علمی تخیلی</option><option>جنایی</option>
-                        <option>ماجراجویی</option><option>ترسناک</option><option>فانتزی</option>
-                        <option>انیمیشن</option><option>مستند</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label id="addRatingLabel">امتیاز (0-10)</label><input type="number" id="newRating" step="0.1" min="0" max="10" placeholder="مثلاً 8.5"></div>
-                <div class="form-group"><label id="addYearLabel">سال انتشار</label><input type="text" id="newYear" placeholder="مثال: ۲۰۲۴"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label id="addDirectorLabel">کارگردان</label><input type="text" id="newDirector" placeholder="نام کارگردان"></div>
-                <div class="form-group"><label id="addDurationLabel">مدت زمان (دقیقه)</label><input type="number" id="newDuration" placeholder="مثلاً ۱۲۰"></div>
-            </div>
-            <div class="form-group"><label id="addDescLabel">خلاصه داستان</label><textarea id="newDesc" rows="2" placeholder="خلاصه داستان فیلم..."></textarea></div>
-            <div class="form-row">
-                <div class="form-group"><label id="addCastLabel">بازیگران (با کاما جدا کنید)</label><input type="text" id="newCast" placeholder="مثلاً لئوناردو دیکاپریو، برد پیت"></div>
-                <div class="form-group"><label id="addStatusLabel">وضعیت</label>
-                    <select id="newStatus">
-                        <option value="showing" id="statusShowing">در حال اکران</option>
-                        <option value="released" selected id="statusReleased">اکران شده</option>
-                        <option value="coming" id="statusComing">در راه</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-primary" onclick="addMovie()" id="btnAddMovie">➕ افزودن فیلم</button>
-            <div id="addResult" style="margin-top:12px;"></div>
-        </div>
-
-        <!-- ===== تب پیشنهاد ===== -->
-        <div id="recommend" class="tab-content">
-            <h2 id="recommendTitle">🎯 پیشنهاد ویژه</h2>
-            <div class="form-group">
-                <label id="recommendGenreLabel">ژانر مورد علاقه</label>
-                <select id="recommendGenre">
+            <h2>➕ افزودن فیلم</h2>
+            <div style="display:flex; flex-direction:column; gap:10px; max-width:500px;">
+                <input type="text" id="newName" placeholder="نام فیلم" style="padding:8px 12px; border-radius:12px; border:2px solid #e0e0e0;">
+                <select id="newGenre" style="padding:8px 12px; border-radius:12px; border:2px solid #e0e0e0;">
                     <option>درام</option><option>اکشن</option><option>کمدی</option>
                     <option>عاشقانه</option><option>علمی تخیلی</option><option>جنایی</option>
-                    <option>ماجراجویی</option><option>ترسناک</option><option>فانتزی</option>
-                    <option>انیمیشن</option><option>مستند</option>
                 </select>
-            </div>
-            <button class="btn-primary" onclick="recommendMovies()" id="btnRecommend">✨ دریافت پیشنهاد</button>
-            <div id="recommendResults" class="movies-grid"></div>
-        </div>
-
-        <!-- ===== تب برترین‌ها ===== -->
-        <div id="top" class="tab-content">
-            <h2 id="topTitle">🏆 فیلم‌های برتر</h2>
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
-                <label style="font-weight:bold; font-size:0.9rem;" id="topCountLabel">تعداد: </label>
-                <input type="number" id="topCount" value="5" min="1" max="20" style="width:70px; padding:6px; border-radius:8px; border:2px solid #e0e0e0;">
-                <button class="btn-primary" onclick="loadTopMovies()" id="btnTopShow">نمایش</button>
-            </div>
-            <div id="topResults" class="movies-grid"></div>
-        </div>
-
-        <!-- ===== تب علاقه‌مندی‌ها ===== -->
-        <div id="favorites" class="tab-content">
-            <h2 id="favoritesTitle">❤️ فیلم‌های مورد علاقه من</h2>
-            <div id="favoritesList" class="movies-grid"></div>
-        </div>
-
-        <!-- ===== تب لیست تماشا ===== -->
-        <div id="watchlist" class="tab-content">
-            <h2 id="watchlistTitle">📋 لیست تماشا <span id="watchlistBadge" style="background:#ffd700; color:#1a1a2e; padding:2px 12px; border-radius:50px; font-size:0.75rem;">0</span></h2>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-                <button class="btn-primary" onclick="exportWatchlist()" id="btnExportJSON">📤 خروجی JSON</button>
-                <button class="btn-success" onclick="exportWatchlistCSV()" id="btnExportCSV">📊 خروجی CSV</button>
-            </div>
-            <div id="watchlistList" class="movies-grid"></div>
-        </div>
-
-        <!-- ===== تب آمار ===== -->
-        <div id="stats" class="tab-content">
-            <h2 id="statsTitle">📊 آمار سیستم</h2>
-            <button class="btn-primary" onclick="loadStats()" id="btnStatsLoad">🔄 بارگیری</button>
-            <div id="statsContent" style="margin-top:15px;"></div>
-            <div style="margin-top:20px;">
-                <canvas id="ratingChart" style="max-height:200px; width:100%;"></canvas>
-            </div>
-            <div style="margin-top:20px;">
-                <canvas id="genreChart" style="max-height:180px; width:100%;"></canvas>
+                <input type="number" id="newRating" placeholder="امتیاز (0-10)" step="0.1" min="0" max="10" style="padding:8px 12px; border-radius:12px; border:2px solid #e0e0e0;">
+                <input type="text" id="newYear" placeholder="سال (مثال: ۲۰۲۴)" style="padding:8px 12px; border-radius:12px; border:2px solid #e0e0e0;">
+                <button class="btn-primary" onclick="addMovie()">➕ افزودن فیلم</button>
+                <div id="addResult" style="margin-top:10px;"></div>
             </div>
         </div>
-
-        <!-- ===== تب پروفایل ===== -->
-        <div id="profile" class="tab-content">
-            <h2 id="profileTitle">👤 پروفایل کاربر</h2>
-            <div style="text-align:center; padding:15px;">
-                <div style="font-size:3.5rem;">👤</div>
-                <h3 id="profileName" style="font-size:1.1rem;">کاربر مهمان</h3>
-                <p id="profileEmail" style="color:#888; font-size:0.85rem;">ایمیل: ثبت نشده</p>
-                <p id="profileJoinDate" style="color:#888; font-size:0.85rem;">تاریخ عضویت: امروز</p>
-                <div class="profile-stats">
-                    <div class="profile-stat-box" style="background:linear-gradient(135deg,#667eea,#764ba2);">
-                        <div class="num" id="profileMovies">0</div>
-                        <div class="label" id="profileLabelMovies">فیلم‌ها</div>
-                    </div>
-                    <div class="profile-stat-box" style="background:linear-gradient(135deg,#f093fb,#f5576c);">
-                        <div class="num" id="profileFavorites">0</div>
-                        <div class="label" id="profileLabelFavorites">علاقه‌مندی</div>
-                    </div>
-                    <div class="profile-stat-box" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">
-                        <div class="num" id="profileWatchlist">0</div>
-                        <div class="label" id="profileLabelWatchlist">لیست تماشا</div>
-                    </div>
-                </div>
-                <div class="profile-actions">
-                    <button class="btn-danger" onclick="resetProfile()" id="btnResetData">🔄 بازنشانی همه داده‌ها</button>
-                    <button class="btn-logout" onclick="logoutUser()" id="profileLogoutBtn">🚪 خروج از حساب کاربری</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== مودال جزئیات فیلم ===== -->
-        <div id="detailModal" class="modal">
-            <div class="modal-content">
-                <button class="close-modal" onclick="closeDetailModal()">✕</button>
-                <h2 id="detailTitle">🎬 نام فیلم</h2>
-                <div class="poster-container">
-                    <img id="detailPoster" src="" alt="پوستر">
-                </div>
-                <div class="detail-row"><strong id="detailGenreLabel">🎭 ژانر:</strong> <span id="detailGenre"></span></div>
-                <div class="detail-row"><strong id="detailRatingLabel">⭐ امتیاز:</strong> <span id="detailRating" class="rating-stars"></span></div>
-                <div class="detail-row"><strong id="detailYearLabel">📅 سال:</strong> <span id="detailYear"></span></div>
-                <div class="detail-row"><strong id="detailDirectorLabel">🎬 کارگردان:</strong> <span id="detailDirector"></span></div>
-                <div class="detail-row"><strong id="detailDurationLabel">⏱️ مدت زمان:</strong> <span id="detailDuration"></span></div>
-                <div class="detail-row"><strong id="detailCastLabel">🎭 بازیگران:</strong> <span id="detailCast"></span></div>
-                <div class="detail-row"><strong id="detailDescLabel">📝 خلاصه:</strong> <span id="detailDesc"></span></div>
-                <div class="detail-row"><strong id="detailStatusLabel">📌 وضعیت:</strong> <span id="detailStatus"></span></div>
-                <div class="detail-row"><strong id="detailFavStatusLabel">❤️ وضعیت:</strong> <span id="detailFavStatus">ثبت نشده</span></div>
-                <div class="detail-row"><strong id="detailWatchlistStatusLabel">📋 لیست تماشا:</strong> <span id="detailWatchlistStatus">ثبت نشده</span></div>
-
-                <!-- لینک‌های مشاهده و تریلر -->
-                <div class="detail-row">
-                    <strong id="detailLinksLabel">🔗 لینک‌ها:</strong>
-                    <div class="link-group">
-                        <a id="detailTrailerLink" href="#" target="_blank" class="btn-trailer" style="color:white;">▶️ تریلر</a>
-                        <a id="detailImdbLink" href="#" target="_blank" class="btn-imdb" style="color:#000;">🎬 IMDb</a>
-                        <a id="detailWatchLink" href="#" target="_blank" class="btn-primary" style="background:linear-gradient(135deg,#4caf50,#2e7d32);">👁️ مشاهده</a>
-                    </div>
-                </div>
-
-                <!-- سیستم امتیازدهی ستاره‌ای -->
-                <div class="detail-row">
-                    <strong id="detailYourRatingLabel">⭐ امتیاز شما:</strong>
-                    <div class="star-rating" id="userRating">
-                        <input type="radio" name="stars" id="star5" value="5" onchange="rateMovie(currentDetailMovie?.id, 5)">
-                        <label for="star5">★</label>
-                        <input type="radio" name="stars" id="star4" value="4" onchange="rateMovie(currentDetailMovie?.id, 4)">
-                        <label for="star4">★</label>
-                        <input type="radio" name="stars" id="star3" value="3" onchange="rateMovie(currentDetailMovie?.id, 3)">
-                        <label for="star3">★</label>
-                        <input type="radio" name="stars" id="star2" value="2" onchange="rateMovie(currentDetailMovie?.id, 2)">
-                        <label for="star2">★</label>
-                        <input type="radio" name="stars" id="star1" value="1" onchange="rateMovie(currentDetailMovie?.id, 1)">
-                        <label for="star1">★</label>
-                    </div>
-                    <div id="userRatingDisplay" style="text-align:center; color:#888; font-size:0.85rem;">هنوز امتیاز نداده‌اید</div>
-                </div>
-
-                <!-- نظرات -->
-                <div class="detail-row">
-                    <strong id="detailCommentsLabel">💬 نظرات کاربران:</strong>
-                    <div id="commentsList"></div>
-                    <div style="margin-top:8px;">
-                        <textarea id="newComment" rows="2" placeholder="نظر خود را بنویسید..." style="width:100%; padding:8px 12px; border-radius:10px; border:2px solid #e0e0e0; resize:vertical; font-size:0.85rem;"></textarea>
-                        <button class="btn-primary" onclick="addComment()" style="margin-top:4px; font-size:0.8rem; padding:6px 16px;" id="btnSendComment">📝 ارسال نظر</button>
-                    </div>
-                </div>
-
-                <div class="detail-row actions">
-                    <button class="btn-primary" id="detailFavBtn" onclick="toggleFavoriteDetail()">❤️ افزودن به علاقه‌مندی‌ها</button>
-                    <button class="btn-warning" id="detailWatchlistBtn" onclick="toggleWatchlistDetail()">📋 افزودن به لیست تماشا</button>
-                    <button class="btn-danger" onclick="deleteMovieDetail()" id="detailDeleteBtn">🗑️ حذف فیلم</button>
-                </div>
-                <div class="detail-row actions">
-                    <button class="btn-primary" onclick="shareMovie()" id="btnShare">📤 اشتراک‌گذاری</button>
-                    <button class="btn-success" onclick="copyMovieLink()" id="btnCopyLink">🔗 کپی لینک</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== دکمه بازگشت به بالا ===== -->
-        <button id="goToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
         <!-- ===== فوتر ===== -->
         <footer class="footer">
-            <p id="footerText">© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.</p>
-            <div class="lang-btns">
-                <button onclick="changeLanguage('fa')" id="langFa">🇮🇷 فارسی</button>
-                <button onclick="changeLanguage('en')" id="langEn">🇬🇧 English</button>
-            </div>
+            <p>© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.</p>
         </footer>
     </div>
 
     <script>
         // =============================================
-        // تنظیمات و داده‌ها
+        // تنظیمات
         // =============================================
-        const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
-        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-
-        let movies = [];
-        let favorites = JSON.parse(localStorage.getItem('cinemachi_favorites') || '[]');
-        let watchlist = JSON.parse(localStorage.getItem('cinemachi_watchlist') || '[]');
-        let watched = JSON.parse(localStorage.getItem('cinemachi_watched') || '[]');
-        let userRatings = JSON.parse(localStorage.getItem('cinemachi_ratings') || '{}');
-        let comments = JSON.parse(localStorage.getItem('cinemachi_comments') || '{}');
-        let currentDetailMovie = null;
-        let currentPage = 1;
-        const ITEMS_PER_PAGE = 8;
-
         let currentUser = null;
-        let currentLanguage = 'fa';
+        let movies = [];
         const STORAGE_PREFIX = 'cinemachi_';
 
         // =============================================
-        // سیستم ترجمه
-        // =============================================
-        const translations = {
-            fa: {
-                appName: 'سینماچی',
-                headerSubtitle: '✨ هوشمندترین سیستم مدیریت فیلم ایران ✨',
-                labelMovies: 'فیلم',
-                labelFavorites: 'علاقه‌مندی',
-                labelWatchlist: 'لیست تماشا',
-                labelWatched: 'دیده‌شده',
-                headerUser: 'مهمان',
-                headerLogout: '🚪 خروج',
-                tabMovies: '🎬 فیلم‌ها',
-                tabSearch: '🔍 جستجو',
-                tabAdd: '➕ افزودن',
-                tabRecommend: '🎯 پیشنهاد',
-                tabTop: '🏆 برترین‌ها',
-                tabFavorites: '❤️ علاقه‌مندی',
-                tabWatchlist: '📋 لیست تماشا',
-                tabStats: '📊 آمار',
-                tabProfile: '👤 پروفایل',
-                moviesTitle: '🎬 گنجینه فیلم‌ها',
-                btnReload: '🔄 بارگیری',
-                optAllGenres: 'همه ژانرها',
-                optAllYears: 'همه سال‌ها',
-                optAllRatings: 'همه امتیازها',
-                sortRatingDesc: 'امتیاز (نزولی)',
-                sortRatingAsc: 'امتیاز (صعودی)',
-                sortYearDesc: 'سال (جدید)',
-                sortYearAsc: 'سال (قدیم)',
-                sortName: 'نام',
-                searchQuick: '🔍 جستجوی سریع...',
-                searchTitle: '🔍 جستجو در TMDB',
-                searchLabel: 'نام فیلم (به انگلیسی)',
-                btnSearch: '🔍 جستجو',
-                btnClear: '🗑️ پاک کردن',
-                searchPlaceholder: 'مثال: The Matrix',
-                addTitle: '➕ افزودن فیلم',
-                addNameLabel: 'نام فیلم',
-                addGenreLabel: 'ژانر',
-                addRatingLabel: 'امتیاز (0-10)',
-                addYearLabel: 'سال انتشار',
-                addDirectorLabel: 'کارگردان',
-                addDurationLabel: 'مدت زمان (دقیقه)',
-                addDescLabel: 'خلاصه داستان',
-                addCastLabel: 'بازیگران (با کاما جدا کنید)',
-                addStatusLabel: 'وضعیت',
-                statusShowing: 'در حال اکران',
-                statusReleased: 'اکران شده',
-                statusComing: 'در راه',
-                btnAddMovie: '➕ افزودن فیلم',
-                addNamePlaceholder: 'نام فیلم',
-                addYearPlaceholder: 'مثال: ۲۰۲۴',
-                addDirectorPlaceholder: 'نام کارگردان',
-                addDurationPlaceholder: 'مثلاً ۱۲۰',
-                addDescPlaceholder: 'خلاصه داستان فیلم...',
-                addCastPlaceholder: 'مثلاً لئوناردو دیکاپریو، برد پیت',
-                addRatingPlaceholder: 'مثلاً 8.5',
-                recommendTitle: '🎯 پیشنهاد ویژه',
-                recommendGenreLabel: 'ژانر مورد علاقه',
-                btnRecommend: '✨ دریافت پیشنهاد',
-                topTitle: '🏆 فیلم‌های برتر',
-                topCountLabel: 'تعداد: ',
-                btnTopShow: 'نمایش',
-                favoritesTitle: '❤️ فیلم‌های مورد علاقه من',
-                watchlistTitle: '📋 لیست تماشا',
-                btnExportJSON: '📤 خروجی JSON',
-                btnExportCSV: '📊 خروجی CSV',
-                statsTitle: '📊 آمار سیستم',
-                btnStatsLoad: '🔄 بارگیری',
-                profileTitle: '👤 پروفایل کاربر',
-                profileName: 'کاربر مهمان',
-                profileEmail: 'ایمیل: ثبت نشده',
-                profileJoinDate: 'تاریخ عضویت: امروز',
-                profileLabelMovies: 'فیلم‌ها',
-                profileLabelFavorites: 'علاقه‌مندی',
-                profileLabelWatchlist: 'لیست تماشا',
-                btnResetData: '🔄 بازنشانی همه داده‌ها',
-                profileLogout: '🚪 خروج از حساب کاربری',
-                detailGenreLabel: '🎭 ژانر:',
-                detailRatingLabel: '⭐ امتیاز:',
-                detailYearLabel: '📅 سال:',
-                detailDirectorLabel: '🎬 کارگردان:',
-                detailDurationLabel: '⏱️ مدت زمان:',
-                detailCastLabel: '🎭 بازیگران:',
-                detailDescLabel: '📝 خلاصه:',
-                detailStatusLabel: '📌 وضعیت:',
-                detailFavStatusLabel: '❤️ وضعیت:',
-                detailWatchlistStatusLabel: '📋 لیست تماشا:',
-                detailLinksLabel: '🔗 لینک‌ها:',
-                linkTrailer: '▶️ تریلر',
-                linkImdb: '🎬 IMDb',
-                linkWatch: '👁️ مشاهده',
-                detailYourRatingLabel: '⭐ امتیاز شما:',
-                detailCommentsLabel: '💬 نظرات کاربران:',
-                btnSendComment: '📝 ارسال نظر',
-                detailFavBtn: '❤️ افزودن به علاقه‌مندی‌ها',
-                detailFavBtnRemove: '❌ حذف از علاقه‌مندی‌ها',
-                detailWatchlistBtn: '📋 افزودن به لیست تماشا',
-                detailWatchlistBtnRemove: '❌ حذف از لیست تماشا',
-                detailDeleteBtn: '🗑️ حذف فیلم',
-                btnShare: '📤 اشتراک‌گذاری',
-                btnCopyLink: '🔗 کپی لینک',
-                detailFavStatusIn: '❤️ در علاقه‌مندی‌ها',
-                detailFavStatusOut: '🤍 ثبت نشده',
-                detailWatchlistStatusIn: '📋 در لیست تماشا',
-                detailWatchlistStatusOut: '📋 ثبت نشده',
-                noRating: 'هنوز امتیاز نداده‌اید',
-                noComments: 'هنوز نظری ثبت نشده است',
-                commentPlaceholder: 'نظر خود را بنویسید...',
-                loginDesc: 'با ایمیل خود وارد شوید تا اطلاعاتتان ذخیره شود',
-                loginEmailLabel: '📧 ایمیل',
-                loginBtn: '🚀 ورود / ثبت نام',
-                loginError: 'لطفاً یک ایمیل معتبر وارد کنید',
-                userInfoText: '👤 کاربر: ',
-                logoutBtn: '🚪 خروج',
-                footerText: '© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.',
-                langFa: '🇮🇷 فارسی',
-                langEn: '🇬🇧 English',
-                emptyTitle: 'هیچ فیلمی پیدا نشد',
-                emptyDesc: 'می‌توانید از طریق جستجو یا افزودن دستی فیلم‌های جدید را اضافه کنید',
-                statusShowingText: '🟢 در حال اکران',
-                statusReleasedText: '🔵 اکران شده',
-                statusComingText: '🟠 در راه',
-                toastWelcome: '👋 خوش آمدید',
-                toastLogout: '🚪 خارج شدید',
-                toastDeleted: '🗑️ فیلم با موفقیت حذف شد',
-                toastAdded: '🎬 فیلم با موفقیت اضافه شد!',
-                toastFavoriteAdded: '❤️ به علاقه‌مندی‌ها اضافه شد',
-                toastFavoriteRemoved: '❌ از علاقه‌مندی‌ها حذف شد',
-                toastWatchlistAdded: '📋 به لیست تماشا اضافه شد',
-                toastWatchlistRemoved: '❌ از لیست تماشا حذف شد',
-                toastCommentAdded: '✅ نظر شما ثبت شد',
-                toastRatingAdded: '⭐ امتیاز شما ثبت شد: ',
-                toastStars: ' ستاره',
-                toastLinkCopied: '🔗 لینک فیلم کپی شد',
-                toastExportJSON: '📤 خروجی JSON دانلود شد',
-                toastExportCSV: '📊 خروجی CSV دانلود شد',
-                toastNoMovie: '❌ فیلم پیدا نشد',
-                toastEnterName: '❌ لطفاً نام فیلم را وارد کنید',
-                toastValidRating: '❌ امتیاز باید بین ۰ تا ۱۰ باشد',
-                toastEnterComment: '❌ لطفاً نظر خود را بنویسید',
-                toastSelectMovie: '❌ لطفاً ابتدا فیلمی را انتخاب کنید',
-                toastEnterEmail: '❌ لطفاً یک ایمیل معتبر وارد کنید',
-                toastLoginFirst: '❌ لطفاً وارد شوید',
-                toastAllDataDeleted: '🗑️ همه داده‌ها پاک شد',
-                toastThemeDark: '🌙 حالت تاریک',
-                toastThemeLight: '☀️ حالت روشن',
-                toastLanguageFa: '🌍 زبان به فارسی تغییر کرد',
-                toastLanguageEn: '🌍 Language changed to English',
-                toastRecommend: '🎯 ${count} فیلم پیشنهاد شد!',
-                toastNoRecommend: '😔 فیلمی با ژانر "${genre}" پیدا نشد',
-                toastTop: '🏆 ${count} فیلم برتر نمایش داده شد',
-                toastStatsUpdated: '📊 آمار به‌روز شد',
-                toastSearchError: '❌ خطا در ارتباط با TMDB',
-                toastMovieNotFound: '😔 فیلمی پیدا نشد',
-                toastSearching: '⏳ در حال جستجو...'
-            },
-            en: {
-                appName: 'Cinemachi',
-                headerSubtitle: '✨ The Smartest Movie Management System ✨',
-                labelMovies: 'Movies',
-                labelFavorites: 'Favorites',
-                labelWatchlist: 'Watchlist',
-                labelWatched: 'Watched',
-                headerUser: 'Guest',
-                headerLogout: '🚪 Logout',
-                tabMovies: '🎬 Movies',
-                tabSearch: '🔍 Search',
-                tabAdd: '➕ Add',
-                tabRecommend: '🎯 Recommend',
-                tabTop: '🏆 Top',
-                tabFavorites: '❤️ Favorites',
-                tabWatchlist: '📋 Watchlist',
-                tabStats: '📊 Stats',
-                tabProfile: '👤 Profile',
-                moviesTitle: '🎬 Movie Collection',
-                btnReload: '🔄 Reload',
-                optAllGenres: 'All Genres',
-                optAllYears: 'All Years',
-                optAllRatings: 'All Ratings',
-                sortRatingDesc: 'Rating (Desc)',
-                sortRatingAsc: 'Rating (Asc)',
-                sortYearDesc: 'Year (New)',
-                sortYearAsc: 'Year (Old)',
-                sortName: 'Name',
-                searchQuick: '🔍 Quick Search...',
-                searchTitle: '🔍 Search in TMDB',
-                searchLabel: 'Movie Name (English)',
-                btnSearch: '🔍 Search',
-                btnClear: '🗑️ Clear',
-                searchPlaceholder: 'Example: The Matrix',
-                addTitle: '➕ Add Movie',
-                addNameLabel: 'Movie Name',
-                addGenreLabel: 'Genre',
-                addRatingLabel: 'Rating (0-10)',
-                addYearLabel: 'Release Year',
-                addDirectorLabel: 'Director',
-                addDurationLabel: 'Duration (minutes)',
-                addDescLabel: 'Synopsis',
-                addCastLabel: 'Cast (comma separated)',
-                addStatusLabel: 'Status',
-                statusShowing: 'Now Showing',
-                statusReleased: 'Released',
-                statusComing: 'Coming Soon',
-                btnAddMovie: '➕ Add Movie',
-                addNamePlaceholder: 'Movie name',
-                addYearPlaceholder: 'Example: 2024',
-                addDirectorPlaceholder: 'Director name',
-                addDurationPlaceholder: 'e.g. 120',
-                addDescPlaceholder: 'Movie synopsis...',
-                addCastPlaceholder: 'e.g. Leonardo DiCaprio, Brad Pitt',
-                addRatingPlaceholder: 'e.g. 8.5',
-                recommendTitle: '🎯 Special Recommendation',
-                recommendGenreLabel: 'Favorite Genre',
-                btnRecommend: '✨ Get Recommendation',
-                topTitle: '🏆 Top Movies',
-                topCountLabel: 'Count: ',
-                btnTopShow: 'Show',
-                favoritesTitle: '❤️ My Favorite Movies',
-                watchlistTitle: '📋 My Watchlist',
-                btnExportJSON: '📤 Export JSON',
-                btnExportCSV: '📊 Export CSV',
-                statsTitle: '📊 System Stats',
-                btnStatsLoad: '🔄 Load',
-                profileTitle: '👤 User Profile',
-                profileName: 'Guest User',
-                profileEmail: 'Email: Not registered',
-                profileJoinDate: 'Member since: Today',
-                profileLabelMovies: 'Movies',
-                profileLabelFavorites: 'Favorites',
-                profileLabelWatchlist: 'Watchlist',
-                btnResetData: '🔄 Reset All Data',
-                profileLogout: '🚪 Logout',
-                detailGenreLabel: '🎭 Genre:',
-                detailRatingLabel: '⭐ Rating:',
-                detailYearLabel: '📅 Year:',
-                detailDirectorLabel: '🎬 Director:',
-                detailDurationLabel: '⏱️ Duration:',
-                detailCastLabel: '🎭 Cast:',
-                detailDescLabel: '📝 Synopsis:',
-                detailStatusLabel: '📌 Status:',
-                detailFavStatusLabel: '❤️ Status:',
-                detailWatchlistStatusLabel: '📋 Watchlist:',
-                detailLinksLabel: '🔗 Links:',
-                linkTrailer: '▶️ Trailer',
-                linkImdb: '🎬 IMDb',
-                linkWatch: '👁️ Watch',
-                detailYourRatingLabel: '⭐ Your Rating:',
-                detailCommentsLabel: '💬 Comments:',
-                btnSendComment: '📝 Send',
-                detailFavBtn: '❤️ Add to Favorites',
-                detailFavBtnRemove: '❌ Remove from Favorites',
-                detailWatchlistBtn: '📋 Add to Watchlist',
-                detailWatchlistBtnRemove: '❌ Remove from Watchlist',
-                detailDeleteBtn: '🗑️ Delete Movie',
-                btnShare: '📤 Share',
-                btnCopyLink: '🔗 Copy Link',
-                detailFavStatusIn: '❤️ In Favorites',
-                detailFavStatusOut: '🤍 Not Added',
-                detailWatchlistStatusIn: '📋 In Watchlist',
-                detailWatchlistStatusOut: '📋 Not Added',
-                noRating: 'No rating yet',
-                noComments: 'No comments yet',
-                commentPlaceholder: 'Write your comment...',
-                loginDesc: 'Enter your email to save your data',
-                loginEmailLabel: '📧 Email',
-                loginBtn: '🚀 Login / Register',
-                loginError: 'Please enter a valid email',
-                userInfoText: '👤 User: ',
-                logoutBtn: '🚪 Logout',
-                footerText: '© 2025 All rights reserved for <strong>Cinemachi</strong>.',
-                langFa: '🇮🇷 فارسی',
-                langEn: '🇬🇧 English',
-                emptyTitle: 'No movies found',
-                emptyDesc: 'You can add new movies through search or manual add',
-                statusShowingText: '🟢 Now Showing',
-                statusReleasedText: '🔵 Released',
-                statusComingText: '🟠 Coming Soon',
-                toastWelcome: '👋 Welcome',
-                toastLogout: '🚪 Logged out',
-                toastDeleted: '🗑️ Movie deleted successfully',
-                toastAdded: '🎬 Movie added successfully!',
-                toastFavoriteAdded: '❤️ Added to favorites',
-                toastFavoriteRemoved: '❌ Removed from favorites',
-                toastWatchlistAdded: '📋 Added to watchlist',
-                toastWatchlistRemoved: '❌ Removed from watchlist',
-                toastCommentAdded: '✅ Comment added',
-                toastRatingAdded: '⭐ Your rating: ',
-                toastStars: ' stars',
-                toastLinkCopied: '🔗 Movie link copied',
-                toastExportJSON: '📤 JSON exported',
-                toastExportCSV: '📊 CSV exported',
-                toastNoMovie: '❌ Movie not found',
-                toastEnterName: '❌ Please enter movie name',
-                toastValidRating: '❌ Rating must be between 0 and 10',
-                toastEnterComment: '❌ Please write your comment',
-                toastSelectMovie: '❌ Please select a movie first',
-                toastEnterEmail: '❌ Please enter a valid email',
-                toastLoginFirst: '❌ Please login first',
-                toastAllDataDeleted: '🗑️ All data deleted',
-                toastThemeDark: '🌙 Dark mode',
-                toastThemeLight: '☀️ Light mode',
-                toastLanguageFa: '🌍 Language changed to Persian',
-                toastLanguageEn: '🌍 Language changed to English',
-                toastRecommend: '🎯 ${count} movies recommended!',
-                toastNoRecommend: '😔 No movie found with genre "${genre}"',
-                toastTop: '🏆 ${count} top movies shown',
-                toastStatsUpdated: '📊 Stats updated',
-                toastSearchError: '❌ Error connecting to TMDB',
-                toastMovieNotFound: '😔 No movies found',
-                toastSearching: '⏳ Searching...'
-            }
-        };
-
-        // =============================================
-        // دیکشنری لینک‌های فیلم‌ها
-        // =============================================
-        const movieLinks = {
-            1: { imdb: 'https://www.imdb.com/title/tt0111161/', trailer: 'https://www.youtube.com/watch?v=6hB3S9bIaco', watch: 'https://www.imdb.com/title/tt0111161/' },
-            2: { imdb: 'https://www.imdb.com/title/tt0068646/', trailer: 'https://www.youtube.com/watch?v=sY1S34973zA', watch: 'https://www.imdb.com/title/tt0068646/' },
-            3: { imdb: 'https://www.imdb.com/title/tt0468569/', trailer: 'https://www.youtube.com/watch?v=EXeTwQWrcwY', watch: 'https://www.imdb.com/title/tt0468569/' },
-            4: { imdb: 'https://www.imdb.com/title/tt0109830/', trailer: 'https://www.youtube.com/watch?v=bLvqoHBptjg', watch: 'https://www.imdb.com/title/tt0109830/' },
-            5: { imdb: 'https://www.imdb.com/title/tt1375666/', trailer: 'https://www.youtube.com/watch?v=YoHD9XEInc0', watch: 'https://www.imdb.com/title/tt1375666/' },
-            6: { imdb: 'https://www.imdb.com/title/tt0133093/', trailer: 'https://www.youtube.com/watch?v=vKQi3bBA1y8', watch: 'https://www.imdb.com/title/tt0133093/' },
-            7: { imdb: 'https://www.imdb.com/title/tt0816692/', trailer: 'https://www.youtube.com/watch?v=zSWdZVtXT7E', watch: 'https://www.imdb.com/title/tt0816692/' },
-            8: { imdb: 'https://www.imdb.com/title/tt0120338/', trailer: 'https://www.youtube.com/watch?v=2e-eXJ6HgkQ', watch: 'https://www.imdb.com/title/tt0120338/' },
-            9: { imdb: 'https://www.imdb.com/title/tt15398776/', trailer: 'https://www.youtube.com/watch?v=uYPbbksJxIg', watch: 'https://www.imdb.com/title/tt15398776/' },
-            10: { imdb: 'https://www.imdb.com/title/tt1517268/', trailer: 'https://www.youtube.com/watch?v=pBk4NYhWNMM', watch: 'https://www.imdb.com/title/tt1517268/' }
-        };
-
-        function getMovieLinks(id) {
-            if (movieLinks[id]) return movieLinks[id];
-            const movie = movies.find(m => m.id === id);
-            const name = movie ? movie.nameEn || movie.name : '';
-            return {
-                imdb: `https://www.imdb.com/find?q=${encodeURIComponent(name)}`,
-                trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+trailer`,
-                watch: `https://www.google.com/search?q=${encodeURIComponent(name)}+movie`
-            };
-        }
-
-        // =============================================
-        // توابع ذخیره‌سازی مبتنی بر کاربر
+        // توابع ذخیره‌سازی
         // =============================================
         function getStorageKey(email, type) {
             const safeEmail = email.replace(/[@.]/g, '_');
             return `${STORAGE_PREFIX}${safeEmail}_${type}`;
         }
 
-        function getUserData(email) {
-            const movies = JSON.parse(localStorage.getItem(getStorageKey(email, 'movies')) || 'null');
-            const favorites = JSON.parse(localStorage.getItem(getStorageKey(email, 'favorites')) || '[]');
-            const watchlist = JSON.parse(localStorage.getItem(getStorageKey(email, 'watchlist')) || '[]');
-            const watched = JSON.parse(localStorage.getItem(getStorageKey(email, 'watched')) || '[]');
-            const ratings = JSON.parse(localStorage.getItem(getStorageKey(email, 'ratings')) || '{}');
-            const comments = JSON.parse(localStorage.getItem(getStorageKey(email, 'comments')) || '{}');
-            const joinDate = localStorage.getItem(getStorageKey(email, 'joindate')) || new Date().toLocaleDateString('fa-IR');
-
-            return { movies, favorites, watchlist, watched, ratings, comments, joinDate };
+        function loadMoviesFromStorage() {
+            if (!currentUser) {
+                // فیلم‌های پیش‌فرض برای مهمان
+                movies = getDefaultMovies();
+                return;
+            }
+            const saved = localStorage.getItem(getStorageKey(currentUser, 'movies'));
+            if (saved) {
+                try {
+                    movies = JSON.parse(saved);
+                    return;
+                } catch(e) {}
+            }
+            movies = getDefaultMovies();
+            saveMovies();
         }
 
-        function saveUserData(email, data) {
-            if (data.movies !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'movies'), JSON.stringify(data.movies));
-            }
-            if (data.favorites !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'favorites'), JSON.stringify(data.favorites));
-            }
-            if (data.watchlist !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'watchlist'), JSON.stringify(data.watchlist));
-            }
-            if (data.watched !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'watched'), JSON.stringify(data.watched));
-            }
-            if (data.ratings !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'ratings'), JSON.stringify(data.ratings));
-            }
-            if (data.comments !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'comments'), JSON.stringify(data.comments));
-            }
-            if (data.joinDate !== undefined) {
-                localStorage.setItem(getStorageKey(email, 'joindate'), data.joinDate);
-            }
+        function saveMovies() {
+            if (!currentUser) return;
+            localStorage.setItem(getStorageKey(currentUser, 'movies'), JSON.stringify(movies));
+            updateCounts();
         }
 
         function getDefaultMovies() {
             return [
-                { id: 1, name: "رستگاری در شاوشنک", nameEn: "The Shawshank Redemption", genre: "درام", rating: 9.3, year: "۱۹۹۴", director: "فرانک دارابونت", duration: 142, cast: "تیم رابینز، مورگان فریمن", poster: "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", desc: "داستان اندی دوفرسن، بانکی که به اشتباه به جرم قتل همسرش محکوم می‌شود و در زندان شاوشنک امید را زنده نگه می‌دارد.", status: "released" },
-                { id: 2, name: "پدرخوانده", nameEn: "The Godfather", genre: "جنایی", rating: 9.2, year: "۱۹۷۲", director: "فرانسیس فورد کاپولا", duration: 175, cast: "مارلون براندو، آل پاچینو", poster: "https://image.tmdb.org/t/p/w500/rPdtLWNsZmAtoZl9PK7S2wE3qiS.jpg", desc: "خانوادهٔ کورلئونه، یکی از قدرتمندترین خانواده‌های مافیایی نیویورک، درگیر جنگ قدرت و خیانت می‌شوند.", status: "released" },
-                { id: 3, name: "شوالیه تاریکی", nameEn: "The Dark Knight", genre: "اکشن", rating: 9.0, year: "۲۰۰۸", director: "کریستوفر نولان", duration: 152, cast: "کریستین بیل، هیث لجر", poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", desc: "بتمن با همکاری ستوان گوردون و دادستان هاروی دنت، تلاش می‌کند تا جنایت‌های جوکر را متوقف کند.", status: "released" },
-                { id: 4, name: "فارست گامپ", nameEn: "Forrest Gump", genre: "درام", rating: 8.8, year: "۱۹۹۴", director: "رابرت زمکیس", duration: 142, cast: "تام هنکس، رابین رایت", poster: "https://image.tmdb.org/t/p/w500/saHP97rTPS5eLmrLQEcANmKrsFl.jpg", desc: "داستان زندگی فارست گامپ، مردی با ضریب هوشی پایین که به طور تصادفی در رویدادهای مهم تاریخ آمریکا نقش دارد.", status: "released" },
-                { id: 5, name: "تلقین", nameEn: "Inception", genre: "علمی تخیلی", rating: 8.8, year: "۲۰۱۰", director: "کریستوفر نولان", duration: 148, cast: "لئوناردو دیکاپریو، جوزف گوردون-لویت", poster: "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", desc: "دزدی که می‌تواند از طریق اشتراک رویاها به اسرار افراد نفوذ کند، ماموریت پیدا می‌کند ایده‌ای را در ذهن یک مدیرعامل بکارد.", status: "released" },
-                { id: 6, name: "ماتریکس", nameEn: "The Matrix", genre: "علمی تخیلی", rating: 8.7, year: "۱۹۹۹", director: "واتشوفسکی", duration: 136, cast: "کیانو ریوز، لارنس فیشبرن", poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg", desc: "نئو، یک برنامه‌نویس، متوجه می‌شود که دنیایی که در آن زندگی می‌کند یک شبیه‌سازی کامپیوتری به نام ماتریکس است.", status: "released" },
-                { id: 7, name: "اینتراستلار", nameEn: "Interstellar", genre: "علمی تخیلی", rating: 8.6, year: "۲۰۱۴", director: "کریستوفر نولان", duration: 169, cast: "متیو مک‌کاناهی، آن هاتاوی", poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", desc: "گروهی از فضانوردان از میان یک کرمچاله سفر می‌کنند تا سیاره جدیدی برای سکونت انسان پیدا کنند.", status: "released" },
-                { id: 8, name: "تایتانیک", nameEn: "Titanic", genre: "عاشقانه", rating: 8.5, year: "۱۹۹۷", director: "جیمز کامرون", duration: 195, cast: "لئوناردو دیکاپریو، کیت وینسلت", poster: "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", desc: "داستان عشق جک و رز در کشتی تایتانیک که به کوه یخ برخورد می‌کند.", status: "released" },
-                { id: 9, name: "اوپنهایمر", nameEn: "Oppenheimer", genre: "درام", rating: 8.4, year: "۲۰۲۳", director: "کریستوفر نولان", duration: 180, cast: "کیلیان مورفی، امیلی بلانت", poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg", desc: "داستان جی. رابرت اوپنهایمر، فیزیکدانی که نقش کلیدی در ساخت بمب اتم داشت.", status: "released" },
-                { id: 10, name: "باربی", nameEn: "Barbie", genre: "کمدی", rating: 7.2, year: "۲۰۲۳", director: "گرتا گرویگ", duration: 114, cast: "مارگو رابی، رایان گاسلینگ", poster: "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg", desc: "باربی به دلیل ناقص شدن‌هایش از باربی‌لند بیرون می‌رود و وارد دنیای واقعی می‌شود.", status: "showing" }
+                { id: 1, name: "رستگاری در شاوشنک", genre: "درام", rating: 9.3, year: "۱۹۹۴", poster: "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", status: "released" },
+                { id: 2, name: "پدرخوانده", genre: "جنایی", rating: 9.2, year: "۱۹۷۲", poster: "https://image.tmdb.org/t/p/w500/rPdtLWNsZmAtoZl9PK7S2wE3qiS.jpg", status: "released" },
+                { id: 3, name: "شوالیه تاریکی", genre: "اکشن", rating: 9.0, year: "۲۰۰۸", poster: "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg", status: "released" },
+                { id: 4, name: "فارست گامپ", genre: "درام", rating: 8.8, year: "۱۹۹۴", poster: "https://image.tmdb.org/t/p/w500/saHP97rTPS5eLmrLQEcANmKrsFl.jpg", status: "released" },
+                { id: 5, name: "تلقین", genre: "علمی تخیلی", rating: 8.8, year: "۲۰۱۰", poster: "https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg", status: "released" },
+                { id: 6, name: "ماتریکس", genre: "علمی تخیلی", rating: 8.7, year: "۱۹۹۹", poster: "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg", status: "released" },
+                { id: 7, name: "اینتراستلار", genre: "علمی تخیلی", rating: 8.6, year: "۲۰۱۴", poster: "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", status: "released" },
+                { id: 8, name: "تایتانیک", genre: "عاشقانه", rating: 8.5, year: "۱۹۹۷", poster: "https://image.tmdb.org/t/p/w500/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", status: "released" }
             ];
         }
 
@@ -1670,11 +370,8 @@
         // =============================================
         function loginUser() {
             const email = document.getElementById('loginEmail').value.trim();
-            const t = translations[currentLanguage];
-            
             if (!email || !email.includes('@') || !email.includes('.')) {
                 document.getElementById('loginError').style.display = 'block';
-                document.getElementById('loginError').textContent = t.loginError;
                 return;
             }
             document.getElementById('loginError').style.display = 'none';
@@ -1682,236 +379,80 @@
             currentUser = email;
             localStorage.setItem('cinemachi_current_user', email);
             
-            const userData = getUserData(email);
-            if (!userData.movies || userData.movies.length === 0) {
-                const defaultMovies = getDefaultMovies();
-                saveUserData(email, { 
-                    movies: defaultMovies,
-                    joinDate: new Date().toLocaleDateString('fa-IR')
-                });
-            }
-            
-            loadUserData(email);
+            loadMoviesFromStorage();
             document.getElementById('loginOverlay').style.display = 'none';
             updateHeaderUser();
             applyFilters();
-            displayFavorites();
-            displayWatchlist();
             updateCounts();
-            updateProfile();
-            
-            showToast(`${t.toastWelcome} ${email.split('@')[0]}`);
+            showToast(`👋 خوش آمدید ${email.split('@')[0]}`);
         }
 
         function logoutUser() {
-            const t = translations[currentLanguage];
-            if (!confirm(currentLanguage === 'fa' ? 'آیا می‌خواهید خارج شوید؟' : 'Are you sure you want to logout?')) return;
-            
+            if (!confirm('آیا می‌خواهید خارج شوید؟')) return;
             currentUser = null;
             localStorage.removeItem('cinemachi_current_user');
             movies = [];
-            favorites = [];
-            watchlist = [];
-            watched = [];
-            userRatings = {};
-            comments = {};
-            
             document.getElementById('loginOverlay').style.display = 'flex';
             updateHeaderUser();
             applyFilters();
-            displayFavorites();
-            displayWatchlist();
             updateCounts();
-            updateProfile();
-            
-            showToast(t.toastLogout);
-        }
-
-        function loadUserData(email) {
-            const data = getUserData(email);
-            movies = data.movies || [];
-            favorites = data.favorites || [];
-            watchlist = data.watchlist || [];
-            watched = data.watched || [];
-            userRatings = data.ratings || {};
-            comments = data.comments || {};
-            
-            const t = translations[currentLanguage];
-            document.getElementById('profileEmail').textContent = `Email: ${email}`;
-            document.getElementById('profileName').textContent = `User ${email.split('@')[0]}`;
-            document.getElementById('profileJoinDate').textContent = `Member since: ${data.joinDate || 'Today'}`;
-            
-            applyFilters();
-            displayFavorites();
-            displayWatchlist();
-            updateCounts();
-            updateProfile();
-            updateHeaderUser();
+            showToast('🚪 خارج شدید');
         }
 
         function updateHeaderUser() {
-            const t = translations[currentLanguage];
             const userSpan = document.getElementById('headerUser');
-            const logoutBtn = document.getElementById('headerLogoutBtn');
-            
+            const logoutBtn = document.getElementById('logoutBtn');
             if (currentUser) {
                 userSpan.textContent = currentUser.split('@')[0];
                 logoutBtn.style.display = 'inline-block';
-                logoutBtn.textContent = t.headerLogout;
             } else {
-                userSpan.textContent = t.headerUser;
+                userSpan.textContent = 'مهمان';
                 logoutBtn.style.display = 'none';
             }
         }
 
         // =============================================
-        // توابع اصلی
+        // توابع نمایش فیلم‌ها
         // =============================================
-        function saveMovies() {
-            if (currentUser) {
-                saveUserData(currentUser, { movies: movies });
-            } else {
-                localStorage.setItem('cinemachi_movies', JSON.stringify(movies));
-            }
-            updateCounts();
-        }
-
-        function saveFavorites() {
-            if (currentUser) {
-                saveUserData(currentUser, { favorites: favorites });
-            } else {
-                localStorage.setItem('cinemachi_favorites', JSON.stringify(favorites));
-            }
-        }
-
-        function saveWatchlist() {
-            if (currentUser) {
-                saveUserData(currentUser, { watchlist: watchlist });
-            } else {
-                localStorage.setItem('cinemachi_watchlist', JSON.stringify(watchlist));
-            }
-        }
-
-        function saveWatched() {
-            if (currentUser) {
-                saveUserData(currentUser, { watched: watched });
-            } else {
-                localStorage.setItem('cinemachi_watched', JSON.stringify(watched));
-            }
-        }
-
-        function saveRatings() {
-            if (currentUser) {
-                saveUserData(currentUser, { ratings: userRatings });
-            } else {
-                localStorage.setItem('cinemachi_ratings', JSON.stringify(userRatings));
-            }
-        }
-
-        function saveComments() {
-            if (currentUser) {
-                saveUserData(currentUser, { comments: comments });
-            } else {
-                localStorage.setItem('cinemachi_comments', JSON.stringify(comments));
-            }
-        }
-
         function updateCounts() {
-            const t = translations[currentLanguage];
             document.getElementById('movieCount').textContent = movies ? movies.length : 0;
-            document.getElementById('favCount').textContent = favorites ? favorites.length : 0;
-            document.getElementById('watchlistCount').textContent = watchlist ? watchlist.length : 0;
-            document.getElementById('watchedCount').textContent = watched ? watched.length : 0;
-            document.getElementById('watchlistBadge').textContent = watchlist ? watchlist.length : 0;
-            
-            if (document.getElementById('profileMovies')) {
-                document.getElementById('profileMovies').textContent = movies ? movies.length : 0;
-                document.getElementById('profileFavorites').textContent = favorites ? favorites.length : 0;
-                document.getElementById('profileWatchlist').textContent = watchlist ? watchlist.length : 0;
-            }
-            
-            document.getElementById('labelMovies').textContent = t.labelMovies;
-            document.getElementById('labelFavorites').textContent = t.labelFavorites;
-            document.getElementById('labelWatchlist').textContent = t.labelWatchlist;
-            document.getElementById('labelWatched').textContent = t.labelWatched;
         }
 
-        function getNextId() {
-            return movies && movies.length > 0 ? Math.max(...movies.map(m => m.id)) + 1 : 1;
+        function getStatusText(status) {
+            const map = { showing: '🟢 در حال اکران', released: '🔵 اکران شده' };
+            return map[status] || status;
         }
 
-        function isFavorite(id) { return favorites && favorites.includes(id); }
-        function isInWatchlist(id) { return watchlist && watchlist.includes(id); }
-        function isWatched(id) { return watched && watched.includes(id); }
-
-        function showToast(message) {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function getStarRating(rating) {
-            const fullStars = Math.floor(rating / 2);
-            const halfStar = rating % 2 >= 0.5 ? 1 : 0;
-            let html = '';
-            for (let i = 0; i < fullStars; i++) html += '★';
-            if (halfStar) html += '½';
-            if (fullStars + halfStar < 5) {
-                for (let i = fullStars + halfStar; i < 5; i++) html += '☆';
-            }
-            return html;
+        function getStatusClass(status) {
+            return status === 'showing' ? 'showing' : 'released';
         }
 
         function getRatingEmoji(rating) {
             if (rating >= 9) return '🌟';
             if (rating >= 8) return '⭐';
             if (rating >= 7) return '👍';
-            if (rating >= 5) return '😐';
-            return '👎';
-        }
-
-        function getStatusText(status) {
-            const t = translations[currentLanguage];
-            const map = { showing: t.statusShowingText, released: t.statusReleasedText, coming: t.statusComingText };
-            return map[status] || status;
-        }
-
-        function getStatusClass(status) {
-            return status === 'showing' ? 'showing' : status === 'coming' ? 'coming' : 'released';
+            return '😐';
         }
 
         function displayMovies(moviesList, containerId) {
             const container = document.getElementById(containerId);
-            const t = translations[currentLanguage];
             if (!container) return;
             if (!moviesList || moviesList.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <span class="icon">🎬</span>
-                        <h3>${t.emptyTitle}</h3>
-                        <p style="color:#888; font-size:0.85rem;">${t.emptyDesc}</p>
+                        <h3>هیچ فیلمی پیدا نشد</h3>
                     </div>
                 `;
                 return;
             }
             container.innerHTML = moviesList.map(m => {
                 const poster = m.poster && m.poster.startsWith('http') ? m.poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
-                const fav = isFavorite(m.id);
-                const inWatch = isInWatchlist(m.id);
-                const watchedStatus = isWatched(m.id);
                 const emoji = getRatingEmoji(m.rating);
                 const statusClass = getStatusClass(m.status);
                 const statusText = getStatusText(m.status);
                 return `
-                    <div class="movie-card" onclick="openDetail(${m.id})">
-                        <button class="delete-btn" onclick="event.stopPropagation(); deleteMovie(${m.id})">🗑</button>
-                        <button class="fav-btn ${fav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${m.id})">${fav ? '❤️' : '🤍'}</button>
-                        <button class="watchlist-btn ${inWatch ? 'active' : ''}" onclick="event.stopPropagation(); toggleWatchlist(${m.id})">📋</button>
-                        ${watchedStatus ? '<span class="watched-badge">✅</span>' : ''}
+                    <div class="movie-card">
                         <img class="movie-poster" src="${poster}" alt="${m.name}" loading="lazy">
                         <h3>${m.name}</h3>
                         <div class="genre-tag">🎭 ${m.genre}</div>
@@ -1926,976 +467,111 @@
         function applyFilters() {
             if (!movies || movies.length === 0) {
                 displayMovies([], 'moviesList');
-                document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
             const genre = document.getElementById('filterGenre').value;
-            const year = document.getElementById('filterYear').value;
-            const rating = document.getElementById('filterRating').value;
-            const sort = document.getElementById('sortMovies').value;
             const search = document.getElementById('searchInputQuick').value.trim().toLowerCase();
 
             let filtered = [...movies];
 
             if (genre) filtered = filtered.filter(m => m.genre === genre);
-            if (year) filtered = filtered.filter(m => m.year === year);
-            if (rating) filtered = filtered.filter(m => m.rating >= parseFloat(rating));
-            if (search) filtered = filtered.filter(m => m.name.toLowerCase().includes(search) || (m.nameEn && m.nameEn.toLowerCase().includes(search)));
+            if (search) filtered = filtered.filter(m => m.name.toLowerCase().includes(search));
 
-            switch(sort) {
-                case 'rating-desc': filtered.sort((a,b) => b.rating - a.rating); break;
-                case 'rating-asc': filtered.sort((a,b) => a.rating - b.rating); break;
-                case 'year-desc': filtered.sort((a,b) => parseInt(b.year) - parseInt(a.year)); break;
-                case 'year-asc': filtered.sort((a,b) => parseInt(a.year) - parseInt(b.year)); break;
-                case 'name': filtered.sort((a,b) => a.name.localeCompare(b.name)); break;
-                default: filtered.sort((a,b) => b.rating - a.rating);
-            }
-
-            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-            if (currentPage > totalPages) currentPage = totalPages || 1;
-            const start = (currentPage - 1) * ITEMS_PER_PAGE;
-            const end = start + ITEMS_PER_PAGE;
-            const pageItems = filtered.slice(start, end);
-
-            displayMovies(pageItems, 'moviesList');
-            renderPagination(totalPages);
-        }
-
-        function renderPagination(totalPages) {
-            const container = document.getElementById('pagination');
-            if (totalPages <= 1) { container.innerHTML = ''; return; }
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="currentPage=${i}; applyFilters();">${i}</button>`;
-            }
-            container.innerHTML = html;
+            displayMovies(filtered, 'moviesList');
         }
 
         // =============================================
-        // جستجو در TMDB
+        // تب‌ها
         // =============================================
-        async function searchMovies() {
-            const query = document.getElementById('searchInput').value.trim();
-            const container = document.getElementById('searchResults');
-            const suggestions = document.getElementById('searchSuggestions');
-            const t = translations[currentLanguage];
-
-            if (!query) {
-                container.innerHTML = '';
-                suggestions.style.display = 'none';
-                return;
-            }
-
-            try {
-                const suggestResponse = await fetch(
-                    `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR&page=1`
-                );
-                const suggestData = await suggestResponse.json();
-                if (suggestData.results && suggestData.results.length > 0) {
-                    suggestions.style.display = 'block';
-                    suggestions.innerHTML = suggestData.results.slice(0, 5).map(m => `
-                        <div style="padding:8px 14px; cursor:pointer; border-bottom:1px solid #eee; transition:background 0.2s;" 
-                             onmouseover="this.style.background='#f0f0f0'" 
-                             onmouseout="this.style.background='white'"
-                             onclick="document.getElementById('searchInput').value='${m.title.replace(/'/g, "\\'")}'; suggestions.style.display='none'; searchMovies();">
-                            ${m.title} (${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'})
-                        </div>
-                    `).join('');
-                } else {
-                    suggestions.style.display = 'none';
-                }
-            } catch(e) { suggestions.style.display = 'none'; }
-
-            container.innerHTML = `<div style="text-align:center; padding:25px; color:#888;">${t.toastSearching}</div>`;
-
-            try {
-                const response = await fetch(
-                    `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=fa-IR`
-                );
-                if (!response.ok) throw new Error('خطا در ارتباط با TMDB');
-
-                const data = await response.json();
-                if (!data.results || data.results.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:25px; color:#888;">${t.toastMovieNotFound}</div>`;
-                    return;
-                }
-
-                container.innerHTML = data.results.map(m => `
-                    <div class="search-result-item" onclick="addFromTMDB(${m.id})">
-                        <img src="${m.poster_path ? TMDB_IMAGE_URL + m.poster_path : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E'}" alt="${m.title}" loading="lazy">
-                        <h4>${m.title}</h4>
-                        <div class="year">${m.release_date ? m.release_date.split('-')[0] : 'نامشخص'}</div>
-                        <div class="rating">⭐ ${m.vote_average ? m.vote_average.toFixed(1) : '?'}/10</div>
-                        <div style="display:flex; gap:4px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
-                            <a href="https://www.imdb.com/title/${m.imdb_id || ''}" target="_blank" class="btn-imdb" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#f5c518; color:#000;">${t.linkImdb}</a>
-                            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(m.title)}+trailer" target="_blank" class="btn-trailer" style="padding:3px 10px; font-size:0.65rem; text-decoration:none; border-radius:20px; background:#e50914; color:#fff;">▶️ ${t.linkTrailer}</a>
-                        </div>
-                        <button class="btn-primary" style="margin-top:4px; padding:4px 16px; font-size:0.75rem;" onclick="event.stopPropagation(); addFromTMDB(${m.id})">➕ ${t.btnAddMovie}</button>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                container.innerHTML = `<div style="text-align:center; padding:25px; color:#ff6b6b;">❌ ${t.toastSearchError}</div>`;
-                showToast(t.toastSearchError);
-            }
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').innerHTML = '';
-            document.getElementById('searchSuggestions').style.display = 'none';
-        }
-
-        // =============================================
-        // افزودن از TMDB
-        // =============================================
-        async function addFromTMDB(tmdbId) {
-            const t = translations[currentLanguage];
-            try {
-                const response = await fetch(
-                    `${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&language=fa-IR`
-                );
-                if (!response.ok) throw new Error('خطا در دریافت اطلاعات');
-                const data = await response.json();
-
-                const newMovie = {
-                    id: getNextId(),
-                    name: data.title,
-                    nameEn: data.original_title,
-                    genre: data.genres?.[0]?.name || 'نامشخص',
-                    rating: data.vote_average || 0,
-                    year: data.release_date ? data.release_date.split('-')[0] : 'نامشخص',
-                    director: data.production_companies?.[0]?.name || 'نامشخص',
-                    duration: data.runtime || 0,
-                    cast: data.production_companies?.[0]?.name || 'نامشخص',
-                    poster: data.poster_path ? TMDB_IMAGE_URL + data.poster_path : '',
-                    desc: data.overview || 'توضیحاتی برای این فیلم ثبت نشده است.',
-                    status: data.status === 'Released' ? 'released' : 'coming',
-                    imdb_id: data.imdb_id || null
-                };
-
-                if (data.imdb_id) {
-                    movieLinks[newMovie.id] = {
-                        imdb: `https://www.imdb.com/title/${data.imdb_id}/`,
-                        trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.original_title)}+trailer`,
-                        watch: `https://www.imdb.com/title/${data.imdb_id}/`
-                    };
-                } else {
-                    movieLinks[newMovie.id] = {
-                        imdb: `https://www.imdb.com/find?q=${encodeURIComponent(data.original_title)}`,
-                        trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(data.original_title)}+trailer`,
-                        watch: `https://www.google.com/search?q=${encodeURIComponent(data.original_title)}+movie`
-                    };
-                }
-
-                movies.push(newMovie);
-                saveMovies();
-                applyFilters();
-                showToast(`${t.toastAdded}`);
-                document.getElementById('searchResults').innerHTML = '';
-                document.getElementById('searchInput').value = '';
-                document.getElementById('searchSuggestions').style.display = 'none';
-
-            } catch (error) {
-                showToast('❌ خطا در افزودن فیلم');
-            }
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                if (b.textContent.includes(
+                    tabName === 'movies' ? 'فیلم‌ها' :
+                    tabName === 'add' ? 'افزودن' : ''
+                )) b.classList.add('active');
+            });
+            if (tabName === 'movies') applyFilters();
         }
 
         // =============================================
         // افزودن دستی
         // =============================================
         function addMovie() {
-            const t = translations[currentLanguage];
             const name = document.getElementById('newName').value.trim();
             const genre = document.getElementById('newGenre').value;
             const rating = parseFloat(document.getElementById('newRating').value);
             const year = document.getElementById('newYear').value.trim();
-            const director = document.getElementById('newDirector').value.trim();
-            const duration = parseInt(document.getElementById('newDuration').value) || 0;
-            const desc = document.getElementById('newDesc').value.trim();
-            const cast = document.getElementById('newCast').value.trim();
-            const status = document.getElementById('newStatus').value;
 
-            if (!name) { showToast(t.toastEnterName); return; }
-            if (isNaN(rating) || rating < 0 || rating > 10) { showToast(t.toastValidRating); return; }
+            if (!name) { showToast('❌ لطفاً نام فیلم را وارد کنید'); return; }
+            if (isNaN(rating) || rating < 0 || rating > 10) { showToast('❌ امتیاز باید بین ۰ تا ۱۰ باشد'); return; }
 
-            const newId = getNextId();
             const newMovie = {
-                id: newId,
+                id: movies.length > 0 ? Math.max(...movies.map(m => m.id)) + 1 : 1,
                 name: name,
-                nameEn: name,
                 genre: genre,
                 rating: rating,
                 year: year || 'نامشخص',
-                director: director || 'نامشخص',
-                duration: duration,
-                cast: cast || 'نامشخص',
                 poster: '',
-                desc: desc || 'توضیحاتی برای این فیلم ثبت نشده است.',
-                status: status || 'released'
-            };
-
-            movieLinks[newId] = {
-                imdb: `https://www.imdb.com/find?q=${encodeURIComponent(name)}`,
-                trailer: `https://www.youtube.com/results?search_query=${encodeURIComponent(name)}+trailer`,
-                watch: `https://www.google.com/search?q=${encodeURIComponent(name)}+movie`
+                status: 'released'
             };
 
             movies.push(newMovie);
             saveMovies();
             applyFilters();
-            showToast(t.toastAdded);
+            showToast(`🎬 فیلم "${name}" با موفقیت اضافه شد!`);
             document.getElementById('newName').value = '';
             document.getElementById('newRating').value = '';
             document.getElementById('newYear').value = '';
-            document.getElementById('newDirector').value = '';
-            document.getElementById('newDuration').value = '';
-            document.getElementById('newDesc').value = '';
-            document.getElementById('newCast').value = '';
-            document.getElementById('addResult').innerHTML = '<div style="color:#4caf50; font-weight:bold;">✅ ' + t.toastAdded + '</div>';
+            document.getElementById('addResult').innerHTML = '<div style="color:#4caf50; font-weight:bold;">✅ فیلم با موفقیت اضافه شد!</div>';
             setTimeout(() => document.getElementById('addResult').innerHTML = '', 3000);
         }
 
         // =============================================
-        // حذف فیلم
+        // توابع کمکی
         // =============================================
-        function deleteMovie(id) {
-            const t = translations[currentLanguage];
-            if (!confirm(currentLanguage === 'fa' ? '⚠️ آیا مطمئن هستید که می‌خواهید این فیلم را حذف کنید؟' : '⚠️ Are you sure you want to delete this movie?')) return;
-            movies = movies.filter(m => m.id !== id);
-            favorites = favorites.filter(f => f !== id);
-            watchlist = watchlist.filter(w => w !== id);
-            watched = watched.filter(w => w !== id);
-            delete userRatings[id];
-            delete comments[id];
-            delete movieLinks[id];
-            saveMovies();
-            saveFavorites();
-            saveWatchlist();
-            saveWatched();
-            saveRatings();
-            saveComments();
-            applyFilters();
-            displayFavorites();
-            displayWatchlist();
-            updateCounts();
-            showToast(t.toastDeleted);
+        function showToast(message) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         // =============================================
-        // علاقه‌مندی‌ها
+        // ورود با Enter
         // =============================================
-        function toggleFavorite(id) {
-            const t = translations[currentLanguage];
-            if (favorites.includes(id)) {
-                favorites = favorites.filter(f => f !== id);
-                showToast(t.toastFavoriteRemoved);
-            } else {
-                favorites.push(id);
-                showToast(t.toastFavoriteAdded);
-            }
-            saveFavorites();
-            applyFilters();
-            displayFavorites();
-            updateCounts();
-            if (currentDetailMovie && currentDetailMovie.id === id) updateDetailUI();
-        }
-
-        function displayFavorites() {
-            const favMovies = movies.filter(m => favorites.includes(m.id));
-            displayMovies(favMovies, 'favoritesList');
-        }
-
-        // =============================================
-        // لیست تماشا
-        // =============================================
-        function toggleWatchlist(id) {
-            const t = translations[currentLanguage];
-            if (watchlist.includes(id)) {
-                watchlist = watchlist.filter(w => w !== id);
-                showToast(t.toastWatchlistRemoved);
-            } else {
-                watchlist.push(id);
-                showToast(t.toastWatchlistAdded);
-                if (watched.includes(id)) {
-                    watched = watched.filter(w => w !== id);
-                    saveWatched();
-                }
-            }
-            saveWatchlist();
-            applyFilters();
-            displayWatchlist();
-            updateCounts();
-            if (currentDetailMovie && currentDetailMovie.id === id) updateDetailUI();
-        }
-
-        function displayWatchlist() {
-            const watchMovies = movies.filter(m => watchlist.includes(m.id));
-            displayMovies(watchMovies, 'watchlistList');
-            updateCounts();
-        }
-
-        function exportWatchlist() {
-            const t = translations[currentLanguage];
-            const data = movies.filter(m => watchlist.includes(m.id));
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'watchlist.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(t.toastExportJSON);
-        }
-
-        function exportWatchlistCSV() {
-            const t = translations[currentLanguage];
-            const data = movies.filter(m => watchlist.includes(m.id));
-            let csv = 'Name,Genre,Rating,Year,Director\n';
-            data.forEach(m => {
-                csv += `"${m.name}","${m.genre}",${m.rating},"${m.year}","${m.director}"\n`;
-            });
-            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'watchlist.csv';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(t.toastExportCSV);
-        }
-
-        // =============================================
-        // پیشنهاد بر اساس ژانر
-        // =============================================
-        function recommendMovies() {
-            const t = translations[currentLanguage];
-            const genre = document.getElementById('recommendGenre').value;
-            const results = movies.filter(m => m.genre === genre).sort((a, b) => b.rating - a.rating);
-            displayMovies(results, 'recommendResults');
-            if (results.length === 0) {
-                showToast(t.toastNoRecommend.replace('${genre}', genre));
-            } else {
-                showToast(t.toastRecommend.replace('${count}', results.length));
-            }
-        }
-
-        // =============================================
-        // برترین فیلم‌ها
-        // =============================================
-        function loadTopMovies() {
-            const t = translations[currentLanguage];
-            const count = parseInt(document.getElementById('topCount').value) || 5;
-            const sorted = [...movies].sort((a, b) => b.rating - a.rating).slice(0, count);
-            displayMovies(sorted, 'topResults');
-            showToast(t.toastTop.replace('${count}', count));
-        }
-
-        // =============================================
-        // آمار با نمودار
-        // =============================================
-        let ratingChartInstance = null;
-        let genreChartInstance = null;
-
-        function loadStats() {
-            const t = translations[currentLanguage];
-            if (!movies) return;
-            const total = movies.length;
-            const avgRating = total > 0 ? (movies.reduce((s, m) => s + m.rating, 0) / total).toFixed(2) : 0;
-            const best = total > 0 ? movies.reduce((a, b) => a.rating > b.rating ? a : b) : null;
-            const worst = total > 0 ? movies.reduce((a, b) => a.rating < b.rating ? a : b) : null;
-            const genres = [...new Set(movies.map(m => m.genre))];
-
-            document.getElementById('statsContent').innerHTML = `
-                <div class="stats-grid">
-                    <div class="stats-card" style="background:linear-gradient(135deg,#667eea,#764ba2);">
-                        <div class="stat-icon">🎬</div>
-                        <div class="stat-number">${total}</div>
-                        <div class="stat-label">${t.labelMovies}</div>
-                    </div>
-                    <div class="stats-card" style="background:linear-gradient(135deg,#f093fb,#f5576c);">
-                        <div class="stat-icon">⭐</div>
-                        <div class="stat-number">${avgRating}</div>
-                        <div class="stat-label">Average Rating</div>
-                    </div>
-                    <div class="stats-card" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">
-                        <div class="stat-icon">🎭</div>
-                        <div class="stat-number">${genres.length}</div>
-                        <div class="stat-label">Genres</div>
-                    </div>
-                    <div class="stats-card" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">
-                        <div class="stat-icon">❤️</div>
-                        <div class="stat-number">${favorites.length}</div>
-                        <div class="stat-label">${t.labelFavorites}</div>
-                    </div>
-                    <div class="stats-card" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24);">
-                        <div class="stat-icon">📋</div>
-                        <div class="stat-number">${watchlist.length}</div>
-                        <div class="stat-label">${t.labelWatchlist}</div>
-                    </div>
-                    <div class="stats-card" style="background:linear-gradient(135deg,#ffd700,#f9a825);">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-number">${watched.length}</div>
-                        <div class="stat-label">${t.labelWatched}</div>
-                    </div>
-                </div>
-                <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:12px;">
-                    ${genres.map(g => `<span style="background:linear-gradient(135deg,#667eea,#764ba2); color:white; padding:4px 14px; border-radius:50px; font-size:0.8rem;">🎭 ${g}</span>`).join('')}
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    ${best ? `<div style="background:rgba(255,215,0,0.08); padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,215,0,0.2);"><div style="color:#ffd700; font-weight:bold;">🏆 Best Movie</div><div style="font-weight:bold; font-size:1rem;">${best.name}</div><div>⭐ ${best.rating}/10</div></div>` : ''}
-                    ${worst ? `<div style="background:rgba(255,107,107,0.08); padding:12px; border-radius:12px; text-align:center; border:1px solid rgba(255,107,107,0.2);"><div style="color:#ff6b6b; font-weight:bold;">📉 Worst Movie</div><div style="font-weight:bold; font-size:1rem;">${worst.name}</div><div>⭐ ${worst.rating}/10</div></div>` : ''}
-                </div>
-            `;
-
-            const ctx = document.getElementById('ratingChart').getContext('2d');
-            if (ratingChartInstance) ratingChartInstance.destroy();
-
-            const ratingRanges = { '0-2': 0, '2-4': 0, '4-6': 0, '6-8': 0, '8-10': 0 };
-            movies.forEach(m => {
-                if (m.rating < 2) ratingRanges['0-2']++;
-                else if (m.rating < 4) ratingRanges['2-4']++;
-                else if (m.rating < 6) ratingRanges['4-6']++;
-                else if (m.rating < 8) ratingRanges['6-8']++;
-                else ratingRanges['8-10']++;
-            });
-
-            const isLight = document.body.classList.contains('light-mode');
-            const textColor = isLight ? '#333' : '#fff';
-
-            if (typeof Chart !== 'undefined') {
-                ratingChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['0-2', '2-4', '4-6', '6-8', '8-10'],
-                        datasets: [{
-                            label: t.labelMovies,
-                            data: Object.values(ratingRanges),
-                            backgroundColor: ['#ff6b6b', '#ff9f43', '#ffd700', '#4caf50', '#00b894'],
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { labels: { color: textColor } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1, color: textColor } },
-                            x: { ticks: { color: textColor } }
-                        }
-                    }
-                });
-
-                const genreCtx = document.getElementById('genreChart').getContext('2d');
-                if (genreChartInstance) genreChartInstance.destroy();
-
-                const genreCounts = {};
-                movies.forEach(m => { genreCounts[m.genre] = (genreCounts[m.genre] || 0) + 1; });
-                const genreLabels = Object.keys(genreCounts);
-                const genreData = Object.values(genreCounts);
-                const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#ff6b6b', '#ffd700', '#ff9f43', '#00b894', '#6c5ce7', '#fd79a8'];
-
-                genreChartInstance = new Chart(genreCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: genreLabels,
-                        datasets: [{
-                            data: genreData,
-                            backgroundColor: colors.slice(0, genreLabels.length),
-                            borderWidth: 2,
-                            borderColor: isLight ? '#fff' : '#1a1a2e'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { position: 'bottom', labels: { color: textColor, padding: 12 } }
-                        }
-                    }
-                });
-            }
-
-            showToast(t.toastStatsUpdated);
-        }
-
-        // =============================================
-        // پروفایل
-        // =============================================
-        function updateProfile() {
-            const t = translations[currentLanguage];
-            document.getElementById('profileMovies').textContent = movies ? movies.length : 0;
-            document.getElementById('profileFavorites').textContent = favorites ? favorites.length : 0;
-            document.getElementById('profileWatchlist').textContent = watchlist ? watchlist.length : 0;
-            document.getElementById('profileLabelMovies').textContent = t.profileLabelMovies;
-            document.getElementById('profileLabelFavorites').textContent = t.profileLabelFavorites;
-            document.getElementById('profileLabelWatchlist').textContent = t.profileLabelWatchlist;
-            document.getElementById('profileLogoutBtn').textContent = t.profileLogout;
-        }
-
-        function resetProfile() {
-            const t = translations[currentLanguage];
-            if (!currentUser) { showToast(t.toastLoginFirst); return; }
-            if (!confirm(currentLanguage === 'fa' ? '⚠️ آیا مطمئن هستید؟ همه داده‌های شما برای همیشه پاک می‌شوند.' : '⚠️ Are you sure? All your data will be permanently deleted.')) return;
-            
-            localStorage.removeItem(getStorageKey(currentUser, 'movies'));
-            localStorage.removeItem(getStorageKey(currentUser, 'favorites'));
-            localStorage.removeItem(getStorageKey(currentUser, 'watchlist'));
-            localStorage.removeItem(getStorageKey(currentUser, 'watched'));
-            localStorage.removeItem(getStorageKey(currentUser, 'ratings'));
-            localStorage.removeItem(getStorageKey(currentUser, 'comments'));
-            localStorage.removeItem(getStorageKey(currentUser, 'joindate'));
-            
-            showToast(t.toastAllDataDeleted);
-            logoutUser();
-        }
-
-        // =============================================
-        // جزئیات فیلم
-        // =============================================
-        function openDetail(id) {
-            const t = translations[currentLanguage];
-            const movie = movies.find(m => m.id === id);
-            if (!movie) { showToast(t.toastNoMovie); return; }
-            currentDetailMovie = movie;
-
-            document.getElementById('detailTitle').textContent = `🎬 ${movie.name}`;
-            document.getElementById('detailPoster').src = movie.poster && movie.poster.startsWith('http') ? movie.poster : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%231a1a2e%22 width=%22300%22 height=%22450%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23666%22 font-size=%2230%22 font-family=%22sans-serif%22%3E🎬%3C/text%3E%3C/svg%3E';
-            document.getElementById('detailGenre').textContent = movie.genre || 'نامشخص';
-            document.getElementById('detailRating').textContent = `${getStarRating(movie.rating)} (${movie.rating}/10)`;
-            document.getElementById('detailYear').textContent = movie.year || 'نامشخص';
-            document.getElementById('detailDirector').textContent = movie.director || 'نامشخص';
-            document.getElementById('detailDuration').textContent = movie.duration ? `${movie.duration} دقیقه` : 'نامشخص';
-            document.getElementById('detailCast').textContent = movie.cast || 'نامشخص';
-            document.getElementById('detailDesc').textContent = movie.desc || 'توضیحاتی برای این فیلم ثبت نشده است.';
-            document.getElementById('detailStatus').textContent = getStatusText(movie.status);
-
-            const links = getMovieLinks(id);
-            document.getElementById('detailTrailerLink').href = links.trailer;
-            document.getElementById('detailImdbLink').href = links.imdb;
-            document.getElementById('detailWatchLink').href = links.watch;
-
-            const userRating = userRatings[id] || 0;
-            document.querySelectorAll('#userRating input').forEach(input => {
-                input.checked = parseInt(input.value) === userRating;
-            });
-            document.getElementById('userRatingDisplay').textContent = userRating > 0 ? `امتیاز شما: ${'★'.repeat(userRating)}${'☆'.repeat(5-userRating)}` : t.noRating;
-
-            loadComments(id);
-            updateDetailUI();
-
-            document.getElementById('detailModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function updateDetailUI() {
-            const t = translations[currentLanguage];
-            if (!currentDetailMovie) return;
-            const id = currentDetailMovie.id;
-            const fav = isFavorite(id);
-            const inWatch = isInWatchlist(id);
-
-            document.getElementById('detailFavStatus').textContent = fav ? t.detailFavStatusIn : t.detailFavStatusOut;
-            document.getElementById('detailWatchlistStatus').textContent = inWatch ? t.detailWatchlistStatusIn : t.detailWatchlistStatusOut;
-
-            const favBtn = document.getElementById('detailFavBtn');
-            if (fav) {
-                favBtn.textContent = t.detailFavBtnRemove;
-                favBtn.className = 'btn-danger';
-                favBtn.onclick = () => { toggleFavorite(id); };
-            } else {
-                favBtn.textContent = t.detailFavBtn;
-                favBtn.className = 'btn-primary';
-                favBtn.onclick = () => { toggleFavorite(id); };
-            }
-
-            const watchBtn = document.getElementById('detailWatchlistBtn');
-            if (inWatch) {
-                watchBtn.textContent = t.detailWatchlistBtnRemove;
-                watchBtn.className = 'btn-danger';
-                watchBtn.onclick = () => { toggleWatchlist(id); };
-            } else {
-                watchBtn.textContent = t.detailWatchlistBtn;
-                watchBtn.className = 'btn-warning';
-                watchBtn.onclick = () => { toggleWatchlist(id); };
-            }
-        }
-
-        function toggleFavoriteDetail() {
-            if (!currentDetailMovie) return;
-            toggleFavorite(currentDetailMovie.id);
-        }
-
-        function toggleWatchlistDetail() {
-            if (!currentDetailMovie) return;
-            toggleWatchlist(currentDetailMovie.id);
-        }
-
-        function deleteMovieDetail() {
-            if (!currentDetailMovie) return;
-            if (!confirm(currentLanguage === 'fa' ? '⚠️ آیا مطمئن هستید؟' : '⚠️ Are you sure?')) return;
-            const id = currentDetailMovie.id;
-            closeDetailModal();
-            deleteMovie(id);
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detailModal').classList.remove('active');
-            document.body.style.overflow = '';
-            currentDetailMovie = null;
-        }
-
-        // =============================================
-        // سیستم امتیازدهی ستاره‌ای
-        // =============================================
-        function rateMovie(id, rating) {
-            const t = translations[currentLanguage];
-            if (!id) return;
-            userRatings[id] = rating;
-            saveRatings();
-            document.getElementById('userRatingDisplay').textContent = `امتیاز شما: ${'★'.repeat(rating)}${'☆'.repeat(5-rating)}`;
-            showToast(`${t.toastRatingAdded}${rating}${t.toastStars}`);
-            const allRatings = Object.values(userRatings).filter(r => r > 0);
-            if (allRatings.length > 0) {
-                const avg = allRatings.reduce((a,b) => a + b, 0) / allRatings.length;
-                const movie = movies.find(m => m.id === id);
-                if (movie) {
-                    movie.rating = Math.round((avg / 5 * 10) * 10) / 10;
-                    saveMovies();
-                    applyFilters();
-                }
-            }
-        }
-
-        // =============================================
-        // نظرات
-        // =============================================
-        function loadComments(movieId) {
-            const t = translations[currentLanguage];
-            const container = document.getElementById('commentsList');
-            const movieComments = comments[movieId] || [];
-            if (movieComments.length === 0) {
-                container.innerHTML = `<div style="color:#888; padding:8px; font-size:0.85rem;">${t.noComments}</div>`;
-                return;
-            }
-            container.innerHTML = movieComments.slice().reverse().map(c => {
-                const sentiment = analyzeSentiment(c.text);
-                return `
-                    <div class="comment">
-                        <div class="comment-meta">👤 ${c.user || 'Guest'} | ${c.date || new Date().toLocaleDateString('fa-IR')}</div>
-                        <div class="comment-text">${c.text}</div>
-                        <div class="sentiment-${sentiment}">${sentiment === 'positive' ? '😊 Positive' : sentiment === 'negative' ? '😞 Negative' : '😐 Neutral'}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function analyzeSentiment(text) {
-            const positiveWords = ['عالی', 'خوب', 'عالیه', 'عالی بود', 'دوست داشتم', 'بی‌نظیر', 'فوق‌العاده', 'دوست دارم', 'جذاب', 'ناب', 'بهترین', 'great', 'good', 'amazing', 'love', 'best', 'awesome', 'excellent'];
-            const negativeWords = ['بد', 'ضعیف', 'تکراری', 'خسته‌کننده', 'بی‌مزه', 'افتضاح', 'ناراحت‌کننده', 'بد بود', 'خوب نبود', 'bad', 'poor', 'boring', 'terrible', 'awful', 'worst'];
-
-            let score = 0;
-            const words = text.split(/[\s،,\.\?\!]+/);
-            words.forEach(w => {
-                if (positiveWords.includes(w.toLowerCase())) score++;
-                if (negativeWords.includes(w.toLowerCase())) score--;
-            });
-            if (score > 0) return 'positive';
-            if (score < 0) return 'negative';
-            return 'neutral';
-        }
-
-        function addComment() {
-            const t = translations[currentLanguage];
-            if (!currentDetailMovie) { showToast(t.toastSelectMovie); return; }
-            const text = document.getElementById('newComment').value.trim();
-            if (!text) { showToast(t.toastEnterComment); return; }
-
-            if (!comments[currentDetailMovie.id]) comments[currentDetailMovie.id] = [];
-            comments[currentDetailMovie.id].push({
-                user: currentUser ? currentUser.split('@')[0] : 'Guest',
-                text: text,
-                date: new Date().toLocaleDateString('fa-IR') + ' ' + new Date().toLocaleTimeString('fa-IR')
-            });
-            saveComments();
-            loadComments(currentDetailMovie.id);
-            document.getElementById('newComment').value = '';
-            showToast(t.toastCommentAdded);
-        }
-
-        // =============================================
-        // اشتراک‌گذاری
-        // =============================================
-        function shareMovie() {
-            if (!currentDetailMovie) return;
-            const url = window.location.href.split('?')[0] + '?movie=' + currentDetailMovie.id;
-            if (navigator.share) {
-                navigator.share({
-                    title: currentDetailMovie.name,
-                    text: `🎬 ${currentDetailMovie.name} - Rating: ${currentDetailMovie.rating}/10`,
-                    url: url                }).catch(() => {});
-            } else {
-                copyMovieLink();
-            }
-        }
-
-        function copyMovieLink() {
-            const t = translations[currentLanguage];
-            if (!currentDetailMovie) return;
-            const url = window.location.href.split('?')[0] + '?movie=' + currentDetailMovie.id;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast(t.toastLinkCopied);
-            }).catch(() => {
-                const input = document.createElement('input');
-                input.value = url;
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                showToast(t.toastLinkCopied);
-            });
-        }
-
-        // =============================================
-        // تغییر تم
-        // =============================================
-        function toggleTheme() {
-            const t = translations[currentLanguage];
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('cinemachi_theme', isLight ? 'light' : 'dark');
-            showToast(isLight ? t.toastThemeLight : t.toastThemeDark);
-            if (document.getElementById('stats').classList.contains('active')) {
-                setTimeout(loadStats, 300);
-            }
-        }
-
-        // =============================================
-        // تغییر زبان
-        // =============================================
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            const t = translations[lang];
-            
-            if (lang === 'en') {
-                document.body.classList.add('en-mode');
-                document.documentElement.dir = 'ltr';
-                document.documentElement.lang = 'en';
-            } else {
-                document.body.classList.remove('en-mode');
-                document.documentElement.dir = 'rtl';
-                document.documentElement.lang = 'fa';
-            }
-            
-            const elements = {
-                'appName': t.appName,
-                'headerSubtitle': t.headerSubtitle,
-                'labelMovies': t.labelMovies,
-                'labelFavorites': t.labelFavorites,
-                'labelWatchlist': t.labelWatchlist,
-                'labelWatched': t.labelWatched,
-                'tabMovies': t.tabMovies,
-                'tabSearch': t.tabSearch,
-                'tabAdd': t.tabAdd,
-                'tabRecommend': t.tabRecommend,
-                'tabTop': t.tabTop,
-                'tabFavorites': t.tabFavorites,
-                'tabWatchlist': t.tabWatchlist,
-                'tabStats': t.tabStats,
-                'tabProfile': t.tabProfile,
-                'moviesTitle': t.moviesTitle,
-                'btnReload': t.btnReload,
-                'optAllGenres': t.optAllGenres,
-                'optAllYears': t.optAllYears,
-                'optAllRatings': t.optAllRatings,
-                'sortRatingDesc': t.sortRatingDesc,
-                'sortRatingAsc': t.sortRatingAsc,
-                'sortYearDesc': t.sortYearDesc,
-                'sortYearAsc': t.sortYearAsc,
-                'sortName': t.sortName,
-                'searchTitle': t.searchTitle,
-                'searchLabel': t.searchLabel,
-                'btnSearch': t.btnSearch,
-                'btnClear': t.btnClear,
-                'addTitle': t.addTitle,
-                'addNameLabel': t.addNameLabel,
-                'addGenreLabel': t.addGenreLabel,
-                'addRatingLabel': t.addRatingLabel,
-                'addYearLabel': t.addYearLabel,
-                'addDirectorLabel': t.addDirectorLabel,
-                'addDurationLabel': t.addDurationLabel,
-                'addDescLabel': t.addDescLabel,
-                'addCastLabel': t.addCastLabel,
-                'addStatusLabel': t.addStatusLabel,
-                'statusShowing': t.statusShowing,
-                'statusReleased': t.statusReleased,
-                'statusComing': t.statusComing,
-                'btnAddMovie': t.btnAddMovie,
-                'recommendTitle': t.recommendTitle,
-                'recommendGenreLabel': t.recommendGenreLabel,
-                'btnRecommend': t.btnRecommend,
-                'topTitle': t.topTitle,
-                'topCountLabel': t.topCountLabel,
-                'btnTopShow': t.btnTopShow,
-                'favoritesTitle': t.favoritesTitle,
-                'watchlistTitle': t.watchlistTitle,
-                'btnExportJSON': t.btnExportJSON,
-                'btnExportCSV': t.btnExportCSV,
-                'statsTitle': t.statsTitle,
-                'btnStatsLoad': t.btnStatsLoad,
-                'profileTitle': t.profileTitle,
-                'profileLabelMovies': t.profileLabelMovies,
-                'profileLabelFavorites': t.profileLabelFavorites,
-                'profileLabelWatchlist': t.profileLabelWatchlist,
-                'btnResetData': t.btnResetData,
-                'profileLogoutBtn': t.profileLogout,
-                'detailGenreLabel': t.detailGenreLabel,
-                'detailRatingLabel': t.detailRatingLabel,
-                'detailYearLabel': t.detailYearLabel,
-                'detailDirectorLabel': t.detailDirectorLabel,
-                'detailDurationLabel': t.detailDurationLabel,
-                'detailCastLabel': t.detailCastLabel,
-                'detailDescLabel': t.detailDescLabel,
-                'detailStatusLabel': t.detailStatusLabel,
-                'detailFavStatusLabel': t.detailFavStatusLabel,
-                'detailWatchlistStatusLabel': t.detailWatchlistStatusLabel,
-                'detailLinksLabel': t.detailLinksLabel,
-                'linkTrailer': t.linkTrailer,
-                'linkImdb': t.linkImdb,
-                'linkWatch': t.linkWatch,
-                'detailYourRatingLabel': t.detailYourRatingLabel,
-                'detailCommentsLabel': t.detailCommentsLabel,
-                'btnSendComment': t.btnSendComment,
-                'detailDeleteBtn': t.detailDeleteBtn,
-                'btnShare': t.btnShare,
-                'btnCopyLink': t.btnCopyLink,
-                'footerText': t.footerText,
-                'langFa': t.langFa,
-                'langEn': t.langEn,
-                'loginDesc': t.loginDesc,
-                'loginEmailLabel': t.loginEmailLabel,
-                'loginBtn': t.loginBtn,
-                'loginError': t.loginError,
-                'userInfoText': t.userInfoText,
-                'logoutBtn': t.logoutBtn,
-                'headerLogoutBtn': t.headerLogout
-            };
-            
-            for (const [id, text] of Object.entries(elements)) {
-                const el = document.getElementById(id);
-                if (el && !['profileName', 'profileEmail', 'profileJoinDate', 'headerUser'].includes(id)) {
-                    el.textContent = text;
-                }
-            }
-            
-            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
-            document.getElementById('searchInputQuick').placeholder = t.searchQuick;
-            document.getElementById('newName').placeholder = t.addNamePlaceholder;
-            document.getElementById('newYear').placeholder = t.addYearPlaceholder;
-            document.getElementById('newDirector').placeholder = t.addDirectorPlaceholder;
-            document.getElementById('newDuration').placeholder = t.addDurationPlaceholder;
-            document.getElementById('newDesc').placeholder = t.addDescPlaceholder;
-            document.getElementById('newCast').placeholder = t.addCastPlaceholder;
-            document.getElementById('newRating').placeholder = t.addRatingPlaceholder;
-            document.getElementById('newComment').placeholder = t.commentPlaceholder;
-            
-            document.getElementById('langFa').className = lang === 'fa' ? 'active-lang' : '';
-            document.getElementById('langEn').className = lang === 'en' ? 'active-lang' : '';
-            
-            document.title = lang === 'fa' ? '🎬 سینماچی - سیستم کامل مدیریت فیلم' : '🎬 Cinemachi - Complete Movie Management System';
-            localStorage.setItem('cinemachi_language', lang);
-            
-            showToast(lang === 'fa' ? t.toastLanguageFa : t.toastLanguageEn);
-            
-            if (document.getElementById('stats').classList.contains('active')) {
-                loadStats();
-            }
-            applyFilters();
-            updateHeaderUser();
-        }
-
-        // =============================================
-        // راه‌اندازی
-        // =============================================
-        window.onscroll = function() {
-            const btn = document.getElementById('goToTop');
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                btn.style.display = 'block';
-            } else {
-                btn.style.display = 'none';
-            }
-        };
-
-        window.onclick = function(e) {
-            if (e.target === document.getElementById('detailModal')) {
-                closeDetailModal();
-            }
-        };
-
-        function loadTheme() {
-            const theme = localStorage.getItem('cinemachi_theme');
-            if (theme === 'light') {
-                document.body.classList.add('light-mode');
-            }
-        }
-
-        function loadLanguage() {
-            const lang = localStorage.getItem('cinemachi_language') || 'fa';
-            changeLanguage(lang);
-        }
-
-        function loadChartJS() {
-            if (typeof Chart === 'undefined') {
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
-                script.onload = () => {
-                    if (document.getElementById('stats').classList.contains('active')) {
-                        loadStats();
-                    }
-                };
-                document.head.appendChild(script);
-            }
-        }
-
-        function init() {
-            loadTheme();
-            loadLanguage();
-            
-            const savedUser = localStorage.getItem('cinemachi_current_user');
-            if (savedUser) {
-                currentUser = savedUser;
-                const userData = getUserData(savedUser);
-                if (userData.movies && userData.movies.length > 0) {
-                    loadUserData(savedUser);
-                    document.getElementById('loginOverlay').style.display = 'none';
-                    updateHeaderUser();
-                } else {
-                    document.getElementById('loginOverlay').style.display = 'flex';
-                }
-            } else {
-                // بارگذاری فیلم‌های پیش‌فرض برای مهمان
-                movies = getDefaultMovies();
-                applyFilters();
-                updateCounts();
-                document.getElementById('loginOverlay').style.display = 'flex';
-            }
-            
-            loadChartJS();
-            console.log('🎬 سینماچی با سیستم ورود و ترجمه کامل بارگذاری شد!');
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
         document.getElementById('loginEmail').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 loginUser();
             }
         });
+
+        // =============================================
+        // راه‌اندازی
+        // =============================================
+        function init() {
+            const savedUser = localStorage.getItem('cinemachi_current_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                loadMoviesFromStorage();
+                document.getElementById('loginOverlay').style.display = 'none';
+                updateHeaderUser();
+                applyFilters();
+                updateCounts();
+                console.log(`👋 خوش آمدید ${savedUser.split('@')[0]}`);
+            } else {
+                document.getElementById('loginOverlay').style.display = 'flex';
+            }
+            console.log('🎬 سینماچی با موفقیت بارگذاری شد!');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
