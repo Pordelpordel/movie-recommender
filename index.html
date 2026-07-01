@@ -175,6 +175,7 @@
             background: rgba(255,255,255,0.06);
             border-radius: 50px;
             font-size: 0.9rem;
+            flex-wrap: wrap;
         }
         body.light-mode .header .user-info {
             background: rgba(0,0,0,0.04);
@@ -934,7 +935,7 @@
         <!-- ===== هدر ===== -->
         <div class="header">
             <h1>🎬 <span>سینماچی</span></h1>
-            <p class="subtitle">✨ هوشمندترین سیستم مدیریت فیلم ایران ✨</p>
+            <p class="subtitle" id="mainSubtitle">✨ هوشمندترین سیستم مدیریت فیلم ایران ✨</p>
             <div class="user-info">
                 <span class="user-avatar" id="userAvatar">👤</span>
                 <span id="userDisplayName">کاربر</span>
@@ -1209,7 +1210,7 @@
 
         <!-- ===== فوتر ===== -->
         <footer class="footer">
-            <p>© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.</p>
+            <p id="footerText">© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.</p>
             <div class="lang-btns">
                 <button onclick="changeLanguage('fa')" id="langFa">🇮🇷 فارسی</button>
                 <button onclick="changeLanguage('en')" id="langEn">🇬🇧 English</button>
@@ -1219,12 +1220,28 @@
 
     <script>
         // =============================================
-        // سیستم کاربری مبتنی بر ایمیل
+        // تنظیمات و داده‌ها
         // =============================================
+        const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
+        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+
         let currentUser = null;
         let currentUserData = null;
+        let movies = [];
+        let favorites = [];
+        let watchlist = [];
+        let watched = [];
+        let userRatings = {};
+        let comments = {};
+        let currentDetailMovie = null;
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 8;
+        let currentLang = localStorage.getItem('cinemachi_lang') || 'fa';
 
-        // کلیدهای ذخیره‌سازی بر اساس ایمیل
+        // =============================================
+        // سیستم کاربری مبتنی بر ایمیل
+        // =============================================
         function getUserStorageKey(email, type) {
             const sanitized = email.replace(/[^a-zA-Z0-9]/g, '_');
             return `cinemachi_${sanitized}_${type}`;
@@ -1295,14 +1312,11 @@
             currentUser = email;
             currentUserData = userData;
             
-            // ذخیره کاربر فعلی
             localStorage.setItem('cinemachi_current_user', email);
             
-            // نمایش اپلیکیشن
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             
-            // راه‌اندازی
             initApp();
             
             showToast(`👋 خوش آمدید ${getUserDisplayName(email)}!`);
@@ -1331,7 +1345,6 @@
                     currentUserData = data;
                     document.getElementById('loginPage').style.display = 'none';
                     document.getElementById('mainApp').style.display = 'block';
-                    initApp();
                     return true;
                 } else {
                     localStorage.removeItem('cinemachi_current_user');
@@ -1341,24 +1354,8 @@
         }
 
         // =============================================
-        // متغیرهای اصلی اپلیکیشن
+        // دیکشنری لینک‌های فیلم‌ها
         // =============================================
-        const TMDB_API_KEY = '65c8437566f16327cea8787949e1c755';
-        const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-        const TMDB_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-
-        let movies = [];
-        let favorites = [];
-        let watchlist = [];
-        let watched = [];
-        let userRatings = {};
-        let comments = {};
-        let currentDetailMovie = null;
-        let currentPage = 1;
-        const ITEMS_PER_PAGE = 8;
-        let currentLang = localStorage.getItem('cinemachi_lang') || 'fa';
-
-        // دیکشنری لینک‌ها
         const movieLinks = {
             1: { imdb: 'https://www.imdb.com/title/tt0111161/', trailer: 'https://www.youtube.com/watch?v=6hB3S9bIaco', watch: 'https://www.imdb.com/title/tt0111161/' },
             2: { imdb: 'https://www.imdb.com/title/tt0068646/', trailer: 'https://www.youtube.com/watch?v=sY1S34973zA', watch: 'https://www.imdb.com/title/tt0068646/' },
@@ -1391,7 +1388,7 @@
         }
 
         // =============================================
-        // توابع بارگذاری داده‌های کاربر
+        // توابع اصلی
         // =============================================
         function loadUserData() {
             if (!currentUserData) return;
@@ -1402,13 +1399,6 @@
             watched = currentUserData.watched || [];
             userRatings = currentUserData.ratings || {};
             comments = currentUserData.comments || {};
-            
-            // اطمینان از وجود لینک‌ها برای فیلم‌های پیش‌فرض
-            movies.forEach(m => {
-                if (!movieLinks[m.id] && m.id <= 10) {
-                    // لینک‌های پیش‌فرض
-                }
-            });
         }
 
         function saveUserDataToStorage() {
@@ -1422,10 +1412,7 @@
             saveUserData(currentUser, currentUserData);
         }
 
-        // =============================================
-        // توابع اصلی
-        // =============================================
-        function updateUI() {
+        function updateCounts() {
             document.getElementById('movieCount').textContent = movies.length;
             document.getElementById('favCount').textContent = favorites.length;
             document.getElementById('watchlistCount').textContent = watchlist.length;
@@ -1547,7 +1534,7 @@
                 if (tabName === 'favorites') displayFavorites();
                 if (tabName === 'watchlist') displayWatchlist();
                 if (tabName === 'stats') loadStats();
-                if (tabName === 'profile') updateUI();
+                if (tabName === 'profile') updateCounts();
             });
         });
 
@@ -1792,7 +1779,7 @@
             applyFilters();
             displayFavorites();
             displayWatchlist();
-            updateUI();
+            updateCounts();
             showToast('🗑️ فیلم با موفقیت حذف شد');
         }
 
@@ -1810,7 +1797,7 @@
             saveUserDataToStorage();
             applyFilters();
             displayFavorites();
-            updateUI();
+            updateCounts();
             if (currentDetailMovie && currentDetailMovie.id === id) updateDetailUI();
         }
 
@@ -1836,14 +1823,14 @@
             saveUserDataToStorage();
             applyFilters();
             displayWatchlist();
-            updateUI();
+            updateCounts();
             if (currentDetailMovie && currentDetailMovie.id === id) updateDetailUI();
         }
 
         function displayWatchlist() {
             const watchMovies = movies.filter(m => watchlist.includes(m.id));
             displayMovies(watchMovies, 'watchlistList');
-            updateUI();
+            updateCounts();
         }
 
         function exportWatchlist() {
@@ -2229,8 +2216,49 @@
         }
 
         // =============================================
-        // تغییر زبان
+        // تغییر زبان (کامل)
         // =============================================
+        const translations = {
+            fa: {
+                title: '🎬 سینماچی - سیستم کامل مدیریت فیلم',
+                subtitle: '✨ هوشمندترین سیستم مدیریت فیلم ایران ✨',
+                footer: '© ۱۴۰۴ تمامی حقوق برای <strong>سینماچی</strong> محفوظ است.',
+                loginTitle: '🎬 سینماچی',
+                loginSubtitle: '✨ برای ادامه، ایمیل خود را وارد کنید ✨',
+                loginBtn: '🚀 ورود / ثبت نام',
+                loginHint: '💡 با وارد کردن هر ایمیل، حساب کاربری جدید ساخته می‌شود',
+                logout: '🚪 خروج',
+                moviesTab: '🎬 فیلم‌ها',
+                searchTab: '🔍 جستجو',
+                addTab: '➕ افزودن',
+                recommendTab: '🎯 پیشنهاد',
+                topTab: '🏆 برترین‌ها',
+                favoritesTab: '❤️ علاقه‌مندی',
+                watchlistTab: '📋 لیست تماشا',
+                statsTab: '📊 آمار',
+                profileTab: '👤 پروفایل'
+            },
+            en: {
+                title: '🎬 Cinemachi - Complete Movie Management System',
+                subtitle: '✨ The Smartest Movie Management System ✨',
+                footer: '© 2025 All rights reserved for <strong>Cinemachi</strong>.',
+                loginTitle: '🎬 Cinemachi',
+                loginSubtitle: '✨ Enter your email to continue ✨',
+                loginBtn: '🚀 Login / Sign Up',
+                loginHint: '💡 Any email creates a new account',
+                logout: '🚪 Logout',
+                moviesTab: '🎬 Movies',
+                searchTab: '🔍 Search',
+                addTab: '➕ Add',
+                recommendTab: '🎯 Recommend',
+                topTab: '🏆 Top',
+                favoritesTab: '❤️ Favorites',
+                watchlistTab: '📋 Watchlist',
+                statsTab: '📊 Stats',
+                profileTab: '👤 Profile'
+            }
+        };
+
         function changeLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('cinemachi_lang', lang);
@@ -2248,20 +2276,39 @@
             document.getElementById('langFa').className = lang === 'fa' ? 'active-lang' : '';
             document.getElementById('langEn').className = lang === 'en' ? 'active-lang' : '';
             
-            // ترجمه متن‌ها
-            const translations = {
-                fa: {
-                    title: '🎬 سینماچی - سیستم کامل مدیریت فیلم',
-                    subtitle: '✨ هوشمندترین سیستم مدیریت فیلم ایران ✨',
-                },
-                en: {
-                    title: '🎬 Cinemachi - Complete Movie Management System',
-                    subtitle: '✨ The Smartest Movie Management System ✨',
-                }
+            const t = translations[lang];
+            
+            // ترجمه عناصر اصلی
+            document.querySelector('title').textContent = t.title;
+            document.getElementById('mainSubtitle').textContent = t.subtitle;
+            document.getElementById('footerText').innerHTML = t.footer;
+            
+            // ترجمه صفحه ورود
+            document.querySelector('.login-box h1').textContent = t.loginTitle;
+            document.querySelector('.login-box .subtitle').textContent = t.loginSubtitle;
+            document.querySelector('.login-box .login-btn').textContent = t.loginBtn;
+            document.querySelector('.login-box .demo-hint').textContent = t.loginHint;
+            document.querySelector('.header .user-info .logout-btn').textContent = t.logout;
+            
+            // ترجمه تب‌ها
+            const tabMap = {
+                'movies': t.moviesTab,
+                'search': t.searchTab,
+                'add': t.addTab,
+                'recommend': t.recommendTab,
+                'top': t.topTab,
+                'favorites': t.favoritesTab,
+                'watchlist': t.watchlistTab,
+                'stats': t.statsTab,
+                'profile': t.profileTab
             };
             
-            document.querySelector('title').textContent = translations[lang].title;
-            document.querySelector('.header .subtitle').textContent = translations[lang].subtitle;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const tab = btn.dataset.tab;
+                if (tabMap[tab]) {
+                    btn.textContent = tabMap[tab];
+                }
+            });
             
             showToast(lang === 'fa' ? '🌍 زبان به فارسی تغییر کرد' : '🌍 Language changed to English');
         }
@@ -2294,11 +2341,10 @@
             loadUserData();
             saveUserDataToStorage();
             
-            // بروزرسانی UI
             applyFilters();
             displayFavorites();
             displayWatchlist();
-            updateUI();
+            updateCounts();
             if (document.getElementById('stats').classList.contains('active')) {
                 loadStats();
             }
@@ -2366,7 +2412,7 @@
             applyFilters();
             displayFavorites();
             displayWatchlist();
-            updateUI();
+            updateCounts();
             loadChartJS();
             loadLanguage();
             
@@ -2383,14 +2429,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadTheme();
             
-            // بررسی کاربر فعلی
             if (!checkCurrentUser()) {
-                // نمایش صفحه ورود
                 document.getElementById('loginPage').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
             }
             
-            // Enter key برای ورود
             document.getElementById('loginEmail').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') loginUser();
             });
